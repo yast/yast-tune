@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Thu Feb 26 20:32:53 CET 2004 - nashif@suse.de
+
+- Changed proposal file name proposal_* to *_proposal
+- 2.9.12
+
+-------------------------------------------------------------------
 Tue Feb 24 11:05:49 CET 2004 - lslezak@suse.cz
 
 - InitHWinfo - only [OK] button in HW summary dialog (#34915)
