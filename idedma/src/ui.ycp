@@ -374,8 +374,6 @@ global define any DmaConfigDialog () ``{
 		    // convert button identification to DMA boolean value
 		    string new_setting = sformat("%1", UI::QueryWidget(`id(`dma_combo), `Value));
 
-		    // TODO remove ` from new_setting
-
 		    if (size(new_setting) > 1 && substring(new_setting, 0, 1) == "`")
 		    {
 			new_setting = substring(new_setting, 1);
@@ -387,12 +385,6 @@ global define any DmaConfigDialog () ``{
 
 		    // refresh value in the table
 		    UI::ChangeWidget(`id(`device_table), `Item(curr, 4), mode_names[new_setting]:_("No change"));
-
-/*		    // set changed flag
-		    if (new_value != select(table_item, 1, nil))
-		    {
-			changed = true;
-		    }*/
 		}
 	    }
 	}

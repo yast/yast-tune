@@ -16,8 +16,11 @@ ynclude_DATA =			\
 	helps.ycp		\
 	ui.ycp
 
+# exclude IDE DMA from Y2CC on s390
+if !ARCH_S390
 config_DATA =			\
 	idedma.y2cc
+endif
 
 module_DATA =			\
 	Idedma.ycp
