@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Fri Mar 21 12:26:21 CET 2003 - lslezak@suse.de
+
+- hwinfo: save hwinfo output to the file (enh. #16771), use Wizard
+  module, small fixes
+
+-------------------------------------------------------------------
 Mon Mar  3 12:53:58 CET 2003 - lslezak@suse.de
 
 - merged proof-read texts

@@ -192,6 +192,8 @@ $[
     "chipcard"	:   _("Chipcard Reader"),
     // tree node - Digital camera or WebCam
     "camera"	:   _("Camera"),
+    // Point-to-Point Protocol Over Ethernet
+    "pppoe"	:   _("PPP Over Ethernet"),
 
     // tree node string - CPU information
     "bogomips"	:   _("Bogus Millions of Instructions Per Second"),
@@ -613,6 +615,23 @@ define term buildHwTree(string p, integer progMin, integer progMax) ``{
     return nil;
 }
 
+/**
+ * Save hwinfo output to the specified file
+ * @param file Target file
+ * @return boolean True if saving was successful
+ */
+global define boolean save_hwinfo(string file) ``{
+    if (file == "" || file == nil)
+    {
+	return false;
+    }
+
+    string command = "/usr/sbin/hwinfo > " + file;
+    return SCR::Execute(.target.bash, command) == 0;
+}
+
+// Main
+
 // tree item list
 any items = nil;
 // default initial path
@@ -620,7 +639,7 @@ path pat = .probe;
 if (size(WFM::Args()) > 0)
 {
     // initial path overriden by module argument
-    pat = WFM::Args(0);
+    pat = topath(WFM::Args(0));
 }
 
 // build the tree
@@ -648,25 +667,51 @@ term con = `Tree(  `id(`idTree), `opt(`vstretch, `hstretch),
 
 Wizard::CreateDialog();
 
-UI::ReplaceWidget(`id(`rep_back), `HStretch());
-UI::ReplaceWidget(`id(`rep_next), `HStretch());
-UI::ReplaceWidget(`id(`rep_abort), `PushButton(`id(`next), `opt(`key_F10), UI::CloseButtonLabel()));
+Wizard::ReplaceBackButton(`Empty());
+Wizard::ReplaceNextButton(`Empty());
+Wizard::ReplaceAbortButton(`HBox(
+	`PushButton(`id(`save), _("Save to File...")),
+	`HSpacing(3),
+	`PushButton(`id(`next), `opt(`key_F10), UI::CloseButtonLabel())
+    )
+);
 
 // dialog header
 Wizard::SetContents (_("Hardware info"), con,
 
 // help text
  _("<P>The <B>Hardware Information</B> module displays the hardware
-details of your computer. Click any node for more information.</p>\n"), false, true);
+details of your computer. Click any node for more information.</p>\n")
++ _("<P>You can save hardware information to file. Click button <B>Save to File</B> and enter file name.</P>"),
+false, true);
 
 any event = nil;
 
 // wait for finish
 while(event != `abort && event !=`next && event != `cancel)
 {
-	event = UI::UserInput();
+    event = UI::UserInput();
+
+    if (event == `save)
+    {
+	// window title
+	string filename = UI::AskForSaveFileName("", "", _("Save Hardware Information"));
+	if (filename != nil)
+	{
+	    // progress window content
+	    UI::OpenDialog(`Label(_("Saving Hardware Information...")));
+	    boolean saved = save_hwinfo(filename);
+	    UI::CloseDialog();
+
+	    if (saved == false)
+	    {
+		// error popup message
+		UI::ErrorPopup(_("Saving data failed"));
+	    }
+	}
+    }
 }
-UI::CloseDialog();
+Wizard::CloseDialog();
 
 /* EOF */
 }
