@@ -69,6 +69,8 @@ $[
     // tree node string
     "device_id"	:   _("Device identifier"),
     // tree node string
+    "drivers"	:   _("Drivers"),
+    // tree node string
     "prog_if"	:   _("Prog. interface"),
     // tree node string
     "resource"	:   _("Resources"),
@@ -143,6 +145,8 @@ $[
     "system"	:   _("System"),
     // tree node string
     "tv"		:   _("TV Card"),
+    // tree node string
+    "dvb"		:   _("DVB Card"),
     // tree node string
     "usb_type"	:   _("USB type"),
     // tree node string
