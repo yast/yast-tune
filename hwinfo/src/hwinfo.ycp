@@ -532,7 +532,7 @@
     }
 
     // title label
-    string title = "All entries";
+    string title = _("All entries"); //this wasn't marked for translation in 8.0
     if(pat != .probe)
     {
 	title = trans_str(afterLast(sformat("%1", pat)));
