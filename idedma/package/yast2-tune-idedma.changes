@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Tue Feb  5 17:15:03 CET 2002 - lslezak@suse.cz
+
+- changed columns in the table
+- added help text
+- version 2.5.5
+
+-------------------------------------------------------------------
 Mon Feb  4 15:31:38 CET 2002 - lslezak@suse.cz
 
 - changed package name from "yast2-config-idedma" to "yast2-tune-idedma"

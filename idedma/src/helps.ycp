@@ -55,14 +55,20 @@ Please wait...
 	    // For translators: IDE DMA setup dialog help, part 1 of 4
 _("<P><B><BIG>IDE DMA setup</BIG></B><BR>
 Configure the DMA mode of your IDE devices here.
-<BR></P>
-") +
-	    // For translators: IDE DMA setup dialog help, part 2 of 3
-_("<P><B><BIG>Change IDE DMA mode</BIG></B><BR>
-Select a device in the table then click the button below with required DMA mode. 
 </P>
 ") +
-	    // For translators: IDE DMA setup dialog help, part 3 of 3
+	    // For translators: IDE DMA setup dialog help, part 2 of 4
+_("<P>The table contains information about all attached IDE devices. There is
+column <B>Current DMA mode</B> with actual settings and column <B>Required DMA
+mode</B> with settings which will be applied after button <B>Finish</B> press and
+after boot.</P>") +
+
+	    // For translators: IDE DMA setup dialog help, part 3 of 4
+_("<P><B><BIG>Change IDE DMA mode</BIG></B><BR>
+Select a device in the table then click the button below with required DMA mode.
+</P>
+") +
+	    // For translators: IDE DMA setup dialog help, part 4 of 4
 _("<P><B><BIG>Note:</BIG></B><BR>
 Disabling DMA mode slows down access to the device, but some devices may
 not work properly if DMA is activated.

@@ -206,7 +206,7 @@ global define list get_table_items() ``{
 	    string device = lookup(d, "dev_name", _("Unknown"));
 	    string device_type = lookup(d, "device_type", _("Unknown type"));
 
-	    table_items = add(table_items, `item(`id(id), dma, device_name, device_type, device, current_dma));
+	    table_items = add(table_items, `item(`id(id), current_dma, device_name, device_type, device, dma));
 
 	    id = id + 1;
 	}
@@ -225,7 +225,7 @@ global define any DmaConfigDialog () ``{
     list items = get_table_items();
 
     term contents = `VBox(
-			`Table(`id(`device_table), `header(_("DMA mode"), _("Device name"), _("Type"), _("Device"), _("Current DMA mode")), items),
+			`Table(`id(`device_table), `header(_("Current DMA mode"), _("Device name"), _("Type"), _("Device"), _("Required DMA mode")), items),
 			`HBox(
 			    `PushButton(`id(`dma_enable), _("&DMA on")),
 			    `HSpacing(2),
