@@ -37,10 +37,11 @@
 
     list exclude_list=[.probe.byclass, .probe.bybus, .probe.mouse, .probe.ihw_data];    
 
-    map trans_table=UI(
+    map trans_table=eval(
     $[
 	"architecture": _("Architecture"),
 	"bus": _("Bus"),
+	"cache": _("Cache"),
 	"card_type": _("Card type"),
 	"class_id": _("Class"),
 	"cdtype": _("CD type"),
@@ -83,6 +84,7 @@
 	"sound": _("Sound"),
 	"storage": _("Storage media"),
 	"system": _("System"),
+	"tv": _("TV Card"),
 	"usb_type": _("USB type"),
 	"version": _("Version")
     ]);
@@ -110,7 +112,7 @@
     }
 
     map classdb=SCR(`Read (.target.yast2, "classnames.ycp"));
-    classdb=UI(classdb);
+    classdb=eval(classdb);
 
 	    /* converts (scalar/nested) lists and maps to tree datastructure
 	    */
@@ -131,6 +133,15 @@
 	    }
 		
 	}
+	return hw;
+    }
+
+    define add_cpu_info(map hw) ``{
+	map inf=SCR(`Read(.proc.cpuinfo));
+	hw=add(hw, "model", lookup(inf, "model_name", ""));
+	hw=add(hw, "cache", sformat("%1 KB", lookup(inf, "cache", 0)));
+		// processor frequency
+	hw=add(hw, _("Frequency"), sformat("%1 MHz", tointeger(lookup(inf, "mhz", 0))));
 	return hw;
     }
 
@@ -172,14 +183,28 @@
 	
 	if(is(node, list))
 	{
+	    y2error("node is list: %1", node);
 	    list lout=[];
 	    integer q=size(node);
 	    integer pos=0;
-	    while(pos<q)
-	    {
-		lout=add(lout, `item(get_item_label(pos), expandTree(select(node, pos))));
+	    foreach(`e, node,
+	    ``{
+		string lab=UI(`Glyph(`ArrowRight));
+		if(is(e, map))
+		{
+		    if(haskey(e, "device"))
+		    {
+			lab=lookup(e, "device", UI(`Glyph(`CheckMark)));
+		    }
+		    else if(haskey(e, "model"))
+		    {
+			lab=lookup(e, "model", UI(`Glyph(`CheckMark)));
+		    }
+		}
+    
+		lout=add(lout, `item(lab, expandTree(e)));
 		pos=pos+1;
-	    }
+	    });
 	    return lout;
 	}
 	if(is(node, map))
@@ -248,6 +273,11 @@
 	    }
 	    else
 	    {
+		if(afterLast(p)=="cpu")
+		{
+		    y2error("cpu: %1", val);
+		    val=maplist(`e, val, ``(add_cpu_info(e)));
+		}
 		return `item(trans_str(afterLast(p)), expandTree(val));
 	    }
 	}

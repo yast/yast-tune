@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Mon Jul 30 16:27:06 CEST 2001 - dmeszar@suse.cz
+
+- show processor description
+- list members are shown not with index but with descprition inside,
+  or with arrow 
+
+-------------------------------------------------------------------
 Mon Jul 23 12:49:57 CEST 2001 - dmeszar@suse.cz
 
 - added yast2-agent-probe to rpm 'requires' entry
