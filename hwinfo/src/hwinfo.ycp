@@ -1,0 +1,179 @@
+/**
+ *
+ *
+ * File:
+ *   probeall.ycp
+ *
+ * Module:
+ *          
+ *
+ * Authors:
+ *   Dan Meszaros <dmeszar@suse.cz>
+ *
+ * displays complete contents of .probe
+ *                   
+ *
+ */
+
+
+{
+    textdomain "hwinfo";
+    include "ui/wizard_dialog.ycp";
+
+    UI(`OpenDialog(`VBox(
+	`TextEntry(`id(`initLab), _("probing:"), "."),
+	`ProgressBar(`id(`initProg), _("progress:"), 1000, 0)
+	)
+    ));
+    
+
+	    /* converts (scalar/nested) lists and maps to tree datastructure
+	    */
+
+    define scalar(any node)
+    ``{
+	if( is(node, string) ||
+	    is(node, boolean) ||
+	    is(node, integer) ||
+	    is(node, float) ||
+	    is(node, locale) ||
+	    is(node, path))
+	{
+	    return true;
+	}
+	return false;
+    }
+
+    define expandTree(any node)
+    ``{
+	if(node==nil) 
+	{
+	    return [];
+	}
+	// if node is scalar, we just return the new item.
+	if(scalar(node))
+	{	
+	    return [`item(sformat("%1", node))];
+	}
+	
+	if(is(node, list))
+	{
+	    list lout=[];
+	    integer q=size(node)-1;
+	    while(q>=0)
+	    {
+		lout=add(lout, `item(sformat("#%1", q), expandTree(select(node, q))));
+		q=q-1;
+	    }
+	    return sort(lout);
+	}
+	if(is(node, map))
+	{
+	    list ltmp=[];
+	    ltmp=foreach(`key, `v, node,
+	    ``{
+		if(scalar(v))
+		{
+		    ltmp=add(ltmp, `item(sformat("%1 : %2", key, v)));
+		}
+		else
+		{
+		    ltmp=add(ltmp, `item(sformat("%1", key), expandTree(v)));
+		}
+		return ltmp;
+	    });
+	    return sort(ltmp);
+	}
+
+	return [];
+   }
+
+    define afterLast(string str)
+    ``{
+	list strs=splitstring(str, ".");
+	return select(strs, size(strs)-1);
+    }
+
+    /*
+    *	returns list of values read from string->path p
+    *	progMin, progMax are bounds for progressBar (because of recursion)
+    */
+
+    define buildHwTree(string p, integer progMin, integer progMax) 
+    ``{
+	UI(`ChangeWidget(`id(`initLab), `Value, p));
+	path pat=topath(p);
+	
+	list dir=SCR(`Dir(pat));
+
+	if(isnil(dir))
+	{
+	    any val=SCR(`Read(pat));
+	    if(scalar(val))
+	    {
+		return `item(sformat("%1 : %2", afterLast(p), val));
+	    }
+	    else if(isnil(val) ||  val==[] || val==$[])
+	    {
+		return nil;
+	    }
+	    else
+	    {
+		return `item(afterLast(p), expandTree(val));
+	    }
+	}
+	else
+	{
+	    integer step=(progMax-progMin)/size(dir); 
+	    integer prog=progMin;
+    
+	    integer pos=size(dir)-1;
+	    list lout=[];
+	    term itm=nil;
+	    while(pos>=0)
+	    {
+		itm=buildHwTree(p+"."+select(dir, pos), prog, prog+step);
+		if(!isnil(itm))
+		{
+		    lout=add(lout, itm);
+		}
+		pos=pos-1;
+		prog=prog+step;
+		UI(`ChangeWidget(`id(`initProg), `Value, prog));
+	    }
+	    return `item(afterLast(p), sort(lout));
+	}
+	return nil;
+    }
+
+
+    any items=nil;
+    if(size(Args()) >0)
+    {
+	string pat=Args(0);
+	y2error(pat);
+	items=buildHwTree(sformat("%1", pat), 0, 1000);
+    }
+    else
+    {
+	items=buildHwTree(".probe", 0, 1000);
+    }
+
+    UI(`CloseDialog());
+
+    term con=`Tree(  `id(`idTree), `opt(`vstretch, `hstretch),
+                                    ".probe",
+                                    [items]);
+
+    UI(`CreateWizardDialog());
+    UI(`SetWizardContents (_("YaST2\nInitializing ..."), con, _("<P>Hardware info</p>"), false, true));
+
+    any event=nil;   
+ 
+    while(event!=`abort && event !=`next && event != `cancel)
+    {
+	    event=UI(`UserInput());
+	    y2error(sformat("%1", event));	    
+    }    
+    UI(`CloseDialog());
+}
