@@ -78,3 +78,15 @@ Read	.init.scripts.runlevel "boot.idedma" $["boot.idedma":$["start":["B"], "stop
 Read	.init.scripts.comment "boot.idedma" $["boot.idedma":$["defstart":["B"], "defstop":[], "description":"Enable/disable DMA mode on IDE devices.", "provides":["boot.idedma"], "reqstart":[], "reqstop":[]]]
 Execute	.target.bash_output "/sbin/insserv -d /etc/init.d/boot.idedma" $["exit":0, "stdout":" using_dma    =  1 (on)"]
 Return	true
+Return	
+Return	
+Return	
+Return	udma2
+Return	udma2
+Return	udma2
+Return	["mdma2", "udma0", "udma2", "udma4", "udma5", "udma6"]
+Return	["mdma2", "udma0", "udma2", "udma4", "udma5", "udma6"]
+Return	["mdma2", "udma0", "udma1", "udma2"]
+Return	["mdma2", "udma0", "udma1", "udma2"]
+Return	["mdma2", "udma0", "udma1", "udma2"]
+Return	["mdma2", "udma0", "udma1", "udma2"]

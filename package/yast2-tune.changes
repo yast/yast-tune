@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Wed Feb 19 15:00:12 CET 2003 - lslezak@suse.de
+
+- hwinfo: increased size of progress window (#23791)
+- idedma: added testsuites, start boot.idedma only if it's needed
+- version 2.7.5
+
+-------------------------------------------------------------------
 Fri Feb 14 13:21:07 CET 2003 - lslezak@suse.de
 
 - edit DMA transfer mode

@@ -76,4 +76,19 @@ DUMP("Write test4");
 DUMP(Idedma::get_ide_devices());
 TEST(``(Idedma::Write()), [ READ, WRITE, [EXEC, EXEC, EXEC2] ], nil );
 
+TEST(``(Idedma::get_current_dma_mode(nil)), [$[], $[], $[]], nil);
+TEST(``(Idedma::get_current_dma_mode("")), [$[], $[], $[]], nil);
+TEST(``(Idedma::get_current_dma_mode("mdma2 udma0 udma1 udma2")), [$[], $[], $[]], nil);
+TEST(``(Idedma::get_current_dma_mode("mdma2 udma0 udma1 *udma2")), [$[], $[], $[]], nil);
+TEST(``(Idedma::get_current_dma_mode("mdma2 udma0 *udma1 *udma2")), [$[], $[], $[]], nil);
+TEST(``(Idedma::get_current_dma_mode("mdma2   udma0   *udma1   *udma2")), [$[], $[], $[]], nil);
+
+// no DMA - should return all modes which can be set in yast2
+TEST(``(Idedma::get_supported_dma_modes(nil)), [$[], $[], $[]], nil);
+TEST(``(Idedma::get_supported_dma_modes("")), [$[], $[], $[]], nil);
+
+TEST(``(Idedma::get_supported_dma_modes("mdma2 udma0 udma1 udma2")), [$[], $[], $[]], nil);
+TEST(``(Idedma::get_supported_dma_modes("mdma2 udma0 udma1 *udma2")), [$[], $[], $[]], nil);
+TEST(``(Idedma::get_supported_dma_modes("mdma2 udma0 *udma1 *udma2")), [$[], $[], $[]], nil);
+TEST(``(Idedma::get_supported_dma_modes("mdma2   udma0   *udma1   *udma2")), [$[], $[], $[]], nil);
 }

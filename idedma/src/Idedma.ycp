@@ -357,15 +357,19 @@
 	// e.g. new_dma_setting = "/dev/hda:udma5 /dev/hdc:off";
 	string new_dma_setting = "";
 	boolean first = true;
+	boolean initscript_needed = false;
 
 	y2milestone("ide_devices: %1", ide_devices);
 
-	foreach(`d, ide_devices, ``{
+	foreach(map d, ide_devices, ``{
 		string d_name = d["dev_name"]:nil;
 
 		if (d_name != nil)
 		{
 		    string dma_setting = d["dma_setting"]:"nochange";
+
+		    string dma_current_setting = d["current_dma"]:"nochange";
+		    string dma_required_setting = dma_setting;
 
 		    if (dma_setting != "nochange")
 		    {
@@ -380,6 +384,18 @@
 			else
 			{
 			    new_dma_setting = new_dma_setting + " " + dma_setting;
+			}
+
+			y2debug("dma_setting: %1, dma_current_setting: %2", dma_setting, dma_current_setting);
+
+			// use boot.idedma only if current DMA mode and required DMA mode differ
+			if (dma_required_setting != dma_current_setting &&
+			    // don't distinguish between "on" and exact DMA mode
+			    // (required is "on", current is not "off" nor "nochange" (it is e.g. "udma2"))
+			    !(dma_required_setting == "on" && dma_current_setting != "off" && dma_current_setting != "nochange")
+			)
+			{
+			    initscript_needed = true;
 			}
 		    }
 		}
@@ -400,14 +416,21 @@
 	SCR::Write(.sysconfig.hardware, nil);
 
 	// activate settings
-	integer result = SCR::Execute(.target.bash, "/etc/init.d/boot.idedma start");
-
-	if (result != 0)
+	if (initscript_needed == true)
 	{
-	    // error message
-	    Report::Error(_("Error occurred while activating changes."));
-	    y2error("boot.idedma result: %1", result);
-	    ret = false;
+	    y2milestone("Executing /etc/init.d/boot.idedma start");
+
+	    integer result = SCR::Execute(.target.bash, "/etc/init.d/boot.idedma start");
+
+	    y2milestone("boot.idedma result: %1", result);
+
+	    if (result != 0)
+	    {
+		// error message
+		Report::Error(_("Error occurred while activating changes."));
+		y2error("boot.idedma result: %1", result);
+		ret = false;
+	    }
 	}
 
 	if (new_dma_setting != "")

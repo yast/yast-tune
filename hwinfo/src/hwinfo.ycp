@@ -24,16 +24,23 @@ boolean abortPressed = false;
 /*
  * open progress bar window
  */
-UI::OpenDialog(`VBox(
-    // popup dialog header
-    `Label(_("Probing:")),
+UI::OpenDialog(
     `HBox(
-	`HWeight(1, `Label(`id(`initLab), ""))
-    ),
-    // progress bar label
-    `ProgressBar(`id(`initProg), _("Progress:"), 1000, 0),
-    `PushButton(`id(`abort), `opt(`key_F9), UI::AbortButtonLabel()))
-    );
+	`VSpacing(7),
+	`VBox(
+	    `HSpacing(40),
+	    // popup dialog header
+	    `Label(_("Probing:")),
+	    `HBox(
+		`HWeight(1, `Label(`id(`initLab), ""))
+	    ),
+	    // progress bar label
+	    `ProgressBar(`id(`initProg), _("Progress:"), 1000, 0),
+	    `VSpacing(0.5),
+	    `PushButton(`id(`abort), `opt(`key_F9), UI::AbortButtonLabel())
+	)
+    )
+);
 
 /*
  * these paths will be excluded from probing.
