@@ -181,20 +181,22 @@ global string dma_default_string = _("No change");
 global map mode_names = $[
     // DMA status is unknown
     ""      : _("Unknown"),
+    // do not change DMA setting
+    "nochange"	: dma_default_string,
     // DMA is enabled, but mode is unknown
     "on"    : dma_on_string,
     // DMA is disabled
     "off"   : dma_off_string,
 
-    "sdma0" : "SW DMA Mode 0/2.1",
-    "sdma1" : "SW DMA Mode 1/4.2",
-    "sdma2" : "SW DMA Mode 2/8.3",
+    "sdma0" : "SW DMA/2.1",
+    "sdma1" : "SW DMA/4.2",
+    "sdma2" : "SW DMA/8.3",
 
-    "mdma0" : "DMA Mode 0/4.2",
-    "mdma1" : "DMA Mode 1/13.3",
-    "mdma2" : "DMA Mode 2/16.6",
+    "mdma0" : "DMA/4.2",
+    "mdma1" : "DMA/13.3",
+    "mdma2" : "DMA/16",
 
-    "udmaS" : "UltraDMA/13 (Slow)",
+    "udmaS" : "UltraDMA/13",
     "udma0" : "UltraDMA/16",
     "udma1" : "UltraDMA/22",
     "udma2" : "UltraDMA/33",
@@ -217,17 +219,8 @@ global define list get_table_items() ``{
     integer id = 1;
 
     foreach(`d, ide, ``{
-	    string dma = dma_default_string;
-
-	    if (lookup(d, "dma_on", nil) == true)
-	    {
-		dma = dma_on_string;
-	    }
-
-	    if (lookup(d, "dma_on", nil) == false)
-	    {
-		dma = dma_off_string;
-	    }
+	    string mode = d["dma_setting"]:"";
+	    string dma = mode_names[mode]:dma_default_string;
 
 	    // current DMA mode is unknown
 	    string current_dma = d["current_dma"]:"";
@@ -261,40 +254,45 @@ global define void refresh_combo() ``{
 	// get device name from the table
 	string dn = select(table_item, 4, nil);
 
+	// get current setting
+	string current = Idedma::selected_mode(dn);
+	y2milestone("current(%2): %1", current, dn);
+
 	// get list of supported DMA modes for selected device
 	list supported_dma_modes = Idedma::supported_dma_modes(dn);
 
 	list combo_list = [
-	    `item(`id(`nochange), _("No change")),
-	    `item(`id(`disable), _("DMA off")),
-	    `item(`id(`enable), _("DMA on (default mode)")),
+	    `item(`id(`nochange), _("No change"), current == "nochange"),
+	    `item(`id(`off), _("DMA off"), current == "off"),
+	    `item(`id(`on), _("DMA on (default mode)"), current == "on"),
 	];
 
 	if (contains(supported_dma_modes, "mdma2"))
 	{
-	    combo_list = add(combo_list, `item(`id(`mdma2), "DMA/16"));
+	    combo_list = add(combo_list, `item(`id(`mdma2), "DMA/16", current == "mdma2"));
 	}
 	if (contains(supported_dma_modes, "udma0"))
 	{
-	    combo_list = add(combo_list, `item(`id(`udma0), "UltraDMA/16"));
+	    combo_list = add(combo_list, `item(`id(`udma0), "UltraDMA/16", current == "udma0"));
 	}
 	if (contains(supported_dma_modes, "udma2"))
 	{
-	    combo_list = add(combo_list, `item(`id(`udma2), "UltraDMA/33"));
+	    combo_list = add(combo_list, `item(`id(`udma2), "UltraDMA/33", current == "udma2"));
 	}
 	if (contains(supported_dma_modes, "udma4"))
 	{
-	    combo_list = add(combo_list, `item(`id(`udma4), "UltraDMA/66"));
+	    combo_list = add(combo_list, `item(`id(`udma4), "UltraDMA/66", current == "udma4"));
 	}
 	if (contains(supported_dma_modes, "udma5"))
 	{
-	    combo_list = add(combo_list, `item(`id(`udma5), "UltraDMA/100"));
+	    combo_list = add(combo_list, `item(`id(`udma5), "UltraDMA/100", current == "udma5"));
 	}
 	if (contains(supported_dma_modes, "udma6"))
 	{
-	    combo_list = add(combo_list, `item(`id(`udma6), "UltraDMA/133"));
+	    combo_list = add(combo_list, `item(`id(`udma6), "UltraDMA/133", current == "udma6"));
 	}
 
+	y2milestone("combo: %1", combo_list);
 
 	UI::ReplaceWidget(`id(`rp), `ComboBox(`id(`dma_combo), `opt(`notify), _("&DMA mode:"), combo_list));
     }
@@ -373,16 +371,21 @@ global define any DmaConfigDialog () ``{
 		    // convert button identification to DMA boolean value
 		    string new_setting = sformat("%1", UI::QueryWidget(`id(`dma_combo), `Value));
 
-		    y2milestone(new_setting);
 		    // TODO remove ` from new_setting
 
+		    if (size(new_setting) > 1 && substring(new_setting, 0, 1) == "`")
+		    {
+			new_setting = substring(new_setting, 1);
+		    }
+
+		    y2milestone(new_setting);
 		    // set DMA
 		    Idedma::set_dma(dn, new_setting);
 
-/*		    // refresh value in the table
-		    UI::ChangeWidget(`id(`device_table), `Item(curr, 4), new_value);
+		    // refresh value in the table
+		    UI::ChangeWidget(`id(`device_table), `Item(curr, 4), mode_names[new_setting]:_("No change"));
 
-		    // set changed flag
+/*		    // set changed flag
 		    if (new_value != select(table_item, 1, nil))
 		    {
 			changed = true;
