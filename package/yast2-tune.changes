@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Fri Jul 05 12:38:44 CEST 2002 - arvin@suse.de
+
+- moved non binary files to /usr/share/YaST2
+
+-------------------------------------------------------------------
 Mon Jul  1 13:12:12 CEST 2002 - lslezak@suse.cz
 
 - merged yast2-config-hwinfo and  yast2-tune-idedma packages to
@@ -50,13 +55,13 @@ Fri Nov  9 14:16:33 CET 2001 - dmeszar@suse.cz
 -------------------------------------------------------------------
 Mon Sep 10 14:08:36 CEST 2001 - dmeszar@suse.cz
 
-- bug #10332 fixed (label for monitor) 
+- bug #10332 fixed (label for monitor)
 
 -------------------------------------------------------------------
 Wed Aug  8 14:55:21 CEST 2001 - dmeszar@suse.cz
 
 - now arrows are used as a fallback for list items.
-  each item should have reasonable label. 
+  each item should have reasonable label.
 - documented & formated sources
 
 -------------------------------------------------------------------
@@ -74,7 +79,7 @@ Mon Jul 30 16:27:06 CEST 2001 - dmeszar@suse.cz
 
 - show processor description
 - list members are shown not with index but with descprition inside,
-  or with arrow 
+  or with arrow
 
 -------------------------------------------------------------------
 Mon Jul 23 12:49:57 CEST 2001 - dmeszar@suse.cz
@@ -89,7 +94,7 @@ Fri May 11 13:16:21 CEST 2001 - kkaempf@suse.de
 -------------------------------------------------------------------
 Fri May  4 15:07:31 CEST 2001 - dmeszar@suse.cz
 
-- abort button for stopping immediatelly, entries translation, 
+- abort button for stopping immediatelly, entries translation,
   close button instead of next/abort
 - class_id, sub_class_id translated
 
@@ -101,5 +106,5 @@ Tue Apr 24 09:49:40 PDT 2001 - dmeszar@suse.cz
 -------------------------------------------------------------------
 Thu Apr  5 11:37:10 CEST 2001 - dmeszar@suse.cz
 
-- initial version 
+- initial version
 
