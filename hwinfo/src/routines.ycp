@@ -221,7 +221,11 @@ $[
     // tree node string - CPU information
     "model"            :   _("Model"),
     // tree node string - CPU information
-    "wp"               :   _("WP")
+    "wp"               :   _("WP"),
+    // tree node string - wireless network adapters
+    "wlan"             :   _("Wireless LAN"),
+    // tree node string - tape devices
+    "tape"             :   _("Tape")
 
 ]);
 

@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Fri Sep  3 13:24:23 CEST 2004 - lslezak@suse.cz
+
+- traslate new device types (wlan, tape)
+- version 2.10.1
+
+-------------------------------------------------------------------
 Tue Aug 10 17:55:38 CEST 2004 - mvidner@suse.cz
 
 - Merged proofread texts.
