@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Mon Sep 10 14:08:36 CEST 2001 - dmeszar@suse.cz
+
+- bug #10332 fixed (label for monitor) 
+
+-------------------------------------------------------------------
 Wed Aug  8 14:55:21 CEST 2001 - dmeszar@suse.cz
 
 - now arrows are used as a fallback for list items.

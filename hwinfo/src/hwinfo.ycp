@@ -272,9 +272,9 @@
     define resolution(any a, map m) ``{
 	if (haskey(m, "height"))
 	{
-	    return sformat("%1x%2", lookup(m, "width"), lookup(m, "height"));
+	    return sformat("%1x%2", lookup(m, "width", ""), lookup(m, "height", ""));
 	}
-	return lookup(m, width);
+	return lookup(m, width, "");
     }
 
     define classtostring(any a, map m) ``{
@@ -292,6 +292,7 @@
 	    ["sub_device",  nil], 
 	    ["device",	    nil],
 	    ["model",	    nil],
+	    ["vendor",	    nil],
 	    ["irq",	    nil],
 	    ["start",	    ``(tohexstring()), false], // tohex
 	    ["name",	    nil],
