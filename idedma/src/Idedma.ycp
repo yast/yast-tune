@@ -105,12 +105,12 @@
 
 	    if (out["exit"]:-1 == 0)
 	    {
-		list output = splitstring(out["stdout"]:"", "\n");
+		list<string> output = splitstring(out["stdout"]:"", "\n");
 
 		y2debug("hdparm output: %1", output);
 
 		// search for status string in output
-		foreach(`l, output, ``{
+		foreach(string l, output, ``{
 
 			if (l == " using_dma    =  1 (on)")
 			{

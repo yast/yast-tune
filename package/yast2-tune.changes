@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Tue Feb 17 17:37:50 CET 2004 - lslezak@suse.cz
+
+- NI fixes (removed globals)
+- InitHWinfo: changed column order
+
+-------------------------------------------------------------------
 Tue Feb 17 15:28:09 CET 2004 - lslezak@suse.cz
 
 - InitHWinfo: use board and generation info for PPC architecture

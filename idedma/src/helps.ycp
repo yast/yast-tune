@@ -24,7 +24,7 @@
      * Help for the ReadDialog () dialog.
      * @return string The help text.
      */
-    global define string ReadDialogHelp () ``{
+    define string ReadDialogHelp () ``{
 	return
 	    // For translators: IDE DMA read dialog help
 _("<P><B><BIG>Initializing IDE DMA mode configuration module</BIG></B><BR>
@@ -37,7 +37,7 @@ Please wait...
      * Help for the WriteDialog () dialog.
      * @return string The help text.
      */
-    global define string WriteDialogHelp () ``{
+    define string WriteDialogHelp () ``{
 	return
 	    // For translators: idedma write dialog help, part 1 of 2
 _("<P><B><BIG>Saving IDE DMA mode configuration</BIG></B><BR>
@@ -50,7 +50,7 @@ Please wait...
      * Help for the DetectedDialog () dialog.
      * @return string The help text.
      */
-    global define string DetectedDialogHelp () ``{
+    define string DetectedDialogHelp () ``{
 	return
 	    // For translators: IDE DMA setup dialog help, part 1 of 4
 _("<P><B><BIG>IDE DMA setup</BIG></B><BR>

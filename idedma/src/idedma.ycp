@@ -26,9 +26,9 @@
 
     import "Mode";
     import "Idedma";
+    import "CommandLine";
     include "idedma/ui.ycp";
     include "idedma/cmdline.ycp";
-    include "commandline/commandline.ycp";
 
     /* The main () */
     y2milestone ("Idedma module started");
@@ -99,7 +99,7 @@
     }
     else
     {
-	ret = CommandLineRun(cmdline);
+	ret = CommandLine::Run(cmdline);
     }
 
     y2debug ("ret == %1", ret);

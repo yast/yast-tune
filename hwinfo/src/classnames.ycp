@@ -21,7 +21,7 @@ textdomain "tune";
 /**
  * Class names collected
  */
-global map<integer,map> ClassNames = $[
+map<integer,map> ClassNames = $[
 
 0x000:
 $[

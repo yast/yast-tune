@@ -28,7 +28,7 @@
      * @param options command options
      * @return boolean Returns true (succeess)
      */
-    global define boolean listHandler(map options) ``{
+    define boolean listHandler(map options) ``{
 	boolean all = !haskey(options, "configured");
 
 	// set plain text output
@@ -42,7 +42,7 @@
      * @param options command options
      * @return boolean True on success
      */
-    global define boolean setHandler(map<string, any> options) ``{
+    define boolean setHandler(map<string, any> options) ``{
 
 	if (haskey(options, "device") && haskey(options, "mode"))
 	{
@@ -67,7 +67,7 @@
      * @param options command options
      * @return boolean Returns true (succeess)
      */
-    global define boolean detailsHandler(map<string, any> options) ``{
+    define boolean detailsHandler(map<string, any> options) ``{
 	string device = (string) (options["device"]:nil);
 	list idedevs = Idedma::get_ide_devices();
 

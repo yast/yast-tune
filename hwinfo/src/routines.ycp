@@ -19,7 +19,7 @@ include "hwinfo/classnames.ycp";
  * translation table- key is replaced by value on it's way to ui
  * must be done this way, because keys are machine-generated
  */
-global map<string, string> trans_table = (map<string, string>) eval(
+map<string, string> trans_table = (map<string, string>) eval(
 $[
     // tree node string
     "architecture"	:   _("Architecture"),
@@ -226,7 +226,7 @@ $[
  * @return string formatted label
  */
 
-global define string resolution(any a, map m) ``{
+define string resolution(any a, map m) ``{
     if (haskey(m, "height"))
     {
 	return sformat("%1x%2", m["width"]:"", m["height"]:"");
@@ -234,7 +234,7 @@ global define string resolution(any a, map m) ``{
     return m["width"]:"";
 }
 
-global define list<string> modules(list<list> val) ``{
+define list<string> modules(list<list> val) ``{
     y2warning("calling modules with param: %1", val);
     list<string> outlist = maplist(list<string> e, val,
     ``{
@@ -250,7 +250,7 @@ global define list<string> modules(list<list> val) ``{
  * @return map device info with translated class information
  */
 
-global define map translate_hw_entry(map hw) ``{
+define map translate_hw_entry(map hw) ``{
     if (haskey(hw, "class_id"))
     {
 	integer iclassid = hw["class_id"]:0xff;
@@ -286,7 +286,7 @@ define string classtostring(any a, map m) ``{
  * second is term that should be used for formating the key- takes key name as first argument
  * if third item is true, the whole map will be passed to term as second argument
  */
-global list<string> representant_order = [
+list<string> representant_order = [
     "sub_device",
     "device",
     "model name",
@@ -313,7 +313,7 @@ global list<string> representant_order = [
  * @param str string to translate
  * @return string translated string or original string if translation is unknown
  */
-global define string trans_str(string str) ``{
+define string trans_str(string str) ``{
 	return (string) (trans_table[str]:str);
 }
 
@@ -322,7 +322,7 @@ global define string trans_str(string str) ``{
  * @param b any value
  * @return string parameter b converted to string, if b is boolean then Yes/No is returned
  */
-global define string trans_bool(any b) ``{
+define string trans_bool(any b) ``{
     if (is(b, boolean))
     {
 	// yes/no strings
@@ -337,7 +337,7 @@ global define string trans_bool(any b) ``{
  * @return boolean true if parameter node is a scalar value (it isn't a list or a map)
  */
 
-global define boolean scalar(any node) ``{
+define boolean scalar(any node) ``{
     if (
 	is(node, string) ||
 	is(node, boolean) ||
@@ -359,7 +359,7 @@ global define boolean scalar(any node) ``{
  * @param m device info
  * @return string name of the selected representant for whole map
  */
-global define string get_representant(map m) ``{
+define string get_representant(map m) ``{
     string out = "";
     integer i = 0;
     // search the 'order' table
@@ -408,7 +408,7 @@ global define string get_representant(map m) ``{
  * @return list list of items (content of tree widget)
  */
 
-global define list expandTree(any node) ``{
+define list expandTree(any node) ``{
     if (node == nil)
     {
 	return [];
@@ -517,7 +517,7 @@ global define list expandTree(any node) ``{
  * @param file Target file
  * @return boolean True if saving was successful
  */
-global define boolean save_hwinfo(string file) ``{
+define boolean save_hwinfo(string file) ``{
     if (file == "" || file == nil)
     {
 	return false;
@@ -534,7 +534,7 @@ global define boolean save_hwinfo(string file) ``{
  * @param target_file_name Target file
  * @return boolean True if saving was successful
  */
-global define boolean save_hwinfo_to_file(string target_file_name) ``{
+define boolean save_hwinfo_to_file(string target_file_name) ``{
     // window title
     string filename = UI::AskForSaveFileName(target_file_name, "*", _("Save hwinfo output to file"));
     boolean saved = false;
@@ -562,7 +562,7 @@ global define boolean save_hwinfo_to_file(string target_file_name) ``{
  * @return string mount point where device was mounted (in /tmp subdirectory)
  *         or nil when mount failed
  */
-global define string mount_device(string device) ``{
+define string mount_device(string device) ``{
     string tmpdir = (string) SCR::Read(.target.tmpdir);
     string mpoint = tmpdir + "/mount";
 
@@ -580,7 +580,7 @@ global define string mount_device(string device) ``{
  * @param mount_point directory where device is mounted
  * @return boolean true on success
  */
-global define boolean umount_device(string mount_point) ``{
+define boolean umount_device(string mount_point) ``{
     return (boolean) SCR::Execute(.target.umount, mount_point);
 }
 

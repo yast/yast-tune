@@ -35,24 +35,24 @@ include "idedma/helps.ycp";
  * (For translators: translation can be long - text is used in the table
  * in column "Required DMA mode" and "Current DMA mode")
  */
-global string dma_on_string = _("On");
+string dma_on_string = _("On");
 
 /**
  * String with DMA off status text
  * (For translators: translation can be long - text is used in the table
  * in column "Required DMA mode" and "Current DMA mode")
  */
-global string dma_off_string = _("Off");
+string dma_off_string = _("Off");
 
 /**
  * String with no change of DMA status text
  * (For translators: translation can be long - text is used in the table
  * in column "Required DMA mode" and "Current DMA mode")
  */
-global string dma_default_string = _("No change");
+string dma_default_string = _("No change");
 
 
-global map mode_names = $[
+map mode_names = $[
     // DMA status is unknown
     ""      : _("Unknown"),
     // do not change DMA setting
@@ -85,7 +85,7 @@ global map mode_names = $[
  * Return list of items for table widget
  * @return list List of items
  */
-global define list get_table_items() ``{
+define list get_table_items() ``{
     list<map> ide = Idedma::get_ide_devices();
 
     // prepare table items
@@ -127,7 +127,7 @@ global define list get_table_items() ``{
 /**
  * Refresh combo widget content for actual selected device in the table
  */
-global define void refresh_combo() ``{
+define void refresh_combo() ``{
     // set DMA status for selected IDE device
     integer curr = (integer) UI::QueryWidget(`id(`device_table), `CurrentItem);
 
@@ -190,7 +190,7 @@ global define void refresh_combo() ``{
  * Main DMA configuration dialog
  * @return any Result from UserInput()
  */
-global define any DmaConfigDialog () ``{
+define any DmaConfigDialog () ``{
     // dialog header
     string caption = _("IDE DMA setup");
     boolean changed = false;
@@ -303,7 +303,7 @@ global define any DmaConfigDialog () ``{
  * Main workflow of the idedma configuration
  * @return any Result from WizardSequencer() function
  */
-global define any MainSequence () ``{
+define any MainSequence () ``{
     map aliases =
 	$[
 	    "dmaconfig"	:   ``( DmaConfigDialog () ),
@@ -327,7 +327,7 @@ global define any MainSequence () ``{
  * Read settings dialog
  * @return symbol `abort if configuration read failed
  */
-global define symbol ReadDialog () ``{
+define symbol ReadDialog () ``{
     // Set help text
     Wizard::RestoreHelp (ReadDialogHelp ());
 
@@ -341,7 +341,7 @@ global define symbol ReadDialog () ``{
  * Write settings dialog
  * @return symbol `abort if configuration write failed
  */
-global define symbol WriteDialog () ``{
+define symbol WriteDialog () ``{
     // Set help text
     Wizard::RestoreHelp (WriteDialogHelp ());
 
@@ -355,7 +355,7 @@ global define symbol WriteDialog () ``{
  * Whole configuration of DMA
  * @return any Result from WizardSequencer() function
  */
-global define any IdedmaSequence() ``{
+define any IdedmaSequence() ``{
     map aliases =
 	$[
 	    "read"	: [ ``( ReadDialog () ), true ],
@@ -394,7 +394,7 @@ global define any IdedmaSequence() ``{
  * For use with autoinstallation.
  * @return any Result from WizardSequencer() function
  */
-global define any IdedmaAutoSequence () ``{
+define any IdedmaAutoSequence () ``{
     // dialog header
     string caption = _("IDE DMA setup");
     // progress label

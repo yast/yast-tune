@@ -22,9 +22,9 @@ include "hwinfo/routines.ycp";
 include "hwinfo/classnames.ycp";
 include "wizard/sequencer.ycp";
 
-global string selected_model = "";
-global map selected_info = $[];
-global string selected_device = nil;
+string selected_model = "";
+map selected_info = $[];
+string selected_device = nil;
 
 
 /**
@@ -32,7 +32,7 @@ global string selected_device = nil;
  * @param devices map with pairs $["device name" : "model (description)"]
  * @return string selected floppy device name or nil when canceled
  */
-global define string floppy_selection(map devices) ``{
+define string floppy_selection(map devices) ``{
     list devs = maplist(string d, string m, devices, ``{
 	    return `item(`id(d), sformat("%1 (%2)", m, d));
 	}
@@ -73,7 +73,7 @@ global define string floppy_selection(map devices) ``{
  * selection dialog
  * @return string floppy device name (e.g. /dev/fd0) or nil when no floppy was found
  */
-global define string selected_floppy() ``{
+define string selected_floppy() ``{
 
     integer floppy_size = size(InitHWinfo::floppy);
 
@@ -107,7 +107,7 @@ global define string selected_floppy() ``{
  * @param info hardware description returned by .probe agent
  * @return symbol UserInput() value
  */
-global define symbol details_dialog(string model, map info) ``{
+define symbol details_dialog(string model, map info) ``{
     // convert information in the map to tree widget content
     list l = [`item(model, true, expandTree(info))];
 
@@ -143,7 +143,7 @@ global define symbol details_dialog(string model, map info) ``{
  * Show summary dialog with all detected hardware
  * @return symbol UserInput() value
  */
-global define symbol detected_dialog() ``{
+define symbol detected_dialog() ``{
 
     list<map> hw = InitHWinfo::DetectedHardware(false);
 
@@ -176,7 +176,7 @@ global define symbol detected_dialog() ``{
 		    cls = _("Unknown device class");
 		}
 
-		table_cont = add(table_cont, `item(`id(uniq), model, cls));
+		table_cont = add(table_cont, `item(`id(uniq), cls, model));
 	    }
 	);
     }
@@ -185,7 +185,7 @@ global define symbol detected_dialog() ``{
 
     term content = `VBox(
 	// table header
-	`Table(`id(`hwtable), `header(_("Model"), _("Class")), table_cont),
+	`Table(`id(`hwtable), `header(_("Class"), _("Model")), table_cont),
 	`VSpacing(0.4),
 	`HBox(
 	    // push button label
