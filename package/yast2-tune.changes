@@ -1,4 +1,12 @@
 -------------------------------------------------------------------
+Mon Sep  1 14:24:09 CEST 2003 - lslezak@suse.de
+
+- added missing import
+- ignore cdb_isdn path
+- set focus to the tree widget
+- version 2.8.5
+
+-------------------------------------------------------------------
 Mon Aug 25 15:48:24 CEST 2003 - lslezak@suse.cz
 
 - removed "Initializing..." dialog in idedma module

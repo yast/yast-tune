@@ -49,7 +49,7 @@ UI::OpenDialog(
  * .probe.mouse doesn't like running X
  * other paths are not user-interesting
  */
-list exclude_list = [.probe.byclass, .probe.bybus, .probe.ihw_data, .probe.system, .probe.status];
+list exclude_list = [.probe.byclass, .probe.bybus, .probe.ihw_data, .probe.system, .probe.status, .probe.cdb_isdn];
 
 /*
  * translation table- key is replaced by value on it's way to ui
@@ -121,7 +121,7 @@ $[
     // tree node string
     "floppy"	:   _("Floppy disk"),
     // tree node string
-    "framebuffer"	:   "Framebuffer",
+    "framebuffer"	:   _("Framebuffer"),
     // tree node string
     "has_apm"	:   _("Has APM"),
     // tree node string
@@ -674,7 +674,7 @@ Wizard::ReplaceNextButton(`Empty());
 Wizard::ReplaceAbortButton(`HBox(
 	`PushButton(`id(`save), _("Save to File...")),
 	`HSpacing(3),
-	`PushButton(`id(`next), `opt(`key_F10), Label::CloseButton())
+	`PushButton(`id(`next), `opt(`default, `key_F10), Label::CloseButton())
     )
 );
 
@@ -686,6 +686,8 @@ Wizard::SetContents (_("Hardware info"), con,
 details of your computer. Click any node for more information.</p>\n")
 + _("<P>You can save hardware information to a file. Click <B>Save to File</B> and enter the file name.</P>"),
 false, true);
+
+UI::SetFocus(`id(`idTree));
 
 any event = nil;
 

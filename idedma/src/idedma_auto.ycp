@@ -29,6 +29,7 @@
     textdomain "tune";
 
     import "Idedma";
+    import "Wizard";
 
     include "idedma/ui.ycp";
 
