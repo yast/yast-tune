@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Sun Sep 14 20:32:35 CEST 2003 - adrian@suse.de
+
+- make it working in kcontrol
+
+-------------------------------------------------------------------
 Mon Sep  1 14:24:09 CEST 2003 - lslezak@suse.de
 
 - added missing import
