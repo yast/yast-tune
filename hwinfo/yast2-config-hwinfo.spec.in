@@ -47,3 +47,4 @@ make install
 %dir @YAST2DIR@/menuentries
 @YAST2DIR@/menuentries/menuentry_hwinfo.ycp
 @YAST2DIR@/clients/hwinfo.ycp
+@YAST2DIR@/classnames.ycp

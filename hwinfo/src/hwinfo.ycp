@@ -20,15 +20,115 @@
     textdomain "hwinfo";
     include "ui/wizard_dialog.ycp";
 
+    boolean abortPressed=false;
+
     UI(`OpenDialog(`VBox(
-	`TextEntry(`id(`initLab), _("probing:"), "."),
-	`ProgressBar(`id(`initProg), _("progress:"), 1000, 0)
+	`TextEntry(`id(`initLab), _("Probing:"), "."),
+	`ProgressBar(`id(`initProg), _("Progress:"), 1000, 0),
+	`PushButton(`id(`abort), _("Abort"))
 	)
     ));
+
+    list exclude_list=[.probe.byclass, .probe.bybus, .probe.mouse];    
+
+    map trans_table=UI(
+    $[
+	"architecture": _("Architecture"),
+	"bus": _("Bus"),
+	"card_type": _("Card type"),
+	"class_id": _("Class"),
+	"cdtype": _("CD type"),
+	"dev_name": _("Device name"),
+	"device": _("Device"),
+	"device_id": _("Device identifier"),
+	"family": _("Family"),
+	"model": _("Model"),
+	"prog_if": _("Prog. interface"),
+	"resource": _("Resources"),
+	"rev": _("Rev"),
+	"sub_class_id" : _("Class (spec)"),
+	"sub_device_id" : _("Device identifier (spec)"),
+	"sub_vendor" : _("Sub Vendor"),
+	"sub_vendor_id" : _("Sub vendor identifier"),
+	"unique_key" : _("Unique key"),
+	"vendor" : _("Vendor"),
+	"vendor_id": _("Vendor identifier"),
+
+	"architecture": _("Architecture"),
+	"bios_video": _("Bios video"),
+	"boot_arch": _("Boot architecture"),
+	"boot_disk": _("Boot disk"),
+	"cdrom": _("CDRom"),
+	"cpu": _("CPU"),
+	"disk": _("Disk"),
+	"display": _("Display"),
+	"floppy": _("Floppy disk"),
+	"has_apm": _("Has APM"),
+	"has_pcmcia": _("Has PCMCIA"),
+	"has_smp": _("Has SMP"),
+	"ihw_data": _("Hardware data"),
+	"isdn": _("ISDN"),
+	"keyboard": _("Keyboard"),
+	"monitor": _("Monitor"),
+	"netdev": _("Network devices"),
+	"netif": _("Network interface"),
+	"printer": _("Printer"),
+	"modem": _("Modem"),
+	"sound": _("Sound"),
+	"storage": _("Storage media"),
+	"system": _("System"),
+	"usb_type": _("USB type"),
+	"version": _("Version")
+    ]);
+
+    // if xserver is running, don't probe for mouse
+
+    map Xres=SCR (`Execute (.target.bash_output, "/bin/ps -A | /bin/grep X", $[] ));
+    if(size(lookup(Xres, "stdout", ""))==0)
+    {
+	exclude_list=add(exclude_list, .probe.mouse);
+    }
     
+    define trans_str(any str)
+    ``{
+	    return lookup(trans_table, str, str);
+    }
+
+
+    map classdb=SCR(`Read (.target.yast2, "classnames.ycp"));
+    classdb=UI(classdb);
 
 	    /* converts (scalar/nested) lists and maps to tree datastructure
 	    */
+
+    define translate_hw_entry(map hw) ``{
+	if(haskey(hw, "class_id"))
+	{
+	    integer iclassid=lookup(hw, "class_id", 0xff);
+	    string classid=lookup(lookup(classdb, iclassid, $[]), "name", "");
+    
+	    hw=add(hw, "class_id", classid);
+
+	    if(haskey(hw, "sub_class_id"))
+	    {
+		integer isubclassid=lookup(hw, "sub_class_id", 0);
+		string subclassid=lookup(lookup(classdb, iclassid, $[]), isubclassid, "");
+		hw=add(hw, "sub_class_id", subclassid);
+	    }
+		
+	}
+	return hw;
+    }
+
+    define get_item_label(integer n)
+    ``{
+	if(n<0) return "";
+	list lab=
+	    UI([_("First"), _("Second"), _("Third"), _("Fourth"), _("Fifth"), _("Sixth"),
+	        _("Seventh"), _("Eighth"), _("Nineth"), _("%1th")]);
+	if(n<9) return select(lab, n);
+	return sformat(select(lab, 7), n+1);
+    }
 
     define scalar(any node)
     ``{
@@ -59,26 +159,28 @@
 	if(is(node, list))
 	{
 	    list lout=[];
-	    integer q=size(node)-1;
-	    while(q>=0)
+	    integer q=size(node);
+	    integer pos=0;
+	    while(pos<q)
 	    {
-		lout=add(lout, `item(sformat("#%1", q), expandTree(select(node, q))));
-		q=q-1;
+		lout=add(lout, `item(get_item_label(pos), expandTree(select(node, pos))));
+		pos=pos+1;
 	    }
-	    return sort(lout);
+	    return lout;
 	}
 	if(is(node, map))
 	{
+	    node=translate_hw_entry(node);
 	    list ltmp=[];
 	    ltmp=foreach(`key, `v, node,
 	    ``{
 		if(scalar(v))
 		{
-		    ltmp=add(ltmp, `item(sformat("%1 : %2", key, v)));
+		    ltmp=add(ltmp, `item(sformat("%1 : %2", trans_str(key), v)));
 		}
 		else
 		{
-		    ltmp=add(ltmp, `item(sformat("%1", key), expandTree(v)));
+		    ltmp=add(ltmp, `item(trans_str(sformat("%1", key)), expandTree(v)));
 		}
 		return ltmp;
 	    });
@@ -101,8 +203,21 @@
 
     define buildHwTree(string p, integer progMin, integer progMax) 
     ``{
-	UI(`ChangeWidget(`id(`initLab), `Value, p));
+
+	any a=UI(`PollInput());
+	if(a==`cancel || a==`abort)
+	{
+	    abortPressed=true;
+	    return nil;
+	}
+
+	UI(`ChangeWidget(`id(`initLab), `Value, trans_str(afterLast(p))));
 	path pat=topath(p);
+
+	if(contains(exclude_list, pat))
+	{
+	    return nil;
+	}
 	
 	list dir=SCR(`Dir(pat));
 
@@ -111,7 +226,7 @@
 	    any val=SCR(`Read(pat));
 	    if(scalar(val))
 	    {
-		return `item(sformat("%1 : %2", afterLast(p), val));
+		return `item(sformat("%1 : %2", trans_str(afterLast(p)), val));
 	    }
 	    else if(val==nil ||  val==[] || val==$[])
 	    {
@@ -119,7 +234,7 @@
 	    }
 	    else
 	    {
-		return `item(afterLast(p), expandTree(val));
+		return `item(trans_str(afterLast(p)), expandTree(val));
 	    }
 	}
 	else
@@ -137,6 +252,10 @@
 	    while(pos>=0)
 	    {
 		itm=buildHwTree(p+"."+select(dir, pos), prog, prog+step);
+		if(abortPressed)
+		{
+		    return nil;
+		}
 		if(itm!=nil)
 		{
 		    lout=add(lout, itm);
@@ -152,26 +271,39 @@
 
 
     any items=nil;
+    path pat=.probe;
     if(size(Args()) >0)
     {
-	string pat=Args(0);
-	y2error(pat);
-	items=buildHwTree(sformat("%1", pat), 0, 1000);
+	pat=Args(0);
     }
-    else
+    
+    items=buildHwTree(sformat("%1", pat), 0, 1000);
+
+    if(abortPressed)
     {
-	items=buildHwTree(".probe", 0, 1000);
+	UI(`CloseDialog());
+	return;
+    }
+
+    string title="All entries";
+    if(pat!=.probe)
+    {
+	title=trans_str(afterLast(sformat("%1", pat)));
     }
 
     UI(`CloseDialog());
 
     term con=`Tree(  `id(`idTree), `opt(`vstretch, `hstretch),
-                                    ".probe",
-                                    [items]);
+                                    title,
+                                    select(items,1));
 
     UI(`CreateWizardDialog());
-    UI(`SetWizardContents (_("YaST2\nInitializing ..."), con, _("<P>Hardware info</p>"), false, true));
+    UI(`SetWizardContents (_("YaST2\nHardware info"), con, _("<P>Hardware info</p>"), false, true));
 
+    UI(`ReplaceWidget(`id(`rep_back), `HStretch()));
+    UI(`ReplaceWidget(`id(`rep_next), `HStretch()));
+    UI(`ReplaceWidget(`id(`rep_abort), `PushButton(`id(`next), _("&Close"))));
+    
     any event=nil;   
  
     while(event!=`abort && event !=`next && event != `cancel)
