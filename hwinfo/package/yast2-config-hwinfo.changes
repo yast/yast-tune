@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Mon Jul 23 12:49:57 CEST 2001 - dmeszar@suse.cz
+
+- added yast2-agent-probe to rpm 'requires' entry
+
+-------------------------------------------------------------------
 Fri May 11 13:16:21 CEST 2001 - kkaempf@suse.de
 
 - use bzip2 for packaging
