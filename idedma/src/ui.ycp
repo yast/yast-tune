@@ -261,7 +261,7 @@ global define any DmaConfigDialog () ``{
 		// get device name from the table
 		string dn = select(table_item, 4, nil);
 		// get current DMA
-		string curr_dma = select(table_item, 5, nil);
+		string curr_dma = select(table_item, 1, nil);
 
 		if (dn != nil)
 		{
@@ -290,7 +290,7 @@ global define any DmaConfigDialog () ``{
 		    Idedma::set_dma(dn, value_bool);
 
 		    // refresh value in the table
-		    UI::ChangeWidget(`id(`device_table), `Item(curr, 0), new_value);
+		    UI::ChangeWidget(`id(`device_table), `Item(curr, 4), new_value);
 
 		    // set changed flag
 		    if (new_value != select(table_item, 1, nil))
