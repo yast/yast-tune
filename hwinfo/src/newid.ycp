@@ -23,6 +23,7 @@ import "Report";
 import "Popup";
 import "Label";
 
+include "hwinfo/routines.ycp";
 
 /**
  * Return list of items for table widget
@@ -38,18 +39,25 @@ define list get_table_items() ``{
     if (ids != nil)
     {
 	foreach(map newid, ids, ``{
-		table_items = add(table_items, `item(`id(id),
-			newid["driver"]:"",
-			newid["vendor"]:"",
-			newid["device"]:"",
-			newid["subvendor"]:"",
-			newid["subdevice"]:"",
-			newid["class"]:"",
-			newid["class_mask"]:"",
-			newid["sysdir"]:""
-		    )
-		);
-		id = id + 1;
+	      // IDs for selected PCI device
+	      if (haskey(newid, "uniq"))
+	      {
+		  newid = NewID::AddIDs(newid);
+	      }
+
+	      table_items = add(table_items, `item(`id(id),
+		      newid["driver"]:"",
+		      NewID::GetModelString(newid["uniq"]:""),
+		      add_hex_prefix(newid["vendor"]:""),
+		      add_hex_prefix(newid["device"]:""),
+		      add_hex_prefix(newid["subvendor"]:""),
+		      add_hex_prefix(newid["subdevice"]:""),
+		      add_hex_prefix(newid["class"]:""),
+		      add_hex_prefix(newid["class_mask"]:""),
+		      newid["sysdir"]:""
+		  )
+	      );
+	      id = id + 1;
 	    }
 	);
     }
@@ -189,6 +197,105 @@ define map NewIDPopup(map<string,any> newid) {
     return ret;
 }
 
+define list<term> pci_items(string selected_uniq) {
+    list<term> ret = [];
+
+    list<map> pcidevices = NewID::GetPCIdevices();
+
+    foreach(map pcidev, pcidevices, {
+	    string uniq = pcidev["unique_key"]:"";
+	    string model = pcidev["model"]:"";
+	    string busid = pcidev["sysfs_bus_id"]:"";
+
+	    if (uniq != "" && model != "" && busid != "")
+	    {
+		ret = add(ret, `item(`id(uniq), sformat("%1 (%2)", model, busid), uniq == selected_uniq));
+	    }
+	}
+    );
+
+    return ret;
+}
+
+define map NewDeviceIDPopup(map<string,any> newid) {
+    // ask user to support new device
+    term new_id_dialog = `VBox(
+	`VSpacing(0.4),
+	// text in dialog header
+	`Heading(_("PCI ID setup")),
+	`VSpacing(0.5),
+	`HBox(
+	    `HSpacing(1),
+		// textentry label
+		`TextEntry(`id(`driver), _("&Driver"), newid["driver"]:""),
+	    `HSpacing(1.5),
+		// textentry label
+		`TextEntry(`id(`sysdir), _("Sys&FS Directory"), newid["sysdir"]:""),
+	    `HSpacing(1)
+	),
+	`VSpacing(1),
+
+	`HBox(
+	    `HSpacing(1),
+	    `ComboBox(`id(`pcidevices), _("PCI &Device"), pci_items(newid["uniq"]:"")),
+	    `HSpacing(1)
+	),
+
+	`VSpacing(1),
+	`HBox(
+	    `HStretch(),
+	    `HWeight(1, `PushButton(`id(`ok), `opt(`default), Label::OKButton())),
+	    `HSpacing(3),
+	    `HWeight(1, `PushButton(`id(`cancel), Label::CancelButton())),
+	    `HStretch()
+	),
+	`VSpacing(0.4)
+    );
+
+    UI::OpenDialog(new_id_dialog);
+
+    symbol ui = nil;
+    map ret = $[];
+
+    do {
+	ui = (symbol)UI::UserInput();
+
+	if (ui == `ok)
+	{
+	    // read and set values
+	    string driver = (string)UI::QueryWidget(`id(`driver), `Value);
+	    string sysdir = (string)UI::QueryWidget(`id(`sysdir), `Value);
+	    string uniq = (string)UI::QueryWidget(`id(`pcidevices), `Value);
+
+	    if (driver == "" && sysdir == "")
+	    {
+		// error message, driver name and sysfs directory are empty
+		Report::Error(_("Enter driver or SysFS directory name."));
+		ui = nil;
+	    }
+	    else
+	    {
+		ret = $["ui" : `ok, "newid" : $[
+			"uniq"   : uniq,
+			"driver" : driver,
+			"sysdir" : sysdir
+		    ]
+		];
+	    }
+	}
+	else if (ui == `close || ui == `cancel)
+	{
+	    ret = $["ui" : `cancel];
+	}
+    }
+    while (ui != `ok && ui != `cancel && ui != `close);
+
+    UI::CloseDialog();
+
+    return ret;
+}
+
+
 define void RefreshTableContent() {
     list items = get_table_items();
 
@@ -207,12 +314,15 @@ define any NewIDConfigDialog() ``{
 
     term contents = `VBox(
 			// table header, use as short texts as possible
-			`Table(`id(`newid_table), `header(_("Driver"), _("Vendor"), _("Device"),
+			`Table(`id(`newid_table), `header(_("Driver"), _("Card Name"), _("Vendor"), _("Device"),
 			// table header, use as short texts as possible
 			    _("Subvendor"), _("Subdevice"), _("Class"), _("Class Mask"), _("SysFS Dir.")), items),
 			`VSpacing(0.5),
 			`HBox(
-			    `PushButton(`id(`add), Label::AddButton()),
+			    `MenuButton( Label::AddButton() + "...", [
+				`item(`id(`add_selected), _("&Select PCI device from list")),
+				`item(`id(`add), _("&Manually enter PCI values")),
+			    ]),
 			    `HSpacing(1),
 			    `PushButton(`id(`edit), Label::EditButton()),
 			    `HSpacing(1),
@@ -273,9 +383,9 @@ define any NewIDConfigDialog() ``{
 	    ret = `abort;
 	    break;
 	}
-	else if (ret == `add)
+	else if (ret == `add || ret == `add_selected)
 	{
-	    map result = NewIDPopup($[]);
+	    map result = (ret == `add) ? NewIDPopup($[]) : NewDeviceIDPopup($[]);
 
 	    if (result["ui"]:`cancel == `ok)
 	    {
@@ -291,7 +401,7 @@ define any NewIDConfigDialog() ``{
 	    integer curr = (integer) UI::QueryWidget(`id(`newid_table), `CurrentItem);
 	    map<string,any> nid = NewID::GetNewID(curr);
 
-	    map result = NewIDPopup(nid);
+	    map result = (haskey(nid, "uniq")) ? NewDeviceIDPopup(nid) : NewIDPopup(nid);
 
 	    if (result["ui"]:`cancel == `ok)
 	    {

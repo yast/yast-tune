@@ -1,0 +1,77 @@
+/**
+ *
+ * Module:	PCI ID client
+ *
+ * Author:	Ladislav Slezak <lslezak@suse.cz>
+ *
+ * $Id: pci_id.ycp,v 1.1.2.1 2005/04/06 06:48:41 lslezak Exp $
+ *
+ * PCI ID - runtime configuration client
+ */
+
+{
+
+textdomain "tune";
+
+import "Wizard";
+import "Sequencer";
+import "NewID";
+
+include "hwinfo/newid.ycp";
+
+
+define symbol ReadSettings() {
+    NewID::Read("/etc/sysconfig/hardware/newids");
+    return `next;
+}
+
+define symbol WriteSettings() {
+    return (NewID::Write()) ? `next : `abort;
+}
+
+/**************************************
+ *
+ *            Main part
+ *
+ **************************************/
+
+// aliases for wizard sequencer
+map aliases =
+    $[
+	"read"	: [``(ReadSettings()), true],
+	"main"	: ``(NewIDConfigDialog()),
+	"write"	: ``(WriteSettings())
+    ];
+
+// workflow sequence
+map sequence = $[
+    "ws_start" : "read",
+    "read" :
+    $[
+	`abort	: `abort,
+	`next	: "main"
+    ],
+    "main" :
+    $[
+	`abort	: `abort,
+	`next	: "write"
+    ],
+    "write" :
+    $[
+	`abort	: `abort,
+	`next	: `next
+    ]
+];
+
+Wizard::CreateDialog();
+Wizard::SetDesktopIcon("powertweak");
+
+// start workflow
+any ret = Sequencer::Run(aliases, sequence);
+
+Wizard::CloseDialog();
+
+return ret;
+
+}
+

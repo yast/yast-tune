@@ -2,9 +2,9 @@
 # Makefile.am for tune/hwinfo/src
 #
 
-client_DATA = hwinfo.ycp hwinfo_proposal.ycp inst_hwinfo.ycp
+client_DATA = hwinfo.ycp hwinfo_proposal.ycp inst_hwinfo.ycp pci_id.ycp
 
-desktop_DATA = hwinfo.desktop
+desktop_DATA = hwinfo.desktop pci_id.desktop
 
 yncludedir = @yncludedir@/hwinfo
 ynclude_DATA = classnames.ycp routines.ycp newid.ycp

@@ -35,6 +35,7 @@ Summary:	System configuration viewer and tuner
 @yncludedir@/idedma/*
 @clientdir@/*.ycp
 @desktopdir@/hwinfo.desktop
+@desktopdir@/pci_id.desktop
 @moduledir@/*.ycp
 @moduledir@/*.ybc
 @scrconfdir@/*.scr

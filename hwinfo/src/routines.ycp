@@ -600,4 +600,37 @@ define boolean umount_device(string mount_point) ``{
     return (boolean) SCR::Execute(.target.umount, mount_point);
 }
 
+define boolean has_hex_prefix (string in) {
+    if (size(in) < 2)
+    {
+	return false;
+    }
+
+    // check whether string has hex prefix (0x or 0X)
+    string start = substring(in, 0, 2);
+    return (start == "0x" || start == "0X");
+}
+
+define string remove_hex_prefix(string in) {
+    if (!has_hex_prefix(in))
+    {
+	return in;
+    }
+
+    return substring(in, 2);
+}
+
+define string add_hex_prefix(string in)
+{
+    if (in == nil || in == "")
+    {
+	return "";
+    }
+    else
+    {
+	return (!has_hex_prefix(in)) ? "0x" + in : in;
+    }
+}
+
+
 }

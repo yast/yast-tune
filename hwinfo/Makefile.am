@@ -1,4 +1,4 @@
 #
 # Makefile.am for tune/hwinfo
 
-SUBDIRS = doc src
+SUBDIRS = doc src scrconf

@@ -15,21 +15,57 @@
     import "ModuleLoading";
     import "Linuxrc";
 
+    include "hwinfo/routines.ycp";
+
     module "NewID";
     textdomain "tune";
 
     // list of configured PCI IDs
     list< map<string,any> > new_ids = nil;
+    list< map<string,any> > removed_ids = [];
+
+    // cache .probe.pci values
+    list<map> pcidevices = nil;
 
     boolean refresh_proposal = false;
+    string configfile = "/etc/sysconfig/hardware/newids";
+
+    global define list<map> GetPCIdevices() {
+      if (pcidevices == nil)
+      {
+          // initialize list
+          pcidevices = (list<map>)SCR::Read(.probe.pci);
+
+          // still nil, set to empty - avoid reprobing next time
+          if (pcidevices == nil)
+          {
+              pcidevices = [];
+          }
+      }
+
+      return pcidevices;
+    }
+
 
     global define void AddID(map<string,string> new_id) {
+        // initialize list if needed
+        if (new_ids == nil)
+        {
+            new_ids = [];
+        }
+
 	if (new_id != nil && new_id != $[])
 	{
 	    if (new_ids == nil)
 	    {
 		new_ids = [ new_id ];
 		refresh_proposal = true;
+
+		if (contains(removed_ids, new_id))
+		{
+		    // remove added id from removed list
+		    removed_ids = filter(map<string,any> i, removed_ids, {return i != new_id;});
+		}
 	    }
 	    else if (!contains(new_ids, new_id))
 	    {
@@ -40,8 +76,22 @@
     }
 
     global define void RemoveID(integer index) {
+        map<string,any> removed_id = new_ids[index]:$[];
+
 	new_ids = remove(new_ids, index);
 	refresh_proposal = true;
+
+	// add to removed
+	if (removed_id != nil && removed_id != $[] && !contains(removed_ids, removed_id))
+	{
+	    removed_ids = add(removed_ids, removed_id);
+
+	    if (contains(new_ids, removed_id))
+	    {
+		// remove deleted id from list of new
+		new_ids = filter(map<string,any> i, new_ids, {return i != removed_id;});
+	    }
+	}
     }
 
     global define list< map<string,any> > GetNewIDs() {
@@ -113,12 +163,68 @@
 
 			map<string,any> newid = $[];
 
-			if (vendor != nil) newid["vendor"] = vendor;
-			if (device != nil) newid["device"] = device;
-			if (subvendor != nil) newid["subvendor"] = subvendor;
-			if (subdevice != nil) newid["subdevice"] = subdevice;
-			if (class != nil) newid["class"] = class;
-			if (class_mask != nil) newid["class_mask"] = class_mask;
+			// search for existing PCI card if class is not specified
+			if (class_mask == nil && class == nil && vendor != nil && device != nil)
+			{
+			    integer vid = nil;
+			    integer did = nil;
+			    integer svid = nil;
+			    integer sdid = nil;
+
+			    if (vendor != nil)
+			    {
+				vid = tointeger((!has_hex_prefix(vendor)) ? "0x" + vendor : vendor);
+			    }
+			    if (device != nil)
+			    {
+				did = tointeger((!has_hex_prefix(device)) ? "0x" + device : device);
+			    }
+			    if (subvendor != nil)
+			    {
+				svid = tointeger((!has_hex_prefix(subvendor)) ? "0x" + subvendor : subvendor);
+			    }
+			    if (subdevice != nil)
+			    {
+				sdid = tointeger((!has_hex_prefix(subdevice)) ? "0x" + subdevice : subdevice);
+			    }
+
+			    y2debug("vid: %1", vid);
+			    y2debug("did: %1", did);
+			    y2debug("svid: %1", svid);
+			    y2debug("sdid: %1", sdid);
+
+			    foreach(map dev, GetPCIdevices(), {
+				    // check ID
+
+				    if (vid == dev["vendor_id"]:0 - 0x10000 && did == dev["device_id"]:0 - 0x10000)
+				    {
+					// some devices don't have subdevice, subvendor
+					if (haskey(dev, "sub_vendor_id") && haskey(dev, "sub_device_id"))
+					{
+					    if (svid == dev["sub_vendor_id"]:0 - 0x10000 && sdid == dev["sub_device_id"]:0 - 0x10000)
+					    {
+						newid["uniq"] = dev["unique_key"]:"";
+					    }
+					}
+					else
+					{
+					    newid["uniq"] = dev["unique_key"]:"";
+					}
+				    }
+				}
+			    );
+			}
+
+			if (!haskey(newid, "uniq"))
+			{
+			    if (vendor != nil) newid["vendor"] = vendor;
+			    if (device != nil) newid["device"] = device;
+			    if (subvendor != nil) newid["subvendor"] = subvendor;
+			    if (subdevice != nil) newid["subdevice"] = subdevice;
+			    if (class != nil) newid["class"] = class;
+			    if (class_mask != nil) newid["class_mask"] = class_mask;
+			}
+
 			if (driver_data != nil) newid["driver_data"] = driver_data;
 
 			if (driver != nil) newid["driver"] = driver;
@@ -167,6 +273,42 @@
 	}
     }
 
+    global define map AddIDs(map id)
+    {
+	map newid = id;
+
+	if (haskey(newid, "uniq"))
+	{
+	    // add device/vendor values from PCI scan for selected PCI device
+	    foreach(map pcidev, GetPCIdevices(), {
+		    if (pcidev["unique_key"]:"" == newid["uniq"]:"")
+		    {
+			y2debug("Found PCI device: %1", pcidev);
+			// libhd uses 0x10000 offset for PCI devices
+			if (haskey(pcidev, "device_id"))
+			{
+			    newid["device"] = tohexstring(pcidev["device_id"]:0 - 0x10000);
+			}
+			if (haskey(pcidev, "sub_device_id"))
+			{
+			    newid["subdevice"] = tohexstring(pcidev["sub_device_id"]:0 - 0x10000);
+			}
+			if (haskey(pcidev, "vendor_id"))
+			{
+			    newid["vendor"] = tohexstring(pcidev["vendor_id"]:0 - 0x10000);
+			}
+			if (haskey(pcidev, "sub_vendor_id"))
+			{
+			    newid["subvendor"] = tohexstring(pcidev["sub_vendor_id"]:0 - 0x10000);
+			}
+		    }
+		}
+	    );
+	}
+
+	return newid;
+    }
+
     define string FormatActivationString(map newid)
     {
 	// create ID string which is passed to the driver
@@ -176,12 +318,17 @@
 	string default_class = "0";
 	string default_mask = "0";
 
-	ret = prepend_option(newid["class_mask"]:"", ret, default_mask);
-	ret = prepend_option(newid["class"]:"", ret, default_class);
-	ret = prepend_option(newid["subdevice"]:"", ret, pci_any_id);
-	ret = prepend_option(newid["subvendor"]:"", ret, pci_any_id);
-	ret = prepend_option(newid["device"]:"", ret, pci_any_id);
-	ret = prepend_option(newid["vendor"]:"", ret, pci_any_id);
+        if (haskey(newid, "uniq"))
+        {
+            newid = AddIDs(newid);
+        }
+
+	ret = prepend_option(remove_hex_prefix(newid["class_mask"]:""), ret, default_mask);
+	ret = prepend_option(remove_hex_prefix(newid["class"]:""), ret, default_class);
+	ret = prepend_option(remove_hex_prefix(newid["subdevice"]:""), ret, pci_any_id);
+	ret = prepend_option(remove_hex_prefix(newid["subvendor"]:""), ret, pci_any_id);
+	ret = prepend_option(remove_hex_prefix(newid["device"]:""), ret, pci_any_id);
+	ret = prepend_option(remove_hex_prefix(newid["vendor"]:""), ret, pci_any_id);
 
 	return ret;
     }
@@ -250,29 +397,13 @@
 	return ret;
     }
 
-    define boolean has_hex_prefix (string in) {
-	if (size(in) < 2)
-	{
-	    return false;
-	}
-
-	// check whether string has hex prefix (0x or 0X)
-	string start = substring(in, 0, 2);
-	return (start == "0x" || start == "0X");
-    }
-
-    define string remove_hex_prefix(string in) {
-	if (!has_hex_prefix(in))
-	{
-	    return in;
-	}
-
-	return substring(in, 2);
-    }
-
-
     define string HwcfgFileName(map newid) {
 	string ret = "";
+
+        if (haskey(newid, "uniq"))
+        {
+            newid = AddIDs(newid);
+        }
 
 	string vendor = remove_hex_prefix(newid["vendor"]:"");
 	string device = remove_hex_prefix(newid["device"]:"");
@@ -290,6 +421,7 @@
 	    }
 	}
 
+	y2debug("activation string: %1", ret);
 	return ret;
     }
 
@@ -322,6 +454,31 @@
 	return ret;
     }
 
+    define boolean RemoveExistingFile(string fname)
+    {
+	boolean ret = true;
+
+	if (fname != nil && fname != "")
+	{
+	    // remove old config file if it exists
+	    if (SCR::Read(.target.size, fname) > 0)
+	    {
+		integer res = (integer) SCR::Execute(.target.bash, "/bin/rm " + fname);
+
+		if (res != 0)
+		{
+		    y2warning("Removing of file %1 has failed, exit: %2", fname, res);
+		}
+		else
+		{
+		    y2milestone("Removed file: %1", fname);
+		}
+	    }
+	}
+
+	return ret;
+    }
+
     global define boolean Write() {
 	boolean ret = true;
 
@@ -330,6 +487,17 @@
 
 	// map ID commands to driver
 	map<string,list<string> > settings = $[];
+
+        // handle removed configurations - remove all modprobe entries
+        list<string> drvs = SCR::Dir(.modprobe_newid.install);
+
+        if (drvs != nil && size(drvs) > 0)
+        {
+            foreach(string d, drvs, {
+                    SCR::Write(add(.modprobe_newid.install, d), nil);
+                }
+            );
+        }
 
 	if (new_ids != nil)
 	{
@@ -373,12 +541,19 @@
 	    );
 	}
 
+	// write sysconfig settings
 	if (size(sysconfig) > 0)
 	{
 	    // write sysconfig file
-	    ret = ret && (boolean) SCR::Write(.target.string, "/etc/sysconfig/hardware/newids", sysconfig);
+	    ret = ret && (boolean) SCR::Write(.target.string, configfile, sysconfig);
+	}
+	else
+	{
+	    // remove old config file if it exists
+	    RemoveExistingFile(configfile);
 	}
 
+	// write modprobe settings
 	if (size(settings) > 0)
 	{
 	    foreach(string modulename, list<string> values, settings, {
@@ -391,6 +566,36 @@
 	    // flush changes
 	    SCR::Write(.modprobe_newid, nil);
 	}
+
+	// handle removed configurations - remove hwcfg files
+	if (size(removed_ids) > 0)
+	{
+	    foreach(map<string,any> rem, removed_ids, {
+		    string fname = HwcfgFileName(rem);
+
+		    if (fname != "")
+		    {
+			// remove the file
+			fname = "/etc/sysconfig/hardware/hwcfg-" + fname;
+			RemoveExistingFile(fname);
+		    }
+		}
+	    );
+	}
+
+	return ret;
+    }
+
+    global define string GetModelString(string uniq) {
+	string ret = "";
+
+	foreach(map d, GetPCIdevices(), {
+		if (d["unique_key"]:"" == uniq)
+		{
+		    ret = d["model"]:"";
+		}
+	    }
+	);
 
 	return ret;
     }
@@ -411,7 +616,22 @@
 		    string idstring = FormatActivationString(newid);
 		    string targetfile = (sysdir != "") ? sysdir : modulename;
 
-		    ret = add(ret, sformat(_("Driver: %1, New PCI ID: %2"), targetfile, idstring));
+		    // test for installation proposal
+		    // %1 - name of kernel driver (e.g. e100)
+		    // %2 - PCI ID (hexnumbers)
+		    string info = sformat(_("Driver: %1, New PCI ID: %2"), targetfile, idstring);
+
+		    if (haskey(newid, "uniq"))
+		    {
+			string model = GetModelString(newid["uniq"]:"");
+
+			if (model != nil && model != "")
+			{
+			    info = info + sformat(" (%1)", model);
+			}
+		    }
+
+		    ret = add(ret, info);
 		}
 	    );
 	}
