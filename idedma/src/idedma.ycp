@@ -91,7 +91,7 @@
     ];
 
 
-    if (Mode::test == true)
+    if (Mode::test() == true)
     {
 	// in test mode set some data and display only main dialog
 	Idedma::set_test_data();

@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Tue Nov 23 10:24:22 CET 2004 - lslezak@suse.cz
+
+- updated to new Mode:: API
+
+-------------------------------------------------------------------
 Tue Oct 19 13:46:25 CEST 2004 - lslezak@suse.cz
 
 - updated: class DB, probe agent path translations
