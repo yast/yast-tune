@@ -121,6 +121,8 @@ define string afterLast(string str) ``{
 
 define term buildHwTree(string p, integer progMin, integer progMax) ``{
 
+    y2internal("buildHwTree path: %1", p);
+
     any a = UI::PollInput();
     if (a == `cancel || a == `abort)
     {

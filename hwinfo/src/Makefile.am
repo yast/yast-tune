@@ -10,6 +10,13 @@ ynclude_DATA = classnames.ycp routines.ycp
 
 module_DATA = InitHWinfo.ycp
 
+symlinks:
+	test -L hwinfo || ln -sf . hwinfo
+
+ycpchook = symlinks
+
+YCPCFLAGS=-I.
+
 EXTRA_DIST = $(client_DATA) $(config_DATA) $(ynclude_DATA) $(desktop_DATA) $(module_DATA)
 
 include $(top_srcdir)/Makefile.am.common

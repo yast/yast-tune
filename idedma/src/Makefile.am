@@ -25,6 +25,14 @@ endif
 module_DATA =			\
 	Idedma.ycp
 
+symlinks:
+	test -L hwinfo || ln -sf ../../hwinfo/src hwinfo
+
+ycpchook = symlinks
+
+YCPCFLAGS=-I.
+
+
 EXTRA_DIST = $(client_DATA) $(ynclude_DATA) $(config_DATA) $(module_DATA) $(desktop_DATA)
 
 include $(top_srcdir)/Makefile.am.common

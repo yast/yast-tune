@@ -38,5 +38,6 @@ Summary:	System configuration viewer and tuner
 @configdir@/hwinfo.y2cc
 @desktopdir@/hwinfo.desktop
 @moduledir@/*.ycp
+@moduledir@/*.ybc
 @scrconfdir@/*.scr
 %doc @docdir@

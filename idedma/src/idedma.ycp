@@ -45,9 +45,9 @@
 	// help text
 	"help"      : _("Configuration of DMA mode for IDE devices"),
 	"id"        : "idedma",
-	"guihandler": ``(IdedmaSequence()),
-	"initialize": ``(Idedma::Read()),
-	"finish"    : ``(Idedma::Write()),
+	"guihandler": IdedmaSequence,
+	"initialize": Idedma::Read,
+	"finish"    : Idedma::Write,
 	"actions"   : $[
 	    "list" : $[
 		// command description

@@ -410,7 +410,7 @@ global define list expandTree(any node) ``{
     {
         list node_list = (list) node;
 
-        if (is(node_list[0]:$[], map))
+        if (is(node_list[0]:nil, map))
 	{
 	    map tmp = (map)eval(node_list[0]:$[]);
 
