@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Tue Aug 10 17:55:38 CEST 2004 - mvidner@suse.cz
+
+- Merged proofread texts.
+
+-------------------------------------------------------------------
 Wed Jun 16 16:56:40 CEST 2004 - lslezak@suse.cz
 
 - updated testsuite (use Testsuite:: module, set testedfiles)
