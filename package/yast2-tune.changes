@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Fri Apr  2 16:28:00 CEST 2004 - lslezak@suse.cz
+
+- changed license to GPL
+- version 2.9.20
+
+-------------------------------------------------------------------
 Fri Mar 26 13:18:40 CET 2004 - lslezak@suse.cz
 
 - added missing translation mark (#37063)
