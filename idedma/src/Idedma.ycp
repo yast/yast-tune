@@ -99,13 +99,26 @@
 		    string subclass_id_string = eval(lookup(lookup(ClassNames, class_id, $[]), subclass_id, _("Unknown device type")));
 
 		    // get current DMA setting
-		    boolean current_dma = get_device_dma_status(dev_name);
-		    ide_devices = add(ide_devices, $["device" : device, "dev_name" : dev_name, "dma_on" : dma_on, "device_type" : subclass_id_string, "current_dma" : current_dma]);
+		    string current_dma = get_device_dma_status(dev_name);
+		    string dma_info = get_dma_info(dev_name);
+
+		    y2milestone("dma_info: %1", dma_info);
+
+		    string current_dma_string = get_current_dma_mode(dma_info);
+		    if (current_dma == "on" && size(current_dma_string) > 0)
+		    {
+			current_dma = current_dma_string;
+		    }
+
+		    list(string) dma_modes = get_supported_dma_modes(dma_info);
+
+		    ide_devices = add(ide_devices, $["device" : device, "dev_name" : dev_name, "dma_on" : dma_on, "device_type" : subclass_id_string, "current_dma" : current_dma, "dma_modes" : dma_modes]);
 		}
 	    }
 	);
 
 	y2debug("IDE devices: %1", ide_devices);
+	y2milestone("IDE devices: %1", ide_devices);
 
 	return true;
     }
@@ -119,22 +132,36 @@
 	return ide_devices;
     }
 
+    global define list supported_dma_modes(string device) ``{
+	list result = [];
+
+	foreach(map info, ide_devices, ``{
+		if (info["dev_name"]:"" == device)
+		{
+		    result = info["dma_modes"]:[];
+		}
+	    }
+	);
+
+	return result;
+    }
+
     /**
      * Return actual DMA status of IDE device
      * @param device Identification of ide device, e.g. "/dev/hdc"
      * @return boolean true if DMA is on, false if DMA is off or nil on error
      */
-    global define boolean get_device_dma_status(string device) ``{
-	boolean result = nil;
+    global define string get_device_dma_status(string device) ``{
+	string result = "";
 
-	if (device != nil)
+	if (device != nil && device != "")
 	{
 	    // run hdparm to get DMA status
 	    map out = SCR::Execute(.target.bash_output, hdparm_bin + " -d " + device);
 
 	    if (lookup(out, "exit", -1) == 0)
 	    {
-		list output = splitstring(lookup(out, "stdout", ""), "\n");
+		list output = splitstring(out["stdout"]:"", "\n");
 
 		y2debug("hdparm output: %1", output);
 
@@ -143,12 +170,13 @@
 
 			if (l == " using_dma    =  1 (on)")
 			{
-			    result = true;
+			    result = "on";
+
 			}
 
 			if (l == " using_dma    =  0 (off)")
 			{
-			    result = false;
+			    result = "off";
 			}
 		    }
 		);
@@ -157,6 +185,78 @@
 
 	return result;
     }
+
+    define string get_dma_info(string device) ``{
+	string result = "";
+
+	if (device != nil && device != "")
+	{
+	    // DMA mode is enabled, get DMA mode number
+	    map out = SCR::Execute(.target.bash_output, hdparm_bin + " -I " + device);
+
+	    if (out["exit"]:-1 == 0)
+	    {
+		list(string) output = splitstring(out["stdout"]:"", "\n");
+
+		foreach(string line, output, ``{
+			string dmaline = (regexpsub(line, "^[ \t]*DMA: (.*)$", "\\1"));
+
+			if (dmaline != nil)
+			{
+			    result = dmaline;
+			}
+		    }
+		);
+	    }
+	}
+	return result;
+    }
+
+
+    define string get_current_dma_mode(string dma_info) ``{
+	string result = "";
+
+	if (dma_info != nil && dma_info != "")
+	{
+	    list modes = splitstring(dma_info, " ");
+
+	    foreach(string mode, modes, ``{
+		    string current = regexpsub(mode, "^\\*(.*)", "\\1");
+
+		    if (current != nil)
+		    {
+			result = current;
+		    }
+		}
+	    );
+	}
+
+	return result;
+    }
+
+    define list(string) get_supported_dma_modes(string dma_info) ``{
+	list result = [];
+
+	if (dma_info != nil && dma_info != "")
+	{
+	    list modes = splitstring(dma_info, " ");
+
+	    foreach(string mode, modes, ``{
+
+		    if (size(mode) > 0)
+		    {
+			string current = regexpsub(mode, "^\\*(.*)", "\\1");
+
+			// add mode or current mode (filter out * mark)
+			result = add(result, (current != nil) ? current : mode);
+		    }
+		}
+	    );
+	}
+
+	return result;
+    }
+
 
     /**
      * Refresh current DMA status stored in internal structure
@@ -182,7 +282,7 @@
      * @param device Identification of IDE device, e.g. "/dev/hda"
      * @param dma_on true - set DMA on, false - set DMA off, nil - no change of DMA
      */
-    global define void set_dma(string device, boolean dma_on) ``{
+    global define void set_dma(string device, string dma_setting) ``{
 	if (device == nil)
 	{
 	    return;
@@ -192,7 +292,7 @@
 	ide_devices = maplist(`d, ide_devices, ``{
 		if (lookup(d, "dev_name", nil) == device)
 		{
-		    d = add(d, "dma_on", dma_on);
+		    d = add(d, "dma_setting", dma_setting);
 		}
 
 		return d;
@@ -221,10 +321,10 @@
 
 		if (d_name != nil)
 		{
-		    boolean dma_on = lookup(d, "dma_on", nil);
+		    string dma_setting = lookup(d, "dma_setting", "");
 		    string dma_str = "''";
 
-		    if (dma_on == true)
+/*		    if (dma_on == true)
 		    {
 			if (first_on == true)
 			{
@@ -264,7 +364,7 @@
 			    Report::Error(sformat(_("Device %1: Can not set DMA to value %2"), d_name, dma_str));
 			    ret = false;
 			}
-		    }
+		    }*/
 		}
 	    }
 	);
@@ -335,7 +435,7 @@
      */
     global define void set_test_data() ``{
 	ide_devices = [ $["current_dma":true, "dev_name":"/dev/hda",
-	    "device":"IBM-DJNA-351520", "device_type":"Disk", "dma_on":nil],
+	    "device":"IBM-DJNA-351520", "device_type":"Disk", "dma_setting":""],
 	    $["current_dma":true, "dev_name":"/dev/hdc", "device":"CD-532E-B",
 	    "device_type":"CD-ROM", "dma_on":nil]
 	];

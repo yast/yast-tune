@@ -177,6 +177,34 @@ global string dma_off_string = _("Off");
  */
 global string dma_default_string = _("No change");
 
+
+global map mode_names = $[
+    // DMA status is unknown
+    ""      : _("Unknown"),
+    // DMA is enabled, but mode is unknown
+    "on"    : dma_on_string,
+    // DMA is disabled
+    "off"   : dma_off_string,
+
+    "sdma0" : "SW DMA Mode 0/2.1",
+    "sdma1" : "SW DMA Mode 1/4.2",
+    "sdma2" : "SW DMA Mode 2/8.3",
+
+    "mdma0" : "DMA Mode 0/4.2",
+    "mdma1" : "DMA Mode 1/13.3",
+    "mdma2" : "DMA Mode 2/16.6",
+
+    "udmaS" : "UltraDMA/13 (Slow)",
+    "udma0" : "UltraDMA/16",
+    "udma1" : "UltraDMA/22",
+    "udma2" : "UltraDMA/33",
+    "udma3" : "UltraDMA/44",
+    "udma4" : "UltraDMA/66",
+    "udma5" : "UltraDMA/100",
+    "udma6" : "UltraDMA/133"
+];
+
+
 /**
  * Return list of items for table widget
  * @return list List of items
@@ -202,17 +230,8 @@ global define list get_table_items() ``{
 	    }
 
 	    // current DMA mode is unknown
-	    string current_dma = _("Unknown");
-
-	    if (lookup(d, "current_dma", nil) == true)
-	    {
-		current_dma = dma_on_string;
-	    }
-
-	    if (lookup(d, "current_dma", nil) == false)
-	    {
-		current_dma = dma_off_string;
-	    }
+	    string current_dma = d["current_dma"]:"";
+	    current_dma = mode_names[current_dma]:_("Unknown");
 
 	    // device model name is unknown
 	    string device_name = lookup(d, "device", _("Unknown device"));
@@ -230,6 +249,61 @@ global define list get_table_items() ``{
     return table_items;
 }
 
+global define void refresh_combo() ``{
+    // set DMA status for selected IDE device
+    integer curr = UI::QueryWidget(`id(`device_table), `CurrentItem);
+
+    if (curr != nil)
+    {
+	// get table item (whole line)
+	term table_item = UI::QueryWidget(`id(`device_table), `Item(curr));
+
+	// get device name from the table
+	string dn = select(table_item, 4, nil);
+
+	// get list of supported DMA modes for selected device
+	list supported_dma_modes = Idedma::supported_dma_modes(dn);
+
+	list combo_list = [
+	    `item(`id(`nochange), _("No change")),
+	    `item(`id(`disable), _("DMA off")),
+	    `item(`id(`enable), _("DMA on (default mode)")),
+	];
+
+	if (contains(supported_dma_modes, "mdma2"))
+	{
+	    combo_list = add(combo_list, `item(`id(`mdma2), "DMA/16"));
+	}
+	if (contains(supported_dma_modes, "udma0"))
+	{
+	    combo_list = add(combo_list, `item(`id(`udma0), "UltraDMA/16"));
+	}
+	if (contains(supported_dma_modes, "udma2"))
+	{
+	    combo_list = add(combo_list, `item(`id(`udma2), "UltraDMA/33"));
+	}
+	if (contains(supported_dma_modes, "udma4"))
+	{
+	    combo_list = add(combo_list, `item(`id(`udma4), "UltraDMA/66"));
+	}
+	if (contains(supported_dma_modes, "udma5"))
+	{
+	    combo_list = add(combo_list, `item(`id(`udma5), "UltraDMA/100"));
+	}
+	if (contains(supported_dma_modes, "udma6"))
+	{
+	    combo_list = add(combo_list, `item(`id(`udma6), "UltraDMA/133"));
+	}
+
+
+	UI::ReplaceWidget(`id(`rp), `ComboBox(`id(`dma_combo), `opt(`notify), _("&DMA mode:"), combo_list));
+    }
+    else
+    {
+	UI::ReplaceWidget(`id(`rp), `ComboBox(`id(`dma_combo), _("&DMA mode:"), []));
+    }
+}
+
 /**
  * Main DMA configuration dialog
  * @return any Result from UserInput()
@@ -242,17 +316,10 @@ global define any DmaConfigDialog () ``{
 
     term contents = `VBox(
 			// table header
-			`Table(`id(`device_table), `header(_("Current DMA mode"), _("Device name"), _("Type"), _("Device"), _("Required DMA mode")), items),
-			`HBox(
-			    // push button label
-			    `PushButton(`id(`dma_enable), _("&DMA on")),
-			    `HSpacing(2),
-			    // push button label
-			    `PushButton(`id(`dma_disable), _("D&MA off")),
-			    `HSpacing(2),
-			    // push button label
-			    `PushButton(`id(`dma_default), _("&No change"))
-			),
+			`Table(`id(`device_table), `opt(`notify, `immediate),
+			    `header(_("Current DMA mode"), _("Device name"), _("Type"),
+			    _("Device"), _("Required DMA mode")), items),
+			`ReplacePoint(`id(`rp), `Empty()),
 			`VSpacing(0.5)
 		    );
 
@@ -265,15 +332,24 @@ global define any DmaConfigDialog () ``{
     // remove Abort button - workflow has only one dialog
     Wizard::ReplaceAbortButton(`Empty());
 
+    // set combo widget content
+    refresh_combo();
+
     any ret = nil;
     while (true)
     {
 	ret = UI::UserInput();
 
-	if (ret == `dma_enable || ret == `dma_disable || ret == `dma_default)
+	y2milestone("ui: %1", ret);
+
+	if (ret == `dma_combo)
 	{
+	    y2milestone("Value changed");
+
 	    // set DMA status for selected IDE device
 	    integer curr = UI::QueryWidget(`id(`device_table), `CurrentItem);
+
+	    y2milestone("curr: %1", curr);
 
 	    if (curr != nil)
 	    {
@@ -282,6 +358,8 @@ global define any DmaConfigDialog () ``{
 		string dn = select(table_item, 4, nil);
 		// get current DMA
 		string curr_dma = select(table_item, 1, nil);
+
+		y2milestone("dn: %1", dn);
 
 		if (dn != nil)
 		{
@@ -293,37 +371,33 @@ global define any DmaConfigDialog () ``{
 		    }
 
 		    // convert button identification to DMA boolean value
-		    boolean value_bool = nil;
-		    string new_value = dma_default_string;
+		    string new_setting = sformat("%1", UI::QueryWidget(`id(`dma_combo), `Value));
 
-		    if (ret == `dma_enable)
-		    {
-			value_bool = true;
-			new_value = dma_on_string;
-		    }
-		    else if (ret == `dma_disable)
-		    {
-			value_bool = false;
-			new_value = dma_off_string;
-		    }
+		    y2milestone(new_setting);
+		    // TODO remove ` from new_setting
 
 		    // set DMA
-		    Idedma::set_dma(dn, value_bool);
+		    Idedma::set_dma(dn, new_setting);
 
-		    // refresh value in the table
+/*		    // refresh value in the table
 		    UI::ChangeWidget(`id(`device_table), `Item(curr, 4), new_value);
 
 		    // set changed flag
 		    if (new_value != select(table_item, 1, nil))
 		    {
 			changed = true;
-		    }
+		    }*/
 		}
 	    }
 	}
 	else if (ret == `next || ret == `back)
 	{
 	    break;
+	}
+	else if (ret == `device_table)
+	{
+	    // selected item was changed
+	    refresh_combo();
 	}
 	else if (ret == `cancel)
 	{
