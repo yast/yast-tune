@@ -2,11 +2,13 @@
 //
 // Idedma:: module testsuite
 //
+// testedfiles: Idedma.ycp Service.ycp
+//
 // $Id$
 //
 
 {
-include "testsuite.ycp";
+import "Testsuite";
 import "Idedma";
 import "Report";
 
@@ -19,32 +21,32 @@ map READ = $[ "probe" : $[ "ide" : [ $["device" : "ABC-13245", "dev_name" : "/de
 
 map EXEC = $[ "target" : $["bash_output" : $["stdout" : " using_dma    =  1 (on)", "exit" : 0 ] , "bash" : 0 ] ];
 
-DUMP("Read test");
-TEST(``(Idedma::Read()), [ READ, $[], EXEC ], nil );
-DUMP(Idedma::get_ide_devices());
+Testsuite::Dump("Read test");
+Testsuite::Test(``(Idedma::Read()), [ READ, $[], EXEC ], nil );
+Testsuite::Dump(Idedma::get_ide_devices());
 
 
 READ = add(READ, "sysconfig", $["ide" : $[ "DEVICES_FORCE_IDE_DMA" : ""] ]);
 EXEC = $["target" : $["bash_output" : $["stdout" : "Error", "exit" : -1 ] ] ];
 
-DUMP("Read test2");
-TEST(``(Idedma::Read()), [ READ, $[], EXEC ], nil );
-DUMP(Idedma::get_ide_devices());
+Testsuite::Dump("Read test2");
+Testsuite::Test(``(Idedma::Read()), [ READ, $[], EXEC ], nil );
+Testsuite::Dump(Idedma::get_ide_devices());
 
 
 READ = add(READ, "sysconfig", $["ide" : $[ "DEVICES_FORCE_IDE_DMA" : "/dev/hda:on"] ]);
 EXEC = $[ "target" : $["bash_output" : $["stdout" : " using_dma    =  1 (on)", "exit" : 0 ] ] ];
 
-DUMP("Read test3");
-TEST(``(Idedma::Read()), [ READ, $[], EXEC ], nil );
-DUMP(Idedma::get_ide_devices());
+Testsuite::Dump("Read test3");
+Testsuite::Test(``(Idedma::Read()), [ READ, $[], EXEC ], nil );
+Testsuite::Dump(Idedma::get_ide_devices());
 
 
 READ = add(READ, "sysconfig", $["ide" : $[ "DEVICES_FORCE_IDE_DMA" : "/dev/hda:off"] ]);
 
-DUMP("Read test4");
-TEST(``(Idedma::Read()), [ READ, $[], EXEC ], nil );
-DUMP(Idedma::get_ide_devices());
+Testsuite::Dump("Read test4");
+Testsuite::Test(``(Idedma::Read()), [ READ, $[], EXEC ], nil );
+Testsuite::Dump(Idedma::get_ide_devices());
 
 
 map WRITE = $[];
@@ -57,41 +59,41 @@ map EXEC2 = $[
 
 Idedma::set_dma("/dev/hda", "on");
 Idedma::set_dma("/dev/hdc", "off");
-DUMP("Write test1");
-DUMP(Idedma::get_ide_devices());
-TEST(``(Idedma::Write()), [ READ, WRITE, [EXEC, EXEC, EXEC2] ], nil );
+Testsuite::Dump("Write test1");
+Testsuite::Dump(Idedma::get_ide_devices());
+Testsuite::Test(``(Idedma::Write()), [ READ, WRITE, [EXEC, EXEC, EXEC2] ], nil );
 
 Idedma::set_dma("/dev/hda", "udma5");
 Idedma::set_dma("/dev/hdc", "udma2");
-DUMP("Write test2");
-DUMP(Idedma::get_ide_devices());
-TEST(``(Idedma::Write()), [ READ, WRITE, [EXEC, EXEC, EXEC2] ], nil );
+Testsuite::Dump("Write test2");
+Testsuite::Dump(Idedma::get_ide_devices());
+Testsuite::Test(``(Idedma::Write()), [ READ, WRITE, [EXEC, EXEC, EXEC2] ], nil );
 
 Idedma::set_dma("/dev/hda", nil);
 Idedma::set_dma("/dev/hdx", "udma2");
-DUMP("Write test3");
-DUMP(Idedma::get_ide_devices());
-TEST(``(Idedma::Write()), [ READ, WRITE, [EXEC, EXEC, EXEC2] ], nil );
+Testsuite::Dump("Write test3");
+Testsuite::Dump(Idedma::get_ide_devices());
+Testsuite::Test(``(Idedma::Write()), [ READ, WRITE, [EXEC, EXEC, EXEC2] ], nil );
 
 Idedma::set_dma("/dev/hda", "nochange");
 Idedma::set_dma("/dev/hdx", "udma2");
-DUMP("Write test4");
-DUMP(Idedma::get_ide_devices());
-TEST(``(Idedma::Write()), [ READ, WRITE, [EXEC, EXEC, EXEC2] ], nil );
+Testsuite::Dump("Write test4");
+Testsuite::Dump(Idedma::get_ide_devices());
+Testsuite::Test(``(Idedma::Write()), [ READ, WRITE, [EXEC, EXEC, EXEC2] ], nil );
 
-TEST(``(Idedma::get_current_dma_mode(nil)), [$[], $[], $[]], nil);
-TEST(``(Idedma::get_current_dma_mode("")), [$[], $[], $[]], nil);
-TEST(``(Idedma::get_current_dma_mode("mdma2 udma0 udma1 udma2")), [$[], $[], $[]], nil);
-TEST(``(Idedma::get_current_dma_mode("mdma2 udma0 udma1 *udma2")), [$[], $[], $[]], nil);
-TEST(``(Idedma::get_current_dma_mode("mdma2 udma0 *udma1 *udma2")), [$[], $[], $[]], nil);
-TEST(``(Idedma::get_current_dma_mode("mdma2   udma0   *udma1   *udma2")), [$[], $[], $[]], nil);
+Testsuite::Test(``(Idedma::get_current_dma_mode(nil)), [$[], $[], $[]], nil);
+Testsuite::Test(``(Idedma::get_current_dma_mode("")), [$[], $[], $[]], nil);
+Testsuite::Test(``(Idedma::get_current_dma_mode("mdma2 udma0 udma1 udma2")), [$[], $[], $[]], nil);
+Testsuite::Test(``(Idedma::get_current_dma_mode("mdma2 udma0 udma1 *udma2")), [$[], $[], $[]], nil);
+Testsuite::Test(``(Idedma::get_current_dma_mode("mdma2 udma0 *udma1 *udma2")), [$[], $[], $[]], nil);
+Testsuite::Test(``(Idedma::get_current_dma_mode("mdma2   udma0   *udma1   *udma2")), [$[], $[], $[]], nil);
 
 // no DMA - should return all modes which can be set in yast2
-TEST(``(Idedma::get_supported_dma_modes(nil)), [$[], $[], $[]], nil);
-TEST(``(Idedma::get_supported_dma_modes("")), [$[], $[], $[]], nil);
+Testsuite::Test(``(Idedma::get_supported_dma_modes(nil)), [$[], $[], $[]], nil);
+Testsuite::Test(``(Idedma::get_supported_dma_modes("")), [$[], $[], $[]], nil);
 
-TEST(``(Idedma::get_supported_dma_modes("mdma2 udma0 udma1 udma2")), [$[], $[], $[]], nil);
-TEST(``(Idedma::get_supported_dma_modes("mdma2 udma0 udma1 *udma2")), [$[], $[], $[]], nil);
-TEST(``(Idedma::get_supported_dma_modes("mdma2 udma0 *udma1 *udma2")), [$[], $[], $[]], nil);
-TEST(``(Idedma::get_supported_dma_modes("mdma2   udma0   *udma1   *udma2")), [$[], $[], $[]], nil);
+Testsuite::Test(``(Idedma::get_supported_dma_modes("mdma2 udma0 udma1 udma2")), [$[], $[], $[]], nil);
+Testsuite::Test(``(Idedma::get_supported_dma_modes("mdma2 udma0 udma1 *udma2")), [$[], $[], $[]], nil);
+Testsuite::Test(``(Idedma::get_supported_dma_modes("mdma2 udma0 *udma1 *udma2")), [$[], $[], $[]], nil);
+Testsuite::Test(``(Idedma::get_supported_dma_modes("mdma2   udma0   *udma1   *udma2")), [$[], $[], $[]], nil);
 }

@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Wed Jun 16 16:56:40 CEST 2004 - lslezak@suse.cz
+
+- updated testsuite (use Testsuite:: module, set testedfiles)
+- version 2.10.0
+
+-------------------------------------------------------------------
 Tue May 25 15:04:58 CEST 2004 - lslezak@suse.cz
 
 - don't show .boot_disk value (not reliable and works only on
