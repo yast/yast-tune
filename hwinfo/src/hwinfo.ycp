@@ -1,4 +1,4 @@
-/**
+/*
  *
  *
  * File:
@@ -23,13 +23,19 @@
     boolean abortPressed=false;
 
     UI(`OpenDialog(`VBox(
-	`TextEntry(`id(`initLab), _("Probing:"), "."),
+	`Label(_("Probing:")),
+	`HBox(
+	    `HWeight(1, `Label(`id(`initLab), ""))
+	),
+//	`TextEntry(`id(`initLab), _("Probing:"), "."),
 	`ProgressBar(`id(`initProg), _("Progress:"), 1000, 0),
-	`PushButton(`id(`abort), _("Abort"))
+	`PushButton(`id(`abort), _("&Abort"))
 	)
     ));
 
-    list exclude_list=[.probe.byclass, .probe.bybus, .probe.mouse];    
+//    UI(`ChangeWidget (`id(`initLab), `Enabled, false));
+
+    list exclude_list=[.probe.byclass, .probe.bybus, .probe.mouse, .probe.ihw_data];    
 
     map trans_table=UI(
     $[
@@ -94,6 +100,14 @@
 	    return lookup(trans_table, str, str);
     }
 
+    define trans_bool(any b)
+    ``{
+	if(is(b, boolean))
+	{
+	    return b?UI(_("Yes")):UI(_("No"));
+	}
+	return b;
+    }
 
     map classdb=SCR(`Read (.target.yast2, "classnames.ycp"));
     classdb=UI(classdb);
@@ -176,7 +190,7 @@
 	    ``{
 		if(scalar(v))
 		{
-		    ltmp=add(ltmp, `item(sformat("%1 : %2", trans_str(key), v)));
+		    ltmp=add(ltmp, `item(sformat("%1 : %2", trans_str(key), trans_bool(v))));
 		}
 		else
 		{
@@ -226,7 +240,7 @@
 	    any val=SCR(`Read(pat));
 	    if(scalar(val))
 	    {
-		return `item(sformat("%1 : %2", trans_str(afterLast(p)), val));
+		return `item(sformat("%1 : %2", trans_str(afterLast(p)), trans_bool(val)));
 	    }
 	    else if(val==nil ||  val==[] || val==$[])
 	    {
@@ -298,7 +312,8 @@
                                     select(items,1));
 
     UI(`CreateWizardDialog());
-    UI(`SetWizardContents (_("YaST2\nHardware info"), con, _("<P>Hardware info</p>"), false, true));
+    UI(`SetWizardContents (_("Hardware info"), con, _("<P><B>Hardware info</B> module displays the hardware 
+details of your computer. Click any node for more info</p>"), false, true));
 
     UI(`ReplaceWidget(`id(`rep_back), `HStretch()));
     UI(`ReplaceWidget(`id(`rep_next), `HStretch()));
