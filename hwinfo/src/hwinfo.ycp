@@ -49,7 +49,7 @@
      * .probe.mouse doesn't like running X
      * other paths are not user-interesting
      */
-    list exclude_list = [.probe.byclass, .probe.bybus, .probe.mouse, .probe.ihw_data, .probe.system];
+    list exclude_list = [.probe.byclass, .probe.bybus, .probe.mouse, .probe.ihw_data, .probe.system, .probe.status];
 
     /*
      * translation table- key is replaced by value on it's way to ui
@@ -239,7 +239,8 @@
      */
 
     define boolean scalar(any node) ``{
-	if (is(node, string) ||
+	if (
+	    is(node, string) ||
 	    is(node, boolean) ||
 	    is(node, integer) ||
 	    is(node, float) ||
@@ -366,7 +367,7 @@
 		{
 		    if (e != nil)
 		    {
-			lout = add(lout, `item(e));
+			lout = add(lout, `item(sformat("%1", e)));
 		    }
 		}
 		else
@@ -404,9 +405,13 @@
 		}
 
 		// ... explore all pairs
-		if(scalar(v))
+		if(scalar(v) || v == $[] || v == [])
 		{
 		    ltmp = add(ltmp, `item(sformat("%1 : %2", trans_str(key), trans_bool(v))));
+		}
+		else if (v == [""])
+		{
+		    ltmp = add(ltmp, `item(sformat("%1", trans_str(key))));
 		}
 		else
 		{
@@ -540,12 +545,13 @@
                                     select(items, 1, nil));
 
     Wizard::CreateDialog();
-    Wizard::SetContents (_("Hardware info"), con, _("<P><B>Hardware info</B> module displays the hardware 
-details of your computer. Click any node for more info</p>"), false, true);
 
     UI::ReplaceWidget(`id(`rep_back), `HStretch());
     UI::ReplaceWidget(`id(`rep_next), `HStretch());
     UI::ReplaceWidget(`id(`rep_abort), `PushButton(`id(`next), UI::CloseButtonLabel()));
+
+    Wizard::SetContents (_("Hardware info"), con, _("<P><B>Hardware info</B> module displays the hardware 
+details of your computer. Click any node for more info</p>"), false, true);
 
     any event = nil;
 

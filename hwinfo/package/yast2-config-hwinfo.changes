@@ -1,4 +1,19 @@
 -------------------------------------------------------------------
+Tue Mar  5 16:10:32 CET 2002 - dmeszar@suse.cz
+
+- fixed #13284 (partially overlapped horizontal scrollbar)
+
+-------------------------------------------------------------------
+Fri Feb 22 15:18:56 CET 2002 - dmeszar@suse.cz
+
+- fixed #13661 (empty values)
+
+-------------------------------------------------------------------
+Mon Feb 18 19:59:51 CET 2002 - dmeszar@suse.cz
+
+- skip .probe.status
+
+-------------------------------------------------------------------
 Tue Feb  5 16:19:43 CET 2002 - dmeszar@suse.cz
 
 - shows 'modules' entry of some devices in more readable form
