@@ -26,7 +26,7 @@ import "Idedma";
 
 import "Popup";
 import "Label";
-include "wizard/sequencer.ycp";
+import "Sequencer";
 
 include "idedma/helps.ycp";
 
@@ -318,7 +318,7 @@ define any MainSequence () ``{
 	],
     ];
 
-    any ret = WizardSequencer (aliases, sequence);
+    any ret = Sequencer::Run(aliases, sequence);
 
     return ret;
 }
@@ -382,8 +382,9 @@ define any IdedmaSequence() ``{
     ];
 
     Wizard::CreateDialog();
+    Wizard::SetDesktopIcon("idedma");
 
-    any ret = WizardSequencer(aliases, sequence);
+    any ret = Sequencer::Run(aliases, sequence);
 
     UI::CloseDialog();
     return ret;
@@ -401,6 +402,7 @@ define any IdedmaAutoSequence () ``{
     term contents = `Label (_("Initializing ..."));
 
     Wizard::CreateDialog ();
+    Wizard::SetDesktopIcon("idedma");
     Wizard::SetContentsButtons ( caption,
 				contents,
 				"",

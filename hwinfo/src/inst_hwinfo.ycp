@@ -18,10 +18,10 @@ import "Wizard";
 import "Label";
 import "Report";
 import "Popup";
+import "Sequencer";
 
 include "hwinfo/routines.ycp";
 include "hwinfo/classnames.ycp";
-include "wizard/sequencer.ycp";
 
 string selected_model = "";
 map selected_info = $[];
@@ -352,9 +352,10 @@ map sequence = $[
 ];
 
 Wizard::CreateDialog();
+Wizard::SetDesktopIcon("hwinfo");
 
 // start workflow
-any ret = WizardSequencer (aliases, sequence);
+any ret = Sequencer::Run(aliases, sequence);
 
 Wizard::CloseDialog();
 

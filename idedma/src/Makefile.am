@@ -24,12 +24,11 @@ endif
 module_DATA =			\
 	Idedma.ycp
 
-hwinfo:
+idedma:
 	ln -sf ../../hwinfo/src hwinfo
+	ln -sf . idedma
 
-ycpchook = hwinfo
-
-YCPCFLAGS=-I.
+ycpchook = idedma
 
 
 EXTRA_DIST = $(client_DATA) $(ynclude_DATA) $(module_DATA) $(desktop_DATA)

@@ -246,6 +246,7 @@ term con = `Tree(  `id(`idTree), `opt(`vstretch, `hstretch),
 				select(items, 1, nil));
 
 Wizard::CreateDialog();
+Wizard::SetDesktopIcon("hwinfo");
 
 Wizard::ReplaceBackButton(`Empty());
 Wizard::ReplaceNextButton(`Empty());
