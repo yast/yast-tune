@@ -106,14 +106,14 @@
 	
 	list dir=SCR(`Dir(pat));
 
-	if(isnil(dir))
+	if(dir==nil)
 	{
 	    any val=SCR(`Read(pat));
 	    if(scalar(val))
 	    {
 		return `item(sformat("%1 : %2", afterLast(p), val));
 	    }
-	    else if(isnil(val) ||  val==[] || val==$[])
+	    else if(val==nil ||  val==[] || val==$[])
 	    {
 		return nil;
 	    }
@@ -133,7 +133,7 @@
 	    while(pos>=0)
 	    {
 		itm=buildHwTree(p+"."+select(dir, pos), prog, prog+step);
-		if(!isnil(itm))
+		if(itm!=nil)
 		{
 		    lout=add(lout, itm);
 		}
