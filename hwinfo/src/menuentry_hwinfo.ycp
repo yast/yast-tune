@@ -10,7 +10,7 @@
    return([ "hwinfo",
    $[
      ////////////////////////////////////////////////////////////////////////////////
-     // name of the entry, shon in curses menu and ycc                             //
+     // name of the entry, shown in curses menu and ycc                             //
      `menuentry    : UI(_("Hardware info")),
      
      ////////////////////////////////////////////////////////////////////////////////

@@ -65,7 +65,7 @@
 	"bios_video": _("Bios video"),
 	"boot_arch": _("Boot architecture"),
 	"boot_disk": _("Boot disk"),
-	"cdrom": _("CDRom"),
+	"cdrom": _("CDROM"),
 	"cpu": _("CPU"),
 	"disk": _("Disk"),
 	"display": _("Display"),
