@@ -8,7 +8,7 @@
  *
  * $Id$
  *
- * Since hardware description string disappeared fro libhd in june-2001
+ * Since hardware description string disappeared from libhd in june-2001
  * this translation table must be used to obtain those descriptions.
  */
 
