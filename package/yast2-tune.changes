@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Mon Sep  9 18:27:33 CEST 2002 - lslezak@suse.cz
+
+- removed noarch architecture from spec file (required by %ifnarch)
+- version 2.6.14
+
+-------------------------------------------------------------------
 Mon Sep  9 14:51:47 CEST 2002 - lslezak@suse.cz
 
 - exclude IDE DMA configuration from y2cc on S390
