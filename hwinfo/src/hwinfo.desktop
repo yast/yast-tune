@@ -16,7 +16,7 @@ X-SuSE-YaST-Geometry=
 X-SuSE-YaST-SortKey=
 X-SuSE-YaST-AutoinstResource=
 
-Icon=system
+Icon=hardware_info
 Exec=/sbin/yast2 hwinfo 
 
 Name=Hardware information

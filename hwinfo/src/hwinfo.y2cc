@@ -15,7 +15,7 @@ Name = _("Hardware information")
 Group = Hardware
 
 ; icon displayed in y2cc
-Icon = system.png
+Icon = hardware_info.png
 
 ; *one* *short* descriptive line for y2cc
 Helptext = _("Show hardware information")
