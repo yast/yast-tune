@@ -16,6 +16,7 @@ module "InitHWinfo";
 import "String";
 import "Confirm";
 import "Progress";
+import "Arch";
 
 include "hwinfo/routines.ycp";
 
@@ -147,9 +148,41 @@ global define boolean Initialize(boolean force) ``{
 	    system_string = system_string + sformat(" (%1)", version);
 	}
     }
+    // PPC architecture - use board and generation information
+    else if (Arch::ppc)
+    {
+	string board = "";
+	string generation = "";
+
+	list<map> systemProbe = (list<map>) SCR::Read(.probe.system);
+	if (systemProbe == nil)
+	{
+	    systemProbe = [];
+	}
+
+	foreach (map systemEntry, systemProbe, ``{
+	    string board_tmp = systemEntry["system"]:"";
+	    if (board_tmp != nil && board_tmp != "")
+	    {
+		board = board_tmp;
+	    }
+
+	    string generation_tmp = systemEntry["generation"]:"";
+	    if (generation_tmp != nil && generation_tmp != "")
+	    {
+		generation = generation_tmp;
+	    }
+	});
+
+	system_string = board;
+
+	if (system_string != "" && generation != "")
+	{
+	    system_string = system_string + sformat(" (%1)", generation);
+	}
+    }
 
     y2milestone("System string: %1", system_string);
-
 
     initialized = true;
 

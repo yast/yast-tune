@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Tue Feb 17 15:28:09 CET 2004 - lslezak@suse.cz
+
+- InitHWinfo: use board and generation info for PPC architecture
+- version 2.9.10
+
+-------------------------------------------------------------------
 Thu Feb 12 18:16:16 CET 2004 - lslezak@suse.cz
 
 - use new config file (/etc/sysconfig/ide)
