@@ -24,8 +24,8 @@ textdomain "tune";
 import "Wizard";
 import "Idedma";
 
-include "ui/common_popups.ycp";
-include "ui/common_messages.ycp";
+import "Popup";
+import "Label";
 include "wizard/sequencer.ycp";
 
 include "idedma/helps.ycp";
@@ -70,8 +70,8 @@ global define any IdedmaSequence() ``{
     Wizard::SetContentsButtons( caption,
 				contents,
 				"",
-				BackButtonLabel (),
-				NextButtonLabel ());
+				Label::BackButton (),
+				Label::NextButton ());
 
     any ret = WizardSequencer(aliases, sequence);
 
@@ -94,8 +94,8 @@ global define any IdedmaAutoSequence () ``{
     Wizard::SetContentsButtons ( caption,
 				contents,
 				"",
-				BackButtonLabel (),
-				NextButtonLabel ());
+				Label::BackButton (),
+				Label::NextButton ());
 
     // Run the main configuration workflow
     any ret = MainSequence ();
@@ -327,8 +327,8 @@ global define any DmaConfigDialog () ``{
     Wizard::SetContentsButtons( caption,
 				contents,
 				DetectedDialogHelp(),
-				BackButtonLabel(),
-				FinishButtonLabel() );
+				Label::BackButton(),
+				Label::FinishButton() );
 
     // remove Abort button - workflow has only one dialog
     Wizard::ReplaceAbortButton(`Empty());
@@ -364,20 +364,22 @@ global define any DmaConfigDialog () ``{
 
 		if (dn != nil)
 		{
-		    // enabling DMA on device with currnet DMA off
-		    if (ret == `dma_enable && curr_dma == dma_off_string)
-		    {
-			// warning popup message
-			UI::WarningPopup(_("Enabling DMA on some devices can cause\ndata loss or system lock."));
-		    }
-
-		    // convert button identification to DMA boolean value
 		    string new_setting = sformat("%1", UI::QueryWidget(`id(`dma_combo), `Value));
 
 		    if (size(new_setting) > 1 && substring(new_setting, 0, 1) == "`")
 		    {
 			new_setting = substring(new_setting, 1);
 		    }
+		    y2debug("ret: %1, curr_dma: %2, new_setting: %3", ret, curr_dma, new_setting);
+
+		    // enabling DMA on device with currnet DMA off
+		    if (ret == `dma_combo && curr_dma == dma_off_string && new_setting != "off" && new_setting != "nochange")
+		    {
+			// warning popup message
+			Popup::Warning(_("Enabling DMA on some devices can cause\ndata loss or system lock."));
+		    }
+
+		    // convert button identification to DMA boolean value
 
 		    y2milestone(new_setting);
 		    // set DMA
@@ -401,7 +403,7 @@ global define any DmaConfigDialog () ``{
 	{
 	    if (changed == true)
 	    {
-		if (UI::ReallyAbortPopup(true) == false)
+		if (Popup::ReallyAbort(true) == false)
 		{
 		    continue;
 		}

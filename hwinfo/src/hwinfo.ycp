@@ -13,6 +13,7 @@
 
 textdomain "tune";
 import "Wizard";
+import "Label";
 
 include "hwinfo/classnames.ycp";
 
@@ -37,7 +38,7 @@ UI::OpenDialog(
 	    // progress bar label
 	    `ProgressBar(`id(`initProg), _("Progress:"), 1000, 0),
 	    `VSpacing(0.5),
-	    `PushButton(`id(`abort), `opt(`key_F9), UI::AbortButtonLabel())
+	    `PushButton(`id(`abort), `opt(`key_F9), Label::AbortButton())
 	)
     )
 );
@@ -672,7 +673,7 @@ Wizard::ReplaceNextButton(`Empty());
 Wizard::ReplaceAbortButton(`HBox(
 	`PushButton(`id(`save), _("Save to File...")),
 	`HSpacing(3),
-	`PushButton(`id(`next), `opt(`key_F10), UI::CloseButtonLabel())
+	`PushButton(`id(`next), `opt(`key_F10), Label::CloseButton())
     )
 );
 
