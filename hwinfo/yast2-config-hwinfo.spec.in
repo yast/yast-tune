@@ -14,7 +14,7 @@ Name:		@RPMNAME@
 Release:	1
 Copyright:	(c) 2000 SuSE GmbH
 Group:		System Environment/YaST
-Requires:	yast2 
+Requires:	yast2 yast2-agent-probe yast2-trans-hwinfo
 BuildArchitectures:	noarch
 
 Packager:	@MAINTAINER@
