@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Wed Aug 14 12:59:35 CEST 2002 - lslezak@suse.cz
+
+- merged proofread texts
+- version 2.6.9
+
+-------------------------------------------------------------------
 Sun Aug 11 22:47:28 CEST 2002 - mvidner@suse.cz
 
 - Fix building (testsuite adapted to changes in yast2.rpm, due to #17608).
