@@ -24,10 +24,18 @@
     boolean refresh_proposal = false;
 
     global define void AddID(map<string,string> new_id) {
-	if (new_id != nil && new_id != $[] && !contains(new_ids, new_id))
+	if (new_id != nil && new_id != $[])
 	{
-	    new_ids = add(new_ids, new_id);
-	    refresh_proposal = true;
+	    if (new_ids == nil)
+	    {
+		new_ids = [ new_id ];
+		refresh_proposal = true;
+	    }
+	    else if (!contains(new_ids, new_id))
+	    {
+		new_ids = add(new_ids, new_id);
+		refresh_proposal = true;
+	    }
 	}
     }
 
