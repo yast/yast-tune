@@ -242,77 +242,67 @@ global define any DmaConfigDialog () ``{
 				BackButtonLabel(),
 				FinishButtonLabel() );
 
+    // remove Abort button - workflow has only one dialog
+    Wizard::ReplaceAbortButton(`Empty());
+
     any ret = nil;
     while (true)
     {
 	ret = UI::UserInput();
-	if (ret == `abort)
-	{
-	    if (UI::ReallyAbortPopup(changed))
-	    {
-		break;
-	    }
-	    else
-	    {
-		continue;
-	    }
-	}
-	else
-	{
-	    if (ret == `dma_enable || ret == `dma_disable || ret == `dma_default)
-	    {
-		// set DMA status for selected IDE device
-		integer curr = UI::QueryWidget(`id(`device_table), `CurrentItem);
 
-		if (curr != nil)
+	if (ret == `dma_enable || ret == `dma_disable || ret == `dma_default)
+	{
+	    // set DMA status for selected IDE device
+	    integer curr = UI::QueryWidget(`id(`device_table), `CurrentItem);
+
+	    if (curr != nil)
+	    {
+		term table_item = UI::QueryWidget(`id(`device_table), `Item(curr));
+		// get device name from the table
+		string dn = select(table_item, 4, nil);
+		// get current DMA
+		string curr_dma = select(table_item, 5, nil);
+
+		if (dn != nil)
 		{
-		    term table_item = UI::QueryWidget(`id(`device_table), `Item(curr));
-		    // get device name from the table
-		    string dn = select(table_item, 4, nil);
-		    // get current DMA
-		    string curr_dma = select(table_item, 5, nil);
-
-		    if (dn != nil)
+		    // enabling DMA on device with currnet DMA off
+		    if (ret == `dma_enable && curr_dma == dma_off_string)
 		    {
-			// enabling DMA on device with currnet DMA off
-			if (ret == `dma_enable && curr_dma == dma_off_string)
-			{
-			    UI::WarningPopup(_("Enabling DMA on some devices can cause\ndata loss or system lock."));
-			}
+			UI::WarningPopup(_("Enabling DMA on some devices can cause\ndata loss or system lock."));
+		    }
 
-			// convert button identification to DMA boolean value
-			boolean value_bool = nil;
-			string new_value = dma_default_string;
+		    // convert button identification to DMA boolean value
+		    boolean value_bool = nil;
+		    string new_value = dma_default_string;
 
-			if (ret == `dma_enable)
-			{
-			    value_bool = true;
-			    new_value = dma_on_string;
-			}
-			else if (ret == `dma_disable)
-			{
-			    value_bool = false;
-			    new_value = dma_off_string;
-			}
+		    if (ret == `dma_enable)
+		    {
+			value_bool = true;
+			new_value = dma_on_string;
+		    }
+		    else if (ret == `dma_disable)
+		    {
+			value_bool = false;
+			new_value = dma_off_string;
+		    }
 
-			// set DMA
-			Idedma::set_dma(dn, value_bool);
+		    // set DMA
+		    Idedma::set_dma(dn, value_bool);
 
-                        // refresh value in the table
-			UI::ChangeWidget(`id(`device_table), `Item(curr, 0), new_value);
+		    // refresh value in the table
+		    UI::ChangeWidget(`id(`device_table), `Item(curr, 0), new_value);
 
-			// set changed flag
-			if (new_value != select(table_item, 1, nil))
-			{
-			    changed = true;
-			}
+		    // set changed flag
+		    if (new_value != select(table_item, 1, nil))
+		    {
+			changed = true;
 		    }
 		}
 	    }
-	    else if (ret == `next)
-	    {
-		break;
-	    }
+	}
+	else if (ret == `next || ret == `back)
+	{
+	    break;
 	}
     };
 
