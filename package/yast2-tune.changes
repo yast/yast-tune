@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Mon Aug 11 09:36:18 CEST 2003 - lslezak@suse.de
+
+- merged proofread texts
+- version 2.8.2
+
+-------------------------------------------------------------------
 Fri Aug  8 11:31:31 CEST 2003 - lslezak@suse.de
 
 - use Label:: and Popup:: modules
