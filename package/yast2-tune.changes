@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Tue Mar  8 14:12:53 CET 2005 - lslezak@suse.cz
+
+- always retranslate memory string (#71109)
+
+-------------------------------------------------------------------
 Tue Mar  1 14:59:20 CET 2005 - lslezak@suse.cz
 
 - PCI ID - nil handling - allow adding of an ID (#67023)
