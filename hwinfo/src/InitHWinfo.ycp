@@ -31,7 +31,7 @@ string memory_string = "";
 string system_string= "";
 
 // list of detected devices
-list detectedHW = nil;
+list<map> detectedHW = nil;
 
 // default is "/dev/fd0" floppy device (used when floppy detection is skipped as a fallback)
 global map floppy = $["/dev/fd0" : _("Floppy disk")];
@@ -190,7 +190,7 @@ global define list<string> MakeProposal(boolean reset) ``{
  * @param force If force is true then detection is always started (cached value is discarded)
  * @return list list of maps - detected hardware items ()
  */
-global define list DetectedHardware(boolean force) ``{
+global define list<map> DetectedHardware(boolean force) ``{
 
     // return cached values if possible
     if (detectedHW != nil && force != true)

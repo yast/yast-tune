@@ -42,7 +42,7 @@
     }
 
     // The settings are in the first argument
-    list settings = (list)(args[0]:[]);
+    list<map> settings = (list<map>) (args[0]:[]);
     y2milestone("Only writing... (%1)", settings);
 
     if (! Idedma::Import (settings))

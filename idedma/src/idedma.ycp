@@ -52,17 +52,17 @@
 	    "list" : $[
 		// command description
 		"help"      : _("Display configuration summary"),
-		"handler"   : ``(listHandler())
+		"handler"   : listHandler
 	    ],
 	    "set" : $[
 		// command description
 		"help"      : _("Set dma mode"),
-		"handler"   : ``(setHandler())
+		"handler"   : setHandler
 	     ],
 	    "details" : $[
 		// command description
 		"help"      : _("Show detailed information"),
-		"handler"   : ``(detailsHandler())
+		"handler"   : detailsHandler
 	    ]
 	],
 	"options" : $[

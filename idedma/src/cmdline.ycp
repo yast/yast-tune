@@ -42,14 +42,14 @@
      * @param options command options
      * @return boolean True on success
      */
-    global define boolean setHandler(map options) ``{
+    global define boolean setHandler(map<string, any> options) ``{
 
 	if (haskey(options, "device") && haskey(options, "mode"))
 	{
-	    string device = options["device"]:nil;
-	    string mode = options["mode"]:nil;
+	    string device = (string) (options["device"]:nil);
+	    string mode = (string) (options["mode"]:nil);
 
-	    boolean result = Idedma::set_dma(options["device"]:nil, options["mode"]:nil);
+	    boolean result = Idedma::set_dma((string) (options["device"]:nil), (string) (options["mode"]:nil));
 	    // status message - %1 is device name (/dev/hdc), %2 is mode name (udma2), %3 is result (Success/Failed)
 	    CommandLine::Print(sformat(_("\nSetting device '%1' to mode '%2': %3"), device, mode,
 		// result string
@@ -67,8 +67,8 @@
      * @param options command options
      * @return boolean Returns true (succeess)
      */
-    global define boolean detailsHandler(map options) ``{
-	string device = options["device"]:nil;
+    global define boolean detailsHandler(map<string, any> options) ``{
+	string device = (string) (options["device"]:nil);
 	list idedevs = Idedma::get_ide_devices();
 
 	if (size(idedevs) > 0)

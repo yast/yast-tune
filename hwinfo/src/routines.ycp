@@ -19,7 +19,7 @@ include "hwinfo/classnames.ycp";
  * translation table- key is replaced by value on it's way to ui
  * must be done this way, because keys are machine-generated
  */
-global map trans_table = (map) eval(
+global map<string, string> trans_table = (map<string, string>) eval(
 $[
     // tree node string
     "architecture"	:   _("Architecture"),
@@ -226,7 +226,7 @@ global define string resolution(any a, map m) ``{
 
 global define list<string> modules(list<list> val) ``{
     y2warning("calling modules with param: %1", val);
-    list outlist = maplist(list<string> e, val,
+    list<string> outlist = maplist(list<string> e, val,
     ``{
 	return "modprobe " + mergestring(e, " ");
     });
@@ -477,7 +477,7 @@ global define list expandTree(any node) ``{
 	    // unfortunatelly 'modules' is used in several places and in different meaings...
 	    if(key == "modules" && is(v, list))
 	    {
-		v = modules((list) v);
+		v = modules((list<list>) v);
 	    }
 
 	    // ... explore all pairs

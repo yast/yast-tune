@@ -33,7 +33,7 @@
     /**
      * List of all IDE devices with descriptions and DMA settings
      */
-    list ide_devices = [];
+    list<map> ide_devices = [];
 
     /**
      * Full path to hdparm binary
@@ -194,7 +194,7 @@
      * @return list<string> list of supported DMA modes
      */
     define list<string> get_supported_dma_modes(string dma_info) ``{
-	list result = [];
+	list<string> result = [];
 
 	if (dma_info != nil && dma_info != "")
 	{
@@ -281,24 +281,24 @@
 	y2milestone("Read config: %1", device_setting_map);
 
 	// for each detected IDE device build internal
-	foreach(map dev, devices, ``{
+	foreach(map<string, any> dev, devices, ``{
 		// device model name is unknown
-		string device = dev["device"]:_("Unknown device");
-		string dev_name = dev["dev_name"]:nil;
+		string device = (string) (dev["device"]:_("Unknown device"));
+		string dev_name = (string) (dev["dev_name"]:nil);
 		string scsi_name = nil;
 
 		if (dev["driver"]:nil == "ide-scsi")
 		{
 		    // this is ide-scsi device
 		    // set device name to IDE name
-		    dev_name = dev["dev_name2"]:nil;
-		    scsi_name = dev["dev_name"]:nil;
+		    dev_name = (string) (dev["dev_name2"]:nil);
+		    scsi_name = (string) (dev["dev_name"]:nil);
 		}
 
 		if (dev_name != nil)
 		{
-		    integer subclass_id = dev["sub_class_id"]:nil;
-		    integer class_id = dev["class_id"]:nil;
+		    integer subclass_id = (integer) (dev["sub_class_id"]:nil);
+		    integer class_id = (integer) (dev["class_id"]:nil);
 
 		    string dma_setting = device_setting_map[dev_name]:"nochange";
 
@@ -342,7 +342,7 @@
      * Return information about all IDE devices
      * @return list List of maps with information about all IDE devices
      */
-    global define list get_ide_devices() ``{
+    global define list<map> get_ide_devices() ``{
 	return ide_devices;
     }
 
@@ -444,14 +444,14 @@
 
 	y2milestone("ide_devices: %1", ide_devices);
 
-	foreach(map d, ide_devices, ``{
-		string d_name = d["dev_name"]:nil;
+	foreach(map<string, any> d, ide_devices, ``{
+		string d_name = (string) (d["dev_name"]:nil);
 
 		if (d_name != nil)
 		{
-		    string dma_setting = d["dma_setting"]:"nochange";
+		    string dma_setting = (string) (d["dma_setting"]:"nochange");
 
-		    string dma_current_setting = d["current_dma"]:"nochange";
+		    string dma_current_setting = (string) (d["current_dma"]:"nochange");
 		    string dma_required_setting = dma_setting;
 
 		    if (dma_setting != "nochange")
@@ -552,7 +552,7 @@
      * @param settings set data from YCP
      * @return void
      */
-    global define void Set (list settings) ``{
+    global define void Set (list<map> settings) ``{
 
 	ide_devices = settings;
 	return;
@@ -564,7 +564,7 @@
      * @param settings The YCP structure to be imported.
      * @return boolean True
      */
-    global define boolean Import (list settings) ``{
+    global define boolean Import (list<map> settings) ``{
 	if (size(settings) == 0)
 	{
 	    return false;
@@ -610,9 +610,9 @@
 
 	if (size(ide_devices) > 0)
 	{
-	    foreach(map dev, ide_devices, ``{
-		    string dmasetting = dev["dma_setting"]:nil;
-		    string devname = dev["dev_name"]:nil;
+	    foreach(map<string, any> dev, ide_devices, ``{
+		    string dmasetting = (string) (dev["dma_setting"]:nil);
+		    string devname = (string) (dev["dev_name"]:nil);
 
 		    if (devname != nil && dmasetting != nil && (all == true || dmasetting != "nochange"))
 		    {

@@ -156,7 +156,7 @@ define term buildHwTree(string p, integer progMin, integer progMax) ``{
 	{
 	    if (afterLast(p) == "cpu")
 	    {
-		val = add_cpu_info((list) val);
+		val = add_cpu_info((list<map>) val);
 	    }
 	    return `item(trans_str(afterLast(p)), expandTree(val));
 	}
@@ -165,7 +165,7 @@ define term buildHwTree(string p, integer progMin, integer progMax) ``{
     {
 
 	// remove duplicates from the list
-	list uniq = [];
+	list<string> uniq = [];
 
 	foreach(string d, dir, ``{
 		if (!contains(uniq, d))

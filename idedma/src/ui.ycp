@@ -133,10 +133,10 @@ global define void refresh_combo() ``{
 
     if (curr != nil)
     {
-	list ide_devs = Idedma::get_ide_devices();
+	list<map> ide_devs = Idedma::get_ide_devices();
 
 	// get device name from the table
-	string dn = ide_devs[curr, "dev_name"]:nil;
+	string dn = (string) (ide_devs[curr, "dev_name"]:nil);
 
 	// get current setting
 	string current = Idedma::selected_mode(dn);
@@ -218,7 +218,7 @@ global define any DmaConfigDialog () ``{
     // set combo widget content
     refresh_combo();
 
-    list ide_devs = Idedma::get_ide_devices();
+    list<map> ide_devs = Idedma::get_ide_devices();
 
     any ret = nil;
     while (true)
@@ -239,9 +239,9 @@ global define any DmaConfigDialog () ``{
 	    if (curr != nil)
 	    {
 		// get device name
-		string dn = ide_devs[curr, "dev_name"]:nil;
+		string dn = (string) (ide_devs[curr, "dev_name"]:nil);
 		// get current DMA
-		string curr_dma = ide_devs[curr, "current_dma"]:nil;
+		string curr_dma = (string) (ide_devs[curr, "current_dma"]:nil);
 
 		y2milestone("dn: %1", dn);
 
