@@ -40,7 +40,7 @@ UI::OpenDialog(`VBox(
  * .probe.mouse doesn't like running X
  * other paths are not user-interesting
  */
-list exclude_list = [.probe.byclass, .probe.bybus, .probe.mouse, .probe.ihw_data, .probe.system, .probe.status];
+list exclude_list = [.probe.byclass, .probe.bybus, .probe.ihw_data, .probe.system, .probe.status];
 
 /*
  * translation table- key is replaced by value on it's way to ui
@@ -204,9 +204,9 @@ $[
 /*
  * if xserver is running, don't probe for mouse
  */
-map Xres = SCR::Execute (.target.bash_output, "/bin/ps -A | /bin/grep X", $[] );
-if(size(lookup(Xres, "stdout", "")) == 0)
+if (SCR::Execute(.target.bash, "/bin/ps -C X") == 0)
 {
+    y2warning("X server is running - mouse will not be probed");
     exclude_list = add(exclude_list, .probe.mouse);
 }
 
@@ -333,7 +333,7 @@ define string classtostring(any a, map m) ``{
 }
 
 define string modules(list val) ``{
-    y2error("calling modules with param: %1", val);
+    y2warning("calling modules with param: %1", val);
     list outlist = maplist(`e, val,
     ``{
 	return "modprobe " + mergestring(e, " ");

@@ -24,6 +24,8 @@
     import "Report";
     import "Runlevel";
 
+    include "hwinfo/classnames.ycp";
+
     textdomain "tune";
 
     // Settings: Define all variables needed for configuration of IDE DMA
@@ -45,8 +47,6 @@
     global define boolean Read() ``{
 	ide_devices = [];
 
-	// read id strings from file
-	map class_ids = SCR::Read(.target.yast2, "classnames.ycp");
 	// read information about all IDE devices
 	list devices = SCR::Read(.probe.ide);
 
@@ -96,7 +96,7 @@
 		    }
 
 		    // get textual information about device type (disk, CD-ROM, tape, ...) from identification number - device type was not found
-		    string subclass_id_string = eval(lookup(lookup(class_ids, class_id, $[]), subclass_id, _("Unknown device type")));
+		    string subclass_id_string = eval(lookup(lookup(ClassNames, class_id, $[]), subclass_id, _("Unknown device type")));
 
 		    // get current DMA setting
 		    boolean current_dma = get_device_dma_status(dev_name);

@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Wed Aug  7 15:59:40 CEST 2002 - lslezak@suse.de
+
+- hwinfo: better check if X server is running
+- idedma: fixed loading class database, fixed testsuite
+- version 2.6.5
+
+-------------------------------------------------------------------
 Tue Aug  6 10:56:12 CEST 2002 - lslezak@suse.de
 
 - added help texts for translators
