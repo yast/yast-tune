@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Mon Feb  4 15:31:38 CET 2002 - lslezak@suse.cz
+
+- changed package name from "yast2-config-idedma" to "yast2-tune-idedma"
+- version 2.5.4
+
+-------------------------------------------------------------------
 Fri Feb  1 14:42:59 CET 2002 - lslezak@suse.cz
 
 - [Back] button fixed (bug #12996)
