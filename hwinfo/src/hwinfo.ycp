@@ -124,7 +124,11 @@
 	}
 	else
 	{
-	    integer step=(progMax-progMin)/size(dir); 
+	    integer step=1000;
+	    if(size(dir)!=0)
+	    {
+		step=(progMax-progMin)/size(dir); 
+	    }
 	    integer prog=progMin;
     
 	    integer pos=size(dir)-1;

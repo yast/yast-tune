@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Tue Apr 24 09:49:40 PDT 2001 - dmeszar@suse.cz
+
+- menuentry fixed, occasional division by zero fixed
+
+-------------------------------------------------------------------
 Thu Apr  5 11:37:10 CEST 2001 - dmeszar@suse.cz
 
 - initial version 
