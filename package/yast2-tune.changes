@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Mon Aug 19 17:38:50 CEST 2002 - lslezak@suse.cz
+
+- added translation message "isapnp" -> _("ISA PnP")
+- version 2.6.10
+
+-------------------------------------------------------------------
 Wed Aug 14 12:59:35 CEST 2002 - lslezak@suse.cz
 
 - merged proofread texts

@@ -165,6 +165,8 @@ $[
     "pci"	:   _("PCI"),
     // tree node string - bus type
     "usb"	:   _("USB"),
+    // tree node string - bus type
+    "isapnp"	:   _("ISA PnP"),
     // tree node
     "usbctrl"	:   _("USB Controller"),
     // tree node
