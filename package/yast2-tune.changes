@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Tue Nov 23 11:12:45 CET 2004 - lslezak@suse.cz
+
+- merged PCI ID feature from 9.1 branch (#36084)
+- select&lookup replaced by bracket operator 
+- version 2.11.2
+
+-------------------------------------------------------------------
 Tue Nov 23 10:24:22 CET 2004 - lslezak@suse.cz
 
 - updated to new Mode:: API

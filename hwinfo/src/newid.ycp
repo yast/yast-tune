@@ -1,0 +1,329 @@
+/**
+ * File:
+ *   newid.ycp
+ *
+ * Summary:
+ *   Configuration of PCI ID - User interface
+ *
+ * Authors:
+ *   Ladislav Slezak <lslezak@suse.cz>
+ *
+ * $Id$
+ *
+ */
+
+{
+
+textdomain "tune";
+
+import "Wizard";
+import "NewID";
+import "Report";
+
+import "Popup";
+import "Label";
+
+
+/**
+ * Return list of items for table widget
+ * @return list List of items
+ */
+define list get_table_items() ``{
+    list<map<string,any> > ids = NewID::GetNewIDs();
+
+    // prepare table items
+    list table_items = [];
+    integer id = 0;
+
+    if (ids != nil)
+    {
+	foreach(map newid, ids, ``{
+		table_items = add(table_items, `item(`id(id),
+			newid["driver"]:"",
+			newid["vendor"]:"",
+			newid["device"]:"",
+			newid["subvendor"]:"",
+			newid["subdevice"]:"",
+			newid["class"]:"",
+			newid["class_mask"]:"",
+			newid["sysdir"]:""
+		    )
+		);
+		id = id + 1;
+	    }
+	);
+    }
+
+    return table_items;
+}
+
+
+define string GetIdValue(symbol widget) {
+
+    string ret = (string) UI::QueryWidget(`id(widget), `Value);
+
+    if (ret == nil)
+    {
+	ret = "";
+    }
+
+    return ret;
+}
+
+define map NewIDPopup(map<string,any> newid) {
+    // ask user to support new device
+    term new_id_dialog = `VBox(
+	`VSpacing(0.4),
+	// text in dialog header
+	`Heading(_("PCI ID setup")),
+	`VSpacing(0.5),
+	`HBox(
+	    `HSpacing(1),
+	    `VBox(
+		// textentry label
+		`TextEntry(`id(`driver), _("&Driver"), newid["driver"]:""),
+		`VSpacing(0.5),
+		// textentry label
+		`TextEntry(`id(`vendor), _("&Vendor"), newid["vendor"]:""),
+		`VSpacing(0.5),
+		// textentry label
+		`TextEntry(`id(`subvendor), _("&Subvendor"), newid["subvendor"]:""),
+		`VSpacing(0.5),
+		// textentry label
+		`TextEntry(`id(`class), _("&Class"), newid["class"]:"")
+	    ),
+	    `HSpacing(1.5),
+	    `VBox(
+		// textentry label
+		`TextEntry(`id(`sysdir), _("Sys&FS Directory"), newid["sysdir"]:""),
+		`VSpacing(0.5),
+		// textentry label
+		`TextEntry(`id(`device), _("&Device"), newid["device"]:""),
+		`VSpacing(0.5),
+		// textentry label
+		`TextEntry(`id(`subdevice), _("S&ubdevice"), newid["subdevice"]:""),
+		`VSpacing(0.5),
+		// textentry label
+		`TextEntry(`id(`class_mask), _("Class &Mask"), newid["class_mask"]:"")
+	    ),
+	    `HSpacing(1)
+	),
+
+	`VSpacing(1),
+	`HBox(
+	    `HStretch(),
+	    `HWeight(1, `PushButton(`id(`ok), `opt(`default), Label::OKButton())),
+	    `HSpacing(3),
+	    `HWeight(1, `PushButton(`id(`cancel), Label::CancelButton())),
+	    `HStretch()
+	),
+	`VSpacing(0.4)
+    );
+
+    UI::OpenDialog(new_id_dialog);
+
+    // allow only hex numbures
+    string hexchars = "0123456789abcdefABCDEFx";
+    UI::ChangeWidget(`id(`vendor), `ValidChars, hexchars);
+    UI::ChangeWidget(`id(`subvendor), `ValidChars, hexchars);
+    UI::ChangeWidget(`id(`device), `ValidChars, hexchars);
+    UI::ChangeWidget(`id(`subdevice), `ValidChars, hexchars);
+    UI::ChangeWidget(`id(`class), `ValidChars, hexchars);
+    UI::ChangeWidget(`id(`class_mask), `ValidChars, hexchars);
+
+    symbol ui = nil;
+    map ret = $[];
+
+    do {
+	ui = (symbol)UI::UserInput();
+
+	if (ui == `ok)
+	{
+	    // read and set values
+	    string vendor = GetIdValue(`vendor);
+	    string subvendor = GetIdValue(`subvendor);
+	    string device = GetIdValue(`device);
+	    string subdevice = GetIdValue(`subdevice);
+	    string class = GetIdValue(`class);
+	    string class_mask = GetIdValue(`class_mask);
+	    string driver = (string)UI::QueryWidget(`id(`driver), `Value);
+	    string sysdir = (string)UI::QueryWidget(`id(`sysdir), `Value);
+
+	    if (driver == "" && sysdir == "")
+	    {
+		// error message, driver name and sysfs directory are empty
+		Report::Error(_("Enter driver or SysFS directory name."));
+		ui = nil;
+	    }
+	    else if (vendor == "" && subvendor == "" && device == "" && subdevice == ""
+		&& class_mask == "" && class == "")
+	    {
+		// error message, user didn't fill any PCI ID value
+		Report::Error(_("At least one PCI ID value is required."));
+		ui = nil;
+	    }
+	    else
+	    {
+		ret = $["ui" : `ok, "newid" : $[
+			"vendor" : vendor,
+			"device" : device,
+			"subvendor" : subvendor,
+			"subdevice" : subdevice,
+			"class" : class,
+			"class_mask" : class_mask,
+			"driver" : driver,
+			"sysdir" : sysdir
+		    ]
+		];
+	    }
+	}
+	else if (ui == `close || ui == `cancel)
+	{
+	    ret = $["ui" : `cancel];
+	}
+    }
+    while (ui != `ok && ui != `cancel && ui != `close);
+
+    UI::CloseDialog();
+
+    return ret;
+}
+
+define void RefreshTableContent() {
+    list items = get_table_items();
+
+    UI::ChangeWidget(`newid_table, `Items, items);
+}
+
+/**
+ * Main PCI ID configuration dialog
+ * @return any Result from UserInput()
+ */
+define any NewIDConfigDialog() ``{
+    // dialog header
+    string caption = _("PCI ID setup");
+    boolean changed = false;
+    list items = get_table_items();
+
+    term contents = `VBox(
+			// table header, use as short texts as possible
+			`Table(`id(`newid_table), `header(_("Driver"), _("Vendor"), _("Device"),
+			// table header, use as short texts as possible
+			    _("Subvendor"), _("Subdevice"), _("Class"), _("Class Mask"), _("SysFS Dir.")), items),
+			`VSpacing(0.5),
+			`HBox(
+			    `PushButton(`id(`add), Label::AddButton()),
+			    `HSpacing(1),
+			    `PushButton(`id(`edit), Label::EditButton()),
+			    `HSpacing(1),
+			    `PushButton(`id(`delete), Label::DeleteButton())
+			),
+			`VSpacing(0.5)
+		    );
+
+    Wizard::SetContents(caption,
+	contents,
+	// help text header
+	_("<P><B>PCI ID setup</B><BR></P>")
+	// PCI ID help text
+	+ _("<P>It's possible to add a PCI ID to a device driver to extend it's internal database of known supported devices.</P>")
+	// PCI ID help text
+	+ _("<P>PCI ID numbers are entered and displayed as hexadecimal numbers. SysFS dir. is directory name in /sys/bus/pci/drivers directory, if it's empty the driver name is used as directory name.</P>")
+	// PCI ID help text
+	+ _("<P>If the driver is compiled into the kernel then leave driver name empty and fill SysFS directory name instead.</P>")
+	// PCI ID help text
+	+ _("<P>Use the buttons below the table to change list of PCI IDs, press OK to activate the settings.</P>")
+	// PCI ID help text
+	+ _("<P><B>Warning:</B> This is expert configuration, you should know what you are doing!</P>")
+	,
+	true, true
+    );
+
+    // remove Back button - workflow has only one dialog
+    Wizard::HideAbortButton();
+    Wizard::SetNextButton(`next, Label::OKButton());
+
+
+    symbol ret = nil;
+    while (true)
+    {
+	ret = (symbol) UI::UserInput();
+
+	y2milestone("ui: %1", ret);
+
+	if (ret == `back)
+	{
+	    break;
+	}
+	else if (ret == `next)
+	{
+	    // activate the settings
+	    NewID::Activate();
+	    break;
+	}
+	else if (ret == `cancel)
+	{
+	    if (changed == true)
+	    {
+		if (Popup::ReallyAbort(true) == false)
+		{
+		    continue;
+		}
+	    }
+	    ret = `abort;
+	    break;
+	}
+	else if (ret == `add)
+	{
+	    map result = NewIDPopup($[]);
+
+	    if (result["ui"]:`cancel == `ok)
+	    {
+		// add new id
+		NewID::AddID(result["newid"]:$[]);
+
+		// refresh table content
+		RefreshTableContent();
+	    }
+	}
+	else if (ret == `edit)
+	{
+	    integer curr = (integer) UI::QueryWidget(`id(`newid_table), `CurrentItem);
+	    map<string,any> nid = NewID::GetNewID(curr);
+
+	    map result = NewIDPopup(nid);
+
+	    if (result["ui"]:`cancel == `ok)
+	    {
+		NewID::SetNewID(result["newid"]:$[], curr);
+		RefreshTableContent();
+		UI::ChangeWidget(`id(`newid_table), `CurrentItem, curr);
+	    }
+	}
+	else if (ret == `delete)
+	{
+	    integer curr = (integer) UI::QueryWidget(`id(`newid_table), `CurrentItem);
+	    NewID::RemoveID(curr);
+
+	    RefreshTableContent();
+
+	    integer numids = size(NewID::GetNewIDs());
+
+	    // preselect the nearest line to deleted one if possible
+	    if (numids > 0)
+	    {
+		if (curr >= numids)
+		{
+		    curr = numids - 1;
+		}
+
+		UI::ChangeWidget(`id(`newid_table), `CurrentItem, curr);
+	    }
+	}
+    };
+
+    return ret;
+}
+
+
+}

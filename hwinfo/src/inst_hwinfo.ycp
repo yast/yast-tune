@@ -24,6 +24,7 @@ import "Arch";
 
 include "hwinfo/routines.ycp";
 include "hwinfo/classnames.ycp";
+include "hwinfo/newid.ycp";
 
 string selected_model = "";
 map selected_info = $[];
@@ -212,6 +213,8 @@ define symbol detected_dialog() ``{
 	`VSpacing(0.4),
 	`HBox(
 	    // push button label
+	    `PushButton(`id(`newid), _("&Set PCI ID...")),
+	    // push button label
 	    `PushButton(`id(`details), _("&Details...")),
 	    (!Arch::is_uml()) ?
 	    // menu button label
@@ -252,7 +255,7 @@ define symbol detected_dialog() ``{
 
     symbol ret = `dummy;
 
-    while (ret != `ok && ret != `details)
+    while (ret != `ok && ret != `details && ret != `newid)
     {
 	ret = (symbol)UI::UserInput();
 
@@ -335,7 +338,8 @@ define symbol detected_dialog() ``{
 map aliases =
     $[
 	"detected"	:   ``(detected_dialog()),
-	"details"	:   [``(details_dialog(selected_model, selected_info)), true]
+	"details"	:   [``(details_dialog(selected_model, selected_info)), true],
+	"newid"		:   [``(NewIDConfigDialog()), true]
     ];
 
 // workflow sequence
@@ -348,12 +352,18 @@ map sequence = $[
 	// (avoids restarting installation proposal of all other modules
 	//  which doesn't make sense - InitHWinfo is read only module)
 	`ok	: `abort,
-	`details	: "details"
+	`details	: "details",
+	`newid : "newid"
     ],
     "details" :
     $[
 	`abort	: `abort,
 	`ok	: "detected"
+    ],
+    "newid" :
+    $[
+	`abort	: `abort,
+	`next	: "detected"
     ]
 ];
 

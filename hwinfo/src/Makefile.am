@@ -7,9 +7,9 @@ client_DATA = hwinfo.ycp hwinfo_proposal.ycp inst_hwinfo.ycp
 desktop_DATA = hwinfo.desktop
 
 yncludedir = @yncludedir@/hwinfo
-ynclude_DATA = classnames.ycp routines.ycp
+ynclude_DATA = classnames.ycp routines.ycp newid.ycp
 
-module_DATA = InitHWinfo.ycp
+module_DATA = InitHWinfo.ycp NewID.ycp
 
 hwinfo:
 	ln -sf . hwinfo

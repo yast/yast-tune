@@ -1,0 +1,343 @@
+/**
+ *
+ * Module:	Set new PCI ID for kernel drivers
+ *
+ * Author:	Ladislav Slezak <lslezak@suse.cz>
+ *
+ * $Id$
+ *
+ * Manage new PCI IDs for kernel drivers
+ */
+
+{
+    import "String";
+    import "Report";
+    import "ModuleLoading";
+    import "Linuxrc";
+
+    module "NewID";
+    textdomain "tune";
+
+    // list of configured PCI IDs
+    list< map<string,any> > new_ids = nil;
+
+    boolean refresh_proposal = false;
+
+    global define void AddID(map<string,string> new_id) {
+	if (new_id != nil && new_id != $[] && !contains(new_ids, new_id))
+	{
+	    new_ids = add(new_ids, new_id);
+	    refresh_proposal = true;
+	}
+    }
+
+    global define void RemoveID(integer index) {
+	new_ids = remove(new_ids, index);
+	refresh_proposal = true;
+    }
+
+    global define list< map<string,any> > GetNewIDs() {
+	return new_ids;
+    }
+
+    global define map<string,any> GetNewID(integer index) {
+	return new_ids[index]:$[];
+    }
+
+    global define void SetNewID(map<string,any> nid, integer index) {
+	new_ids[index] = nid;
+	refresh_proposal = true;
+    }
+
+    global define boolean RefreshProposal() {
+	return refresh_proposal;
+    }
+
+    global define boolean Read(string filename) {
+	if (filename != nil && filename != "")
+	{
+	    new_ids = [];
+
+	    // read file
+	    string file = (string) SCR::Read(.target.string, filename);
+
+	    if (file == nil)
+	    {
+		return false;
+	    }
+
+	    list<string> lines = splitstring(file, "\n");
+
+	    y2internal("lines: %1", lines);
+	    list<string> comment = [];
+
+	    // parse lines
+	    foreach(string line, lines, {
+		    line = String::CutBlanks(line);
+
+		    if (regexpmatch(line, "^#.*"))
+		    {
+			// line is a comment
+			comment = add(comment, line);
+		    }
+		    else
+		    {
+			list<string> parts = splitstring(line, ",");
+
+			string driver = parts[1]:nil;
+			string sysdir = parts[2]:nil;
+
+			// parse newid line
+			// replace tabs by spaces
+			line = mergestring(splitstring(parts[0]:"", "\t"), " ");
+
+			list<string> idparts = splitstring(line, " ");
+
+			idparts = filter(string part, idparts, {return part != nil && part != "";});
+
+			string vendor = idparts[0]:nil;
+			string device = idparts[1]:nil;
+			string subvendor = idparts[2]:nil;
+			string subdevice = idparts[3]:nil;
+			string class = idparts[4]:nil;
+			string class_mask = idparts[5]:nil;
+			string driver_data = idparts[6]:nil;
+
+			map<string,any> newid = $[];
+
+			if (vendor != nil) newid["vendor"] = vendor;
+			if (device != nil) newid["device"] = device;
+			if (subvendor != nil) newid["subvendor"] = subvendor;
+			if (subdevice != nil) newid["subdevice"] = subdevice;
+			if (class != nil) newid["class"] = class;
+			if (class_mask != nil) newid["class_mask"] = class_mask;
+			if (driver_data != nil) newid["driver_data"] = driver_data;
+
+			if (driver != nil) newid["driver"] = driver;
+			if (sysdir != nil) newid["sysdir"] = sysdir;
+			if (size(comment) > 0) newid["comment"] = comment;
+
+			y2milestone("read newid: %1", newid);
+
+			if (newid != $[])
+			{
+			    new_ids = add(new_ids, newid);
+			}
+
+			comment = [];
+		    }
+		}
+	    );
+
+	    y2milestone("Read settings: %1", new_ids);
+
+	    return true;
+	}
+	return false;
+    }
+
+    /**
+     * Prepend option to PCI ID string, use default value if required
+     * @param newopt Prepend this option
+     * @param opts Already existing option string
+     * @param defval Default value, used when newopt is empty
+     */
+    define string prepend_option(string newopt, string opts, string defval) {
+
+	if (opts == "" && newopt == "")
+	{
+	    return "";
+	}
+
+	if (size(opts) > 0)
+	{
+	    return ((size(newopt) > 0) ? newopt : defval) + " " + opts;
+	}
+	else
+	{
+	    return newopt;
+	}
+    }
+
+    define string FormatActivationString(map newid)
+    {
+	// create ID string which is passed to the driver
+	string ret = "";
+
+	string pci_any_id = "ffffffff";
+	string default_class = "0";
+	string default_mask = "0";
+
+	ret = prepend_option(newid["class_mask"]:"", ret, default_mask);
+	ret = prepend_option(newid["class"]:"", ret, default_class);
+	ret = prepend_option(newid["subdevice"]:"", ret, pci_any_id);
+	ret = prepend_option(newid["subvendor"]:"", ret, pci_any_id);
+	ret = prepend_option(newid["device"]:"", ret, pci_any_id);
+	ret = prepend_option(newid["vendor"]:"", ret, pci_any_id);
+
+	return ret;
+    }
+
+    /**
+     * Activate value stored in the internal list
+     * @return boolean True if all settings were successfuly set
+     */
+    global define boolean Activate() {
+	boolean ret = true;
+
+	if (new_ids != nil)
+	{
+	    foreach(map newid, new_ids, {
+		    string modulename = newid["driver"]:"";
+		    string sysdir = newid["sysdir"]:"";
+
+		    // load kernel module if it isn't already loaded
+		    if (modulename != nil && modulename != "")
+		    {
+			ModuleLoading::Load(modulename, "", // TODO allow setting of module args?
+				// vendor is empty, device name is unknown
+				"", _("Unknown device"), Linuxrc::manual(), true);
+		    }
+
+
+		    if (sysdir == nil || sysdir == "")
+		    {
+			sysdir = modulename;
+		    }
+
+		    string targetfile = sformat("/sys/bus/pci/drivers/%1/new_id", sysdir);
+
+		    // create ID string passed to the driver
+		    string idstring = FormatActivationString(newid);
+
+		    // check whether target file exists
+		    integer filesize = (integer) SCR::Read(.target.size, targetfile);
+
+		    if (filesize >= 0)
+		    {
+			// set the new value
+			boolean set = (integer) SCR::Execute(.target.bash, sformat("echo '%1' > %2", idstring, targetfile)) == 0;
+
+			if (!set)
+			{
+			    y2error("Setting the new id failed: driver: %1, value: %2", targetfile, idstring);
+			    ret = false;
+			}
+			else
+			{
+			    y2milestone("File %1 - new PCI ID '%2' was succesfully set", targetfile, idstring);
+			}
+		    }
+		    else
+		    {
+			// Error message
+			Report::Error(sformat(_("File '%1' doesn't exist, cannot set new PCI ID"), targetfile));
+			ret = false;
+		    }
+
+		}
+	    );
+	}
+
+	return ret;
+    }
+
+    global define boolean Write() {
+	boolean ret = true;
+
+	// content of /etc/sysconfig/hardware/newids
+	string sysconfig = "";
+
+	// map ID commands to driver
+	map<string,list<string> > settings = $[];
+
+	if (new_ids != nil)
+	{
+	    foreach(map newid, new_ids, {
+		    string modulename = newid["driver"]:"";
+		    string sysdir = newid["sysdir"]:"";
+		    string idstring = FormatActivationString(newid);
+
+		    // write settings to /etc/modprobe.d/newid if the module is known
+		    // (the module is not compiled into the kernel)
+		    if (modulename != "")
+		    {
+			string targetfile = (sysdir != "") ? sysdir : modulename;
+			string install_string = sformat("echo '%1' > /sys/bus/pci/drivers/%2/new_id", idstring, targetfile);
+
+			list<string> current = settings[modulename]:[];
+			current = add(current, install_string);
+			settings[modulename] = current;
+		    }
+
+		    // add to /etc/sysconfig/hardware/newids
+		    if (haskey(newid, "comment"))
+		    {
+			// add the comment
+			sysconfig = sysconfig + mergestring(newid["comment"]:[], "\n") + "\n";
+		    }
+
+		    sysconfig = sysconfig + idstring + "," + modulename;
+
+		    if (sysdir != "")
+		    {
+			sysconfig = sysconfig + "," + sysdir;
+		    }
+
+		    // add trailing newline
+		    sysconfig = sysconfig + "\n";
+		}
+	    );
+	}
+
+	if (size(sysconfig) > 0)
+	{
+	    // write sysconfig file
+	    ret = ret && (boolean) SCR::Write(.target.string, "/etc/sysconfig/hardware/newids", sysconfig);
+	}
+
+	if (size(settings) > 0)
+	{
+	    foreach(string modulename, list<string> values, settings, {
+		    string install_string = sformat("/sbin/modprobe --ignore-install %1; %2", modulename, mergestring(values, "; "));
+
+		    ret = ret && (boolean) SCR::Write(add(.modprobe_newid.install, modulename), install_string);
+		}
+	    );
+
+	    // flush changes
+	    SCR::Write(.modprobe_newid, nil);
+	}
+
+	return ret;
+    }
+
+    /**
+     * Return new ID description
+     * @return list(string) list of hardware desciptions
+     */
+    global define list<string> MakeProposal() ``{
+	list<string> ret = [];
+
+	if (size(new_ids) > 0)
+	{
+	    foreach(map newid, new_ids, {
+		    string modulename = newid["driver"]:"";
+		    string sysdir = newid["sysdir"]:"";
+
+		    string idstring = FormatActivationString(newid);
+		    string targetfile = (sysdir != "") ? sysdir : modulename;
+
+		    ret = add(ret, sformat(_("Driver: %1, New PCI ID: %2"), targetfile, idstring));
+		}
+	    );
+	}
+
+	y2milestone("NewID proposal: %1", ret);
+
+	// proposal is valid
+	refresh_proposal = false;
+
+	return ret;
+    }
+}

@@ -291,7 +291,8 @@ define map<string,any> translate_hw_entry(map<string,any> hw) ``{
  * @return string translated subclass name
  */
 define string classtostring(any a, map<string,any> m) ``{
-    return (string)(lookup(translate_hw_entry(m), "sub_class_id", ""));
+    map<string,any> trans = translate_hw_entry(m);
+    return trans["sub_class_id"]:"";
 }
 
 

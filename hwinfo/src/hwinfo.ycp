@@ -250,9 +250,7 @@ if(pat != .probe)
 
 UI::CloseDialog();
 
-term con = `Tree(  `id(`idTree), `opt(`vstretch, `hstretch),
-				title,
-				select(items, 1, nil));
+term con = `Tree(`id(`idTree), `opt(`vstretch, `hstretch), title, items[1]:nil);
 
 Wizard::CreateDialog();
 Wizard::SetDesktopIcon("hwinfo");
