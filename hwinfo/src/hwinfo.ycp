@@ -265,45 +265,33 @@ define map translate_hw_entry(map hw) ``{
  * reads .proc.cpuinfo and creates hardware map
  */
 
-define map add_cpu_info(map hw) ``{
-    map inf = SCR::Read(.proc.cpuinfo);
+define list add_cpu_info(list(map) cpuinfo) ``{
+    // add information from /proc/cpuinfo for each CPU
+    integer cpu_index = 0;
 
-    foreach(`key, `val, inf,
-    ``{
-	if (key == "model_name")
-	{
-	    return;
-	}
-	if (key == "flags")
-	{
-	    string s = "";
-	    foreach(`e, val,
-	    ``{
-		if (size(s) > 0)
-		{
-		    s = s + ", ";
-		}
-		s = s + e;
+    list ret = maplist(map probe_cpuinfo, cpuinfo, ``{
+	    // get all keys for selected processor
+	    list(string) keys = SCR::Dir(add(.proc.cpuinfo.value, sformat("%1", cpu_index)));
+
+	    if (keys != nil)
+	    {
+		// read values
+		foreach(string key, keys, ``{
+			probe_cpuinfo = add(probe_cpuinfo, key, SCR::Read(add(add(.proc.cpuinfo.value, sformat("%1", cpu_index)), key)));
+		    }
+		);
+
+		// add processor index
+		probe_cpuinfo = add(probe_cpuinfo, "Processor", cpu_index);
 	    }
-	    );
-	    hw = add(hw, key, s);
-	    return;
+
+	    cpu_index = cpu_index + 1;
+
+	    return probe_cpuinfo;
 	}
-	if (is(val, float))
-	{
-	    hw = add(hw, key, tointeger(val));
-	}
-	else
-	{
-	    hw = add(hw, key, val);
-	}
-    }
     );
 
-    hw = add(hw, "mhz", sformat("%1 MHz", tointeger(lookup(inf, "mhz", 0))));
-    hw = add(hw, "cache", sformat("%1 KB", lookup(inf, "cache", 0)));
-    hw = add(hw, "device", lookup(inf, "model_name", ""));
-    return hw;
+    return ret;
 }
 
 /**
@@ -359,6 +347,7 @@ define string modules(list val) ``{
 list order=[
 	["sub_device",  nil],
 	["device",	    nil],
+	["model name",	    nil],
 	["model",	    nil],
 	["vendor",	    nil],
 	["irq",	    nil],
@@ -548,7 +537,7 @@ define term buildHwTree(string p, integer progMin, integer progMax) ``{
 	{
 	    if (afterLast(p) == "cpu")
 	    {
-		val = maplist(`e, val, ``(add_cpu_info(e)));
+		val = add_cpu_info(val);
 	    }
 	    return `item(trans_str(afterLast(p)), expandTree(val));
 	}

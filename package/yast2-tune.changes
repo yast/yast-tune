@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Wed Dec 11 17:05:19 CET 2002 - lslezak@suse.cz
+
+- fixed CPU information (#22379)
+- version 2.7.0
+
+-------------------------------------------------------------------
 Mon Sep  9 18:27:33 CEST 2002 - lslezak@suse.cz
 
 - removed noarch architecture from spec file (required by %ifnarch)
