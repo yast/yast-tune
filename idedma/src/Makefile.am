@@ -5,7 +5,7 @@
 #
 
 clientsdir = $(YAST2DIR)/clients
-includedir = $(YAST2DIR)/include/idedma
+yncludedir = $(YAST2DIR)/include/idedma
 menudir = $(YAST2DIR)/menuentries
 modulesdir = $(YAST2DIR)/modules
 
@@ -15,7 +15,7 @@ clients_DATA =			\
 	idedma_summary.ycp	\
 	idedma_write.ycp
 
-include_DATA =			\
+ynclude_DATA =			\
 	helps.ycp		\
 	ui.ycp
 
@@ -25,4 +25,4 @@ menu_DATA =			\
 modules_DATA =			\
 	Idedma.ycp
 
-EXTRA_DIST = $(clients_DATA) $(include_DATA) $(menu_DATA) $(modules_DATA)
+EXTRA_DIST = $(clients_DATA) $(ynclude_DATA) $(menu_DATA) $(modules_DATA)
