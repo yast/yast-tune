@@ -293,7 +293,12 @@
      * @return boolean True
      */
     global define boolean Import (map settings) ``{
-	ide_devices = settings;
+	if (!haskey(settings, "settings"))
+	{
+	    return false;
+	}
+
+	ide_devices = lookup(settings, "settings", []);
 	return true;
     }
 
@@ -303,7 +308,7 @@
      * @return map Dumped settings (later acceptable by Import ())
      */
     global define map Export () ``{
-	return ide_devices;
+	return $[ "settings" : ide_devices ];
     }
 
     /**
