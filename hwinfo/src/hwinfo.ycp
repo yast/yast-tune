@@ -21,7 +21,8 @@
 
 {
     textdomain "hwinfo";
-    include "ui/wizard_dialog.ycp";
+    import "Wizard";
+//    include "ui/wizard_dialog.ycp";
 
 
     /* 
@@ -33,15 +34,14 @@
     /* 
      * open progress bar window 
      */
-    UI(`OpenDialog(`VBox(
+    UI::OpenDialog(`VBox(
 	`Label(_("Probing:")),
 	`HBox(
 	    `HWeight(1, `Label(`id(`initLab), ""))
 	),
 	`ProgressBar(`id(`initProg), _("Progress:"), 1000, 0),
-	`PushButton(`id(`abort), UI(`AbortButtonLabel()))
-	)
-    ));
+	`PushButton(`id(`abort), UI::AbortButtonLabel()))
+	);
 
 
     /*
@@ -131,7 +131,7 @@
     /*
      * if xserver is running, don't probe for mouse
      */
-    map Xres = SCR (`Execute (.target.bash_output, "/bin/ps -A | /bin/grep X", $[] ));
+    map Xres = SCR::Execute (.target.bash_output, "/bin/ps -A | /bin/grep X", $[] );
     if(size(lookup(Xres, "stdout", "")) == 0)
     {
 	exclude_list = add(exclude_list, .probe.mouse);
@@ -150,7 +150,7 @@
     define trans_bool(any b) ``{
 	if (is(b, boolean))
 	{
-	    return b ? UI(_("Yes")) : UI(_("No"));
+	    return b ? _("Yes") : _("No");
 	}
 	return b;
     }
@@ -158,7 +158,7 @@
     /*
      * read the classnames database for translation id's to hardware names
      */
-    map classdb = SCR(`Read (.target.yast2, "classnames.ycp"));
+    map classdb = SCR::Read (.target.yast2, "classnames.ycp");
     /*
      * translate strings...
      */ 
@@ -194,7 +194,7 @@
      */
 
     define add_cpu_info(map hw) ``{
-	map inf = SCR(`Read(.proc.cpuinfo));
+	map inf = SCR::Read(.proc.cpuinfo);
 
 	
 
@@ -324,7 +324,7 @@
 		if (select(select(order, i), 1) != nil)
 		{
 		    term t = select(select(order, i), 1);
-		    t = add(t, lookup(m, select(select(order, i), 0)));
+		    t = add(t, lookup(m, select(select(order, i), 0), nil));
 		    if(size(select(order, i)) > 2 && select(select(order, i), 2))
 		    {
 			t = add(t, m);
@@ -333,7 +333,7 @@
 		}
 		else
 		{
-		    out = sformat("%1", lookup(m, select(select(order, i), 0)));
+		    out = sformat("%1", lookup(m, select(select(order, i), 0), nil));
 		}
 		break;
 	    }
@@ -366,7 +366,7 @@
 	    integer pos = 0;
 	    foreach(`e, node,
 	    ``{
-		string lab = UI(`Glyph(`ArrowRight));
+		string lab = UI::Glyph(`ArrowRight);
 		if (is(e, map))
 		{
 		    // ... create label for each item ...
@@ -424,14 +424,14 @@
 
     define buildHwTree(string p, integer progMin, integer progMax) ``{
 
-	any a = UI(`PollInput());
+	any a = UI::PollInput();
 	if (a == `cancel || a == `abort)
 	{
 	    abortPressed = true;
 	    return nil;
 	}
 
-	UI(`ChangeWidget(`id(`initLab), `Value, trans_str(afterLast(p))));
+	UI::ChangeWidget(`id(`initLab), `Value, trans_str(afterLast(p)));
 	path pat = topath(p);
 
 	if (contains(exclude_list, pat))
@@ -439,11 +439,11 @@
 	    return nil;
 	}
 	
-	list dir = SCR(`Dir(pat));
+	list dir = SCR::Dir(pat);
 
 	if (dir == nil)
 	{
-	    any val = SCR(`Read(pat));
+	    any val = SCR::Read(pat);
 	    if (scalar(val))
 	    {
 		return `item(sformat("%1 : %2", trans_str(afterLast(p)), trans_bool(val)));
@@ -486,7 +486,7 @@
 		}
 		pos = pos - 1;
 		prog = prog + step;
-		UI(`ChangeWidget(`id(`initProg), `Value, prog));
+		UI::ChangeWidget(`id(`initProg), `Value, prog);
 	    }
 	    return `item(afterLast(p), sort(lout));
 	}
@@ -509,7 +509,7 @@
     // interrupted
     if (abortPressed)
     {
-	UI(`CloseDialog());
+	UI::CloseDialog();
 	return;
     }
     
@@ -520,26 +520,26 @@
 	title = trans_str(afterLast(sformat("%1", pat)));
     }
 
-    UI(`CloseDialog());
+    UI::CloseDialog();
 
     term con = `Tree(  `id(`idTree), `opt(`vstretch, `hstretch),
                                     title,
                                     select(items,1));
 
-    UI(`CreateWizardDialog());
-    UI(`SetWizardContents (_("Hardware info"), con, _("<P><B>Hardware info</B> module displays the hardware 
-details of your computer. Click any node for more info</p>"), false, true));
+    UI::Wizard::CreateDialog();
+    UI::Wizard::SetContents (_("Hardware info"), con, _("<P><B>Hardware info</B> module displays the hardware 
+details of your computer. Click any node for more info</p>"), false, true);
 
-    UI(`ReplaceWidget(`id(`rep_back), `HStretch()));
-    UI(`ReplaceWidget(`id(`rep_next), `HStretch()));
-    UI(`ReplaceWidget(`id(`rep_abort), `PushButton(`id(`next), UI(`CloseButtonLabel()))));
+    UI::ReplaceWidget(`id(`rep_back), `HStretch());
+    UI::ReplaceWidget(`id(`rep_next), `HStretch());
+    UI::ReplaceWidget(`id(`rep_abort), `PushButton(`id(`next), UI::CloseButtonLabel()));
     
     any event = nil;   
  
     // wait for finish
     while(event != `abort && event !=`next && event != `cancel)
     {
-	    event = UI(`UserInput());
+	    event = UI::UserInput();
     }    
-    UI(`CloseDialog());
+    UI::CloseDialog();
 }
