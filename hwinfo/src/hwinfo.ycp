@@ -73,6 +73,8 @@ $[
     // tree node string
     "resource"	:   _("Resources"),
     // tree node string
+    "requires"	:   _("Requires"),
+    // tree node string
     "rev"		:   _("Rev"),
     // tree node string
     "sub_class_id"	:   _("Class (spec)"),
@@ -634,7 +636,7 @@ UI::ReplaceWidget(`id(`rep_abort), `PushButton(`id(`next), UI::CloseButtonLabel(
 Wizard::SetContents (_("Hardware info"), con,
 
 // help text
- _("<P><B>Hardware info</B> module displays the hardware 
+ _("<P><B>Hardware info</B> module displays the hardware
 details of your computer. Click any node for more info</p>"), false, true);
 
 any event = nil;
