@@ -26,7 +26,6 @@ Summary:	System configuration viewer and tuner
 %defattr(-,root,root)
 
 %ifnarch s390 s390x
-@configdir@/idedma.y2cc
 @desktopdir@/idedma.desktop
 %endif
 
@@ -35,7 +34,6 @@ Summary:	System configuration viewer and tuner
 @yncludedir@/hwinfo/*
 @yncludedir@/idedma/*
 @clientdir@/*.ycp
-@configdir@/hwinfo.y2cc
 @desktopdir@/hwinfo.desktop
 @moduledir@/*.ycp
 @moduledir@/*.ybc

@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Mon Feb 09 11:30:33 CET 2004 - arvin@suse.de
+
+- removed config files (*.y2cc)
+
+-------------------------------------------------------------------
 Fri Jan 30 11:21:09 CET 2004 - lslezak@suse.cz
 
 - fixes for new interpreter (data types)

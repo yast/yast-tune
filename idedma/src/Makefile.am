@@ -1,4 +1,6 @@
+#
 # Makefile.am for tune/idedma/src
+#
 
 yncludedir = @yncludedir@/idedma
 
@@ -15,9 +17,6 @@ ynclude_DATA =			\
 
 # exclude IDE DMA from Y2CC on s390
 if !ARCH_S390
-config_DATA =			\
-	idedma.y2cc
-
 desktop_DATA =			\
 	idedma.desktop
 endif
@@ -33,6 +32,6 @@ ycpchook = hwinfo
 YCPCFLAGS=-I.
 
 
-EXTRA_DIST = $(client_DATA) $(ynclude_DATA) $(config_DATA) $(module_DATA) $(desktop_DATA)
+EXTRA_DIST = $(client_DATA) $(ynclude_DATA) $(module_DATA) $(desktop_DATA)
 
 include $(top_srcdir)/Makefile.am.common
