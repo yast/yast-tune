@@ -1,4 +1,12 @@
 -------------------------------------------------------------------
+Fri Mar 26 13:18:40 CET 2004 - lslezak@suse.cz
+
+- added missing translation mark (#37063)
+- use -i option in hdaprm call (#36565), testsuite update
+- added missing import
+- version 2.9.18
+
+-------------------------------------------------------------------
 Wed Mar 17 17:41:16 CET 2004 - lslezak@suse.cz
 
 - fixed monitor resolution
