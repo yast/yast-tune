@@ -212,7 +212,7 @@ define any DmaConfigDialog () ``{
     );
 
     // remove Back button - workflow has only one dialog
-    Wizard::ReplaceBackButton(`Empty());
+    Wizard::HideBackButton();
     Wizard::ReplaceNextButton(`PushButton(`id(`next), `opt(`default, `key_F10), Label::FinishButton()));
 
     // set combo widget content

@@ -258,7 +258,7 @@ Wizard::HideAbortButton();	// FIXME - Bad UI style - no safe exit?!
 // This was the original - hopefully my changes lead to the desired result
 // 2004-03-09 sh
 //
-//	Wizard::ReplaceBackButton(`Empty());
+//	Wizard::HideBackButton();
 //	Wizard::ReplaceNextButton(`Empty());
 //	Wizard::ReplaceAbortButton(`HBox(
 //		// Push button label
