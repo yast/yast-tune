@@ -140,14 +140,14 @@
     /*
      * translate string - looks to the translation table and returns value
      */
-    define trans_str(any str) ``{
+    define string trans_str(any str) ``{
 	    return lookup(trans_table, str, str);
     }
 
     /*
      * translate boolean to Yes/No
      */
-    define trans_bool(any b) ``{
+    define string trans_bool(any b) ``{
 	if (is(b, boolean))
 	{
 	    return b ? _("Yes") : _("No");
@@ -170,7 +170,7 @@
      * and substitues them in given map. returns modified map
      */
 
-    define translate_hw_entry(map hw) ``{
+    define map translate_hw_entry(map hw) ``{
 	if (haskey(hw, "class_id"))
 	{
 	    integer iclassid = lookup(hw, "class_id", 0xff);
@@ -193,7 +193,7 @@
      * reads .proc.cpuinfo and creates hardware map
      */
 
-    define add_cpu_info(map hw) ``{
+    define map add_cpu_info(map hw) ``{
 	map inf = SCR::Read(.proc.cpuinfo);
 
 	foreach(`key, `val, inf,
@@ -238,7 +238,7 @@
      * evals to true if given value is scalar (not map or term or list)
      */
 
-    define scalar(any node) ``{
+    define boolean scalar(any node) ``{
 	if (is(node, string) ||
 	    is(node, boolean) ||
 	    is(node, integer) ||
@@ -251,23 +251,11 @@
 	return false;
     }
 
-    // hack, TODO: remove this
-    define tohexstring(integer i) ``{
-	string out = "";
-	list nums = ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "a", "b", "c", "d", "e", "f"];
-	while (i > 0)
-	{
-	    out = sformat("%1" + out, select(nums, i % 16, ""));
-	    i = i / 16;
-	}
-	return "0x" + out;
-    }
-
     /*
      * reads values from map and creates label for this entry
      */
 
-    define resolution(any a, map m) ``{
+    define string resolution(any a, map m) ``{
 	if (haskey(m, "height"))
 	{
 	    return sformat("%1x%2", lookup(m, "width", ""), lookup(m, "height", ""));
@@ -275,7 +263,7 @@
 	return lookup(m, width, "");
     }
 
-    define classtostring(any a, map m) ``{
+    define string classtostring(any a, map m) ``{
 	return lookup(translate_hw_entry(m), "sub_class_id", "");
     }
 
@@ -311,7 +299,7 @@
      * which value from map will be used as label
      */
 
-    define getRepresentant(map m) ``{
+    define string getRepresentant(map m) ``{
 	string out = "";
 	integer i = 0;
 	// search the 'order' table
@@ -344,7 +332,7 @@
      *converts (scalar/nested) lists and maps to tree datastructure
      */
 
-    define expandTree(any node) ``{
+    define list expandTree(any node) ``{
 	if (node == nil)
 	{
 	    return [];
@@ -410,7 +398,7 @@
      * returns string that is behind the last dot of given string (extract last part of path)
      */
 
-    define afterLast(string str) ``{
+    define string afterLast(string str) ``{
 	list strs = splitstring(str, ".");
 	return select(strs, size(strs) - 1, "");
     }
@@ -420,7 +408,7 @@
     *	progMin, progMax are bounds for progressBar (because of recursion)
     */
 
-    define buildHwTree(string p, integer progMin, integer progMax) ``{
+    define term buildHwTree(string p, integer progMin, integer progMax) ``{
 
 	any a = UI::PollInput();
 	if (a == `cancel || a == `abort)
