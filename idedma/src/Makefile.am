@@ -14,6 +14,7 @@ client_DATA =			\
 
 ynclude_DATA =			\
 	helps.ycp		\
+	cmdline.ycp		\
 	ui.ycp
 
 # exclude IDE DMA from Y2CC on s390

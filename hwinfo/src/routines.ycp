@@ -206,7 +206,10 @@ $[
 ]);
 
 /**
- * reads values from map and creates label for this entry
+ * reads values from map and creates formatted label for monitor resolution data
+ * @param a dummy parameter?
+ * @param m device info
+ * @return string formatted label
  */
 
 global define string resolution(any a, map m) ``{
@@ -229,6 +232,8 @@ global define list<string> modules(list<list> val) ``{
 /**
  * tries to determine hardware name by class_id and sub_class_id
  * and substitues them in given map. returns modified map
+ * @param hw device info
+ * @return map device info with translated class information
  */
 
 global define map translate_hw_entry(map hw) ``{
@@ -250,7 +255,12 @@ global define map translate_hw_entry(map hw) ``{
     return hw;
 }
 
-
+/**
+ * Translate subclass identification of the device
+ * @param a dummy parameter?
+ * @param m device information
+ * @return string translated subclass name
+ */
 define string classtostring(any a, map m) ``{
     return lookup(translate_hw_entry(m), "sub_class_id", "");
 }
@@ -287,6 +297,8 @@ global list order=[
 
 /**
  * translate string - looks to the translation table and returns value
+ * @param str string to translate
+ * @return string translated string or original string if translation is unknown
  */
 global define string trans_str(string str) ``{
 	return (string) (trans_table[str]:str);
@@ -294,6 +306,8 @@ global define string trans_str(string str) ``{
 
 /**
  * translate boolean to Yes/No
+ * @param b any value
+ * @return string parameter b converted to string, if b is boolean then Yes/No is returned
  */
 global define string trans_bool(any b) ``{
     if (is(b, boolean))
@@ -306,6 +320,8 @@ global define string trans_bool(any b) ``{
 
 /**
  * evals to true if given value is scalar (not map or term or list)
+ * @param node any value
+ * @return boolean true if parameter node is a scalar value (it isn't a list or a map)
  */
 
 global define boolean scalar(any node) ``{
@@ -327,6 +343,8 @@ global define boolean scalar(any node) ``{
  * if expandTree function tries to explore list, it should use some
  * label for each item. it tree items are maps, this function decides
  * which value from map will be used as label
+ * @param m device info
+ * @return string name of the selected representant for whole map
  */
 
 global define string getRepresentant(map m) ``{
@@ -359,7 +377,9 @@ global define string getRepresentant(map m) ``{
 }
 
 /**
- *converts (scalar/nested) lists and maps to tree datastructure
+ * Recursively converts (scalar/nested) lists and maps to tree datastructure
+ * @param node any value
+ * @return list list of items (content of tree widget)
  */
 
 global define list expandTree(any node) ``{
@@ -485,7 +505,7 @@ global define boolean save_hwinfo(string file) ``{
 /**
  * Save hwinfo output to the specified file, progress popup is displayed.
  * Display error message when saving failed.
- * @param file Target file
+ * @param target_file_name Target file
  * @return boolean True if saving was successful
  */
 global define boolean save_hwinfo_to_file(string target_file_name) ``{

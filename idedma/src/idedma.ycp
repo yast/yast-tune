@@ -27,6 +27,8 @@
     import "Mode";
     import "Idedma";
     include "idedma/ui.ycp";
+    include "idedma/cmdline.ycp";
+    include "commandline/commandline.ycp";
 
     /* The main () */
     y2milestone ("Idedma module started");
@@ -34,6 +36,60 @@
 
     /* main ui function */
     any ret = nil;
+
+
+    /**
+     * Command line definition
+     */
+    map cmdline = $[
+	// help text
+	"help"      : _("Configuration of DMA mode for IDE devices"),
+	"id"        : "idedma",
+	"guihandler": ``(IdedmaSequence()),
+	"initialize": ``(Idedma::Read()),
+	"finish"    : ``(Idedma::Write()),
+	"actions"   : $[
+	    "list" : $[
+		// command description
+		"help"      : _("Display configuration summary"),
+		"handler"   : ``(listHandler())
+	    ],
+	    "set" : $[
+		// command description
+		"help"      : _("Set dma mode"),
+		"handler"   : ``(setHandler())
+	     ],
+	    "details" : $[
+		// command description
+		"help"      : _("Show detailed information"),
+		"handler"   : ``(detailsHandler())
+	    ]
+	],
+	"options" : $[
+	    "configured" : $[
+		// option description
+		"help"      : _("List only configured devices")
+	    ],
+	    "all" : $[
+		// option description
+		"help"	    : _("List all detected IDE devices")
+	    ],
+	    "device" : $[
+		// option description
+		"help"      : _("Selected IDE device")
+	    ],
+	    "mode" : $[
+		// option description
+		"help"      : _("Requested DMA mode")
+	    ]
+	],
+	"mappings" : $[
+	    "list" : ["configured", "all"],
+	    "set"  : ["device", "mode"],
+	    "details" : ["device"]
+	]
+    ];
+
 
     if (Mode::test == true)
     {
@@ -43,7 +99,7 @@
     }
     else
     {
-	ret = IdedmaSequence ();
+	ret = CommandLineRun(cmdline);
     }
 
     y2debug ("ret == %1", ret);

@@ -1,4 +1,12 @@
 -------------------------------------------------------------------
+Thu Nov 13 12:39:13 CET 2003 - lslezak@suse.cz
+
+- syntax fixes for new interpreter (by jhumpol)
+- command line UI
+- autoinstallation support
+- version 2.9.2
+
+-------------------------------------------------------------------
 Thu Oct 30 10:55:58 CET 2003 - lslezak@suse.cz
 
 - fixes for the new interpreter

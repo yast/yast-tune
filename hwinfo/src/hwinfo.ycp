@@ -66,7 +66,9 @@ if (SCR::Execute(.target.bash, "/bin/ps -C X") == 0)
 
 
 /**
- * reads .proc.cpuinfo and creates hardware map
+ * Add extra CPU info from .proc.cpuinfo to data read from .probe agent
+ * @param cpuinfo CPU information returned by .probe agent
+ * @return list input with additional CPU information
  */
 
 define list add_cpu_info(list<map> cpuinfo) ``{
@@ -100,6 +102,8 @@ define list add_cpu_info(list<map> cpuinfo) ``{
 
 /**
  * returns string that is behind the last dot of given string (extract last part of path)
+ * @param str path in string form
+ * @return string last path element
  */
 
 define string afterLast(string str) ``{
@@ -108,9 +112,12 @@ define string afterLast(string str) ``{
 }
 
 /**
-*	returns list of values read from string->path p
-*	progMin, progMax are bounds for progressBar (because of recursion)
-*/
+ * Returns list of values read from path p
+ * @param progMin minimum value used in progressbar
+ * @param progMax maximum value used in progressbar
+ * @param p read path p
+ * @return term tree widget content
+ */
 
 define term buildHwTree(string p, integer progMin, integer progMax) ``{
 

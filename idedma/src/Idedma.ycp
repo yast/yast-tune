@@ -386,11 +386,18 @@
      * Set DMA of device
      * @param device Identification of IDE device, e.g. "/dev/hda"
      * @param dma_setting DMA mode (e.g. "mdma2", "udma5", "off",...)
+     * @return boolean true on success
      */
-    global define void set_dma(string device, string dma_setting) ``{
-	if (device == nil || dma_setting == nil)
+    global define boolean set_dma(string device, string dma_setting) ``{
+	if (size(device) == 0 || size(dma_setting) == 0)
 	{
-	    return;
+	    return false;
+	}
+
+	// check if mode name in known
+	if (!haskey(mode_names, dma_setting))
+	{
+	    return false;
 	}
 
 	// store required DMA status
@@ -403,6 +410,8 @@
 		return d;
 	    }
 	);
+
+	return true;
     }
 
     /**
@@ -580,11 +589,14 @@
 
     /**
      * Create rich text description of the current configuration
+     * @param all when true all IDE devices are contained in the summary text
+     * (even unconfigured devices with default DMA mode)
+     * @param richtext select rich/plain text output
      * @return string summary text
      */
-    global define string Summary() ``{
+    global define string Summary(boolean all, boolean richtext) ``{
 	// summary text - header
-	string summary = _("<P><B>Configured Devices:</B></P>");
+	string summary = (all == true) ? ((richtext) ? "<P><B>":"") + _("All IDE Devices:") + ((richtext) ? "</B></P>":"\n") : ((richtext) ? "<P><B>":"") + _("Configured Devices:") + ((richtext) ? "</B></P>":"\n");
 	string devices = "";
 	boolean found = false;
 
@@ -594,10 +606,10 @@
 		    string dmasetting = dev["dma_setting"]:nil;
 		    string devname = dev["dev_name"]:nil;
 
-		    if (devname != nil && dmasetting != nil && dmasetting != "nochange")
+		    if (devname != nil && dmasetting != nil && (all == true || dmasetting != "nochange"))
 		    {
 			// summary text - unknown DMA mode is selected
-			devices = devices + "<LI><B>" + devname + ":</B> " + mode_names[dmasetting]:_("Unknown mode") + "</LI>";
+			devices = devices + ((richtext) ? "<LI><B>":"") + devname + ":" + ((richtext) ? "</B>":"") + " " + sformat("%1 (%2)", dmasetting, mode_names[dmasetting]:_("Unknown mode")) + ((richtext) ? "</LI>":"\n");
 			found = true;
 		    }
 		}
@@ -608,10 +620,10 @@
 	if (found == false)
 	{
 	    // summary text - none device is configured
-	    devices = "<LI>" + _("None device") + "</LI>";
+	    devices = ((richtext) ? "<LI>":"") + _("None device") + ((richtext) ? "</LI>":"\n");
 	}
 
-	return summary + "<UL>" + devices + "</UL>";
+	return summary + ((richtext) ? "<UL>":"") + devices + ((richtext) ? "</UL>":"");
     }
 
 

@@ -81,7 +81,8 @@ if(func == "Import")
 /* create a summary */
 else if(func == "Summary")
 {
-    ret =  Idedma::Summary();
+    // show only configured devices, richtext output
+    ret = Idedma::Summary(false, true);
 }
 else if (func == "Packages")
 {
