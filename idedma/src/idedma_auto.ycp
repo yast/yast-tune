@@ -46,7 +46,7 @@
     }
 
     // The settings are in the first argument
-    list settings = select (args, 0, []);
+    list settings = args[0]:[];
     y2milestone("Imported: (%1)", settings);
 /*
     if (size(settings) == 0)

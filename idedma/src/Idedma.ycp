@@ -41,6 +41,138 @@
     string hdparm_bin = "/sbin/hdparm";
 
     /**
+     * Return actual DMA status of IDE device
+     * @param device Identification of ide device, e.g. "/dev/hdc"
+     * @return string true if DMA is on, false if DMA is off or nil on error
+     */
+    global define string get_device_dma_status(string device) ``{
+	string result = "";
+
+	if (device != nil && device != "")
+	{
+	    // run hdparm to get DMA status
+	    map out = (map) SCR::Execute(.target.bash_output, hdparm_bin + " -d " + device);
+
+	    if (out["exit"]:-1 == 0)
+	    {
+		list output = splitstring(out["stdout"]:"", "\n");
+
+		y2debug("hdparm output: %1", output);
+
+		// search for status string in output
+		foreach(`l, output, ``{
+
+			if (l == " using_dma    =  1 (on)")
+			{
+			    result = "on";
+
+			}
+
+			if (l == " using_dma    =  0 (off)")
+			{
+			    result = "off";
+			}
+		    }
+		);
+	    }
+	}
+
+	return result;
+    }
+
+    /**
+     * Get DMA information status for device
+     * @param device device name (e.g. "/dev/hdc")
+     * @return string DMA information from hdparm ("mdma2 udma0 udma1 *udma2")
+     */
+    define string get_dma_info(string device) ``{
+	string result = "";
+
+	if (device != nil && device != "")
+	{
+	    // DMA mode is enabled, get DMA mode number
+	    map out = (map) SCR::Execute(.target.bash_output, hdparm_bin + " -I " + device);
+
+	    if (out["exit"]:-1 == 0)
+	    {
+		list<string> output = splitstring(out["stdout"]:"", "\n");
+
+		foreach(string line, output, ``{
+			string dmaline = (regexpsub(line, "^[ \t]*DMA: (.*)$", "\\1"));
+
+			if (dmaline != nil)
+			{
+			    result = dmaline;
+			}
+		    }
+		);
+	    }
+	}
+	return result;
+    }
+
+
+    /**
+     * Parse DMA info string from hdparm output - return current DMA mode (has mark '*')
+     * @param dma_info DMA support string (e.g. "mdma2 udma0 udma1 *udma2")
+     * @return string current DMA mode or "" if unknown
+     */
+    define string get_current_dma_mode(string dma_info) ``{
+	string result = "";
+
+	if (dma_info != nil && dma_info != "")
+	{
+	    list modes = splitstring(dma_info, " ");
+
+	    foreach(string mode, modes, ``{
+		    string current = regexpsub(mode, "^\\*(.*)", "\\1");
+
+		    if (current != nil)
+		    {
+			result = current;
+		    }
+		}
+	    );
+	}
+
+	return result;
+    }
+
+    /**
+     * Parse DMA info string from hdparm output - return list of supported DMA modes
+     * @param dma_info DMA support string (e.g. "mdma2 udma0 udma1 *udma2")
+     * @return list(string) list of supported DMA modes
+     */
+    define list(string) get_supported_dma_modes(string dma_info) ``{
+	list result = [];
+
+	if (dma_info != nil && dma_info != "")
+	{
+	    list modes = splitstring(dma_info, " ");
+
+	    foreach(string mode, modes, ``{
+
+		    if (size(mode) > 0)
+		    {
+			string current = regexpsub(mode, "^\\*(.*)", "\\1");
+
+			// add mode or current mode (filter out * mark)
+			result = add(result, (current != nil) ? current : mode);
+		    }
+		}
+	    );
+	}
+	else
+	{
+	    // DMA info line is empty - no information is available
+	    // offer all possible values
+	    result = [ "mdma2", "udma0", "udma2", "udma4", "udma5", "udma6"];
+	}
+
+	return result;
+    }
+
+    /**
      * Read all DMA settings from the SCR
      * @return boolean true on success
      */
@@ -48,10 +180,10 @@
 	ide_devices = [];
 
 	// read information about all IDE devices
-	list devices = SCR::Read(.probe.ide);
+	list devices = (list) SCR::Read(.probe.ide);
 
 	// read SCSI devices
-	list scsi_devices = SCR::Read(.probe.scsi);
+	list scsi_devices = (list) SCR::Read(.probe.scsi);
 
 	if (size(scsi_devices) > 0)
 	{
@@ -68,7 +200,7 @@
 	y2milestone("Detected ide-scsi devices: %1", scsi_devices);
 
 	// read setting from sysconfig
-	string devices_setting_str = SCR::Read(.sysconfig.hardware.DEVICES_FORCE_IDE_DMA);
+	string devices_setting_str = (string) SCR::Read(.sysconfig.hardware.DEVICES_FORCE_IDE_DMA);
 
 	y2debug("Read configuration: %1", devices_setting_str);
 
@@ -83,12 +215,9 @@
 
 	// create map of settings <device>:<DMA_setting>
 	map device_setting_map = listmap(string setting, device_settings,
-	    ``{
-		string dev = regexpsub(setting, "^(.*):(.*)", "\\1");
-		string dma = regexpsub(setting, "^(.*):(.*)", "\\2");
-
-		return [dev, dma];
-	    }
+	    ``(
+		[regexpsub(setting, "^(.*):(.*)", "\\1"), regexpsub(setting, "^(.*):(.*)", "\\2")]
+              )
 	);
 
 	y2milestone("Read config: %1", device_setting_map);
@@ -201,138 +330,6 @@
 	}
 
 	return mode;
-    }
-
-    /**
-     * Return actual DMA status of IDE device
-     * @param device Identification of ide device, e.g. "/dev/hdc"
-     * @return string true if DMA is on, false if DMA is off or nil on error
-     */
-    global define string get_device_dma_status(string device) ``{
-	string result = "";
-
-	if (device != nil && device != "")
-	{
-	    // run hdparm to get DMA status
-	    map out = SCR::Execute(.target.bash_output, hdparm_bin + " -d " + device);
-
-	    if (out["exit"]:-1 == 0)
-	    {
-		list output = splitstring(out["stdout"]:"", "\n");
-
-		y2debug("hdparm output: %1", output);
-
-		// search for status string in output
-		foreach(`l, output, ``{
-
-			if (l == " using_dma    =  1 (on)")
-			{
-			    result = "on";
-
-			}
-
-			if (l == " using_dma    =  0 (off)")
-			{
-			    result = "off";
-			}
-		    }
-		);
-	    }
-	}
-
-	return result;
-    }
-
-    /**
-     * Get DMA information status for device
-     * @param device device name (e.g. "/dev/hdc")
-     * @return string DMA information from hdparm ("mdma2 udma0 udma1 *udma2")
-     */
-    define string get_dma_info(string device) ``{
-	string result = "";
-
-	if (device != nil && device != "")
-	{
-	    // DMA mode is enabled, get DMA mode number
-	    map out = SCR::Execute(.target.bash_output, hdparm_bin + " -I " + device);
-
-	    if (out["exit"]:-1 == 0)
-	    {
-		list(string) output = splitstring(out["stdout"]:"", "\n");
-
-		foreach(string line, output, ``{
-			string dmaline = (regexpsub(line, "^[ \t]*DMA: (.*)$", "\\1"));
-
-			if (dmaline != nil)
-			{
-			    result = dmaline;
-			}
-		    }
-		);
-	    }
-	}
-	return result;
-    }
-
-
-    /**
-     * Parse DMA info string from hdparm output - return current DMA mode (has mark '*')
-     * @param dma_info DMA support string (e.g. "mdma2 udma0 udma1 *udma2")
-     * @return string current DMA mode or "" if unknown
-     */
-    define string get_current_dma_mode(string dma_info) ``{
-	string result = "";
-
-	if (dma_info != nil && dma_info != "")
-	{
-	    list modes = splitstring(dma_info, " ");
-
-	    foreach(string mode, modes, ``{
-		    string current = regexpsub(mode, "^\\*(.*)", "\\1");
-
-		    if (current != nil)
-		    {
-			result = current;
-		    }
-		}
-	    );
-	}
-
-	return result;
-    }
-
-    /**
-     * Parse DMA info string from hdparm output - return list of supported DMA modes
-     * @param dma_info DMA support string (e.g. "mdma2 udma0 udma1 *udma2")
-     * @return list(string) list of supported DMA modes
-     */
-    define list(string) get_supported_dma_modes(string dma_info) ``{
-	list result = [];
-
-	if (dma_info != nil && dma_info != "")
-	{
-	    list modes = splitstring(dma_info, " ");
-
-	    foreach(string mode, modes, ``{
-
-		    if (size(mode) > 0)
-		    {
-			string current = regexpsub(mode, "^\\*(.*)", "\\1");
-
-			// add mode or current mode (filter out * mark)
-			result = add(result, (current != nil) ? current : mode);
-		    }
-		}
-	    );
-	}
-	else
-	{
-	    // DMA info line is empty - no information is available
-	    // offer all possible values
-	    result = [ "mdma2", "udma0", "udma2", "udma4", "udma5", "udma6"];
-	}
-
-	return result;
     }
 
     /**
