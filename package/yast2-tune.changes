@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Fri Jan 17 17:25:56 CET 2003 - lslezak@suse.cz
+
+- function keys in ncurses UI
+- version 2.7.1
+
+-------------------------------------------------------------------
 Wed Dec 11 17:05:19 CET 2002 - lslezak@suse.cz
 
 - fixed CPU information (#22379)

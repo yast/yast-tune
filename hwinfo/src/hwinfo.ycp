@@ -32,7 +32,7 @@ UI::OpenDialog(`VBox(
     ),
     // progress bar label
     `ProgressBar(`id(`initProg), _("Progress:"), 1000, 0),
-    `PushButton(`id(`abort), UI::AbortButtonLabel()))
+    `PushButton(`id(`abort), `opt(`key_F9), UI::AbortButtonLabel()))
     );
 
 /*
@@ -625,7 +625,7 @@ Wizard::CreateDialog();
 
 UI::ReplaceWidget(`id(`rep_back), `HStretch());
 UI::ReplaceWidget(`id(`rep_next), `HStretch());
-UI::ReplaceWidget(`id(`rep_abort), `PushButton(`id(`next), UI::CloseButtonLabel()));
+UI::ReplaceWidget(`id(`rep_abort), `PushButton(`id(`next), `opt(`key_F10), UI::CloseButtonLabel()));
 
 // dialog header
 Wizard::SetContents (_("Hardware info"), con,
