@@ -5,10 +5,10 @@
  * Access:	Read / Write
  *
  * Example:
- *   Read(.sysconfig.hardware.DEVICES_FORCE_IDE_DMA_OFF)
- *   ("hdc")
+ *   Read(.sysconfig.hardware.DEVICES_FORCE_IDE_DMA)
+ *   ("/dev/hdc:udma2")
  **
- *   Write(.sysconfig.hardware.DEVICES_FORCE_IDE_DMA_ON, "hdd")
+ *   Write(.sysconfig.hardware.DEVICES_FORCE_IDE_DMA, "/dev/hdd:off")
  *   (true)
  *
  * $Id$

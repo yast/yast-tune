@@ -242,6 +242,9 @@ global define list get_table_items() ``{
     return table_items;
 }
 
+/**
+ * Refresh combo widget content for actual selected device in the table
+ */
 global define void refresh_combo() ``{
     // set DMA status for selected IDE device
     integer curr = UI::QueryWidget(`id(`device_table), `CurrentItem);

@@ -1,4 +1,12 @@
 -------------------------------------------------------------------
+Fri Feb 14 13:21:07 CET 2003 - lslezak@suse.de
+
+- edit DMA transfer mode
+- use DEVICES_FORCE_IDE_DMA sysconfig variable
+- documentation and testsuite update
+- version 2.7.4
+
+-------------------------------------------------------------------
 Fri Feb  7 15:14:54 CET 2003 - lslezak@suse.de
 
 - don't probe for chipcards when X server is running

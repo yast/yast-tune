@@ -127,6 +127,11 @@
 	return ide_devices;
     }
 
+    /**
+     * Get list of supported DMA modes for selected device
+     * @param device device name ("/dev/hda")
+     * @return list supported DMA modes (["mdma2", "udma0", "udma1", "udma2"])
+     */
     global define list supported_dma_modes(string device) ``{
 	list result = [];
 
@@ -144,6 +149,11 @@
 	return result;
     }
 
+    /**
+     * Get selected DMA mode, which will be saved and set in Write
+     * @param device device name ("/dev/hda")
+     * @return string selected DMA mode ("on", "off", "nochange", or mode supported by hdparm - "udma5",...)
+     */
     global define string selected_mode(string device) ``{
 	string mode = "";
 
@@ -164,7 +174,7 @@
     /**
      * Return actual DMA status of IDE device
      * @param device Identification of ide device, e.g. "/dev/hdc"
-     * @return boolean true if DMA is on, false if DMA is off or nil on error
+     * @return string true if DMA is on, false if DMA is off or nil on error
      */
     global define string get_device_dma_status(string device) ``{
 	string result = "";
@@ -201,6 +211,11 @@
 	return result;
     }
 
+    /**
+     * Get DMA information status for device
+     * @param device device name (e.g. "/dev/hdc")
+     * @return string DMA information from hdparm ("mdma2 udma0 udma1 *udma2")
+     */
     define string get_dma_info(string device) ``{
 	string result = "";
 
@@ -228,6 +243,11 @@
     }
 
 
+    /**
+     * Parse DMA info string from hdparm output - return current DMA mode (has mark '*')
+     * @param dma_info DMA support string (e.g. "mdma2 udma0 udma1 *udma2")
+     * @return string current DMA mode or "" if unknown
+     */
     define string get_current_dma_mode(string dma_info) ``{
 	string result = "";
 
@@ -249,6 +269,11 @@
 	return result;
     }
 
+    /**
+     * Parse DMA info string from hdparm output - return list of supported DMA modes
+     * @param dma_info DMA support string (e.g. "mdma2 udma0 udma1 *udma2")
+     * @return list(string) list of supported DMA modes
+     */
     define list(string) get_supported_dma_modes(string dma_info) ``{
 	list result = [];
 
@@ -304,7 +329,7 @@
      * @param dma_setting DMA mode (e.g. "mdma2", "udma5", "off",...)
      */
     global define void set_dma(string device, string dma_setting) ``{
-	if (device == nil)
+	if (device == nil || dma_setting == nil)
 	{
 	    return;
 	}
@@ -344,6 +369,7 @@
 
 		    if (dma_setting != "nochange")
 		    {
+			y2debug("d_name: %1  dma_setting: %2", d_name, dma_setting);
 			dma_setting = d_name + ":" + dma_setting;
 
 			if (first == true)
@@ -370,6 +396,9 @@
 	    return false;
 	}
 
+	// flush changes
+	SCR::Write(.sysconfig.hardware, nil);
+
 	// activate settings
 	integer result = SCR::Execute(.target.bash, "/etc/init.d/boot.idedma start");
 
@@ -377,15 +406,19 @@
 	{
 	    // error message
 	    Report::Error(_("Error occurred while activating changes."));
+	    y2error("boot.idedma result: %1", result);
 	    ret = false;
 	}
 
-	// enable service
-	if (Runlevel::ServiceAdjust("boot.idedma", "default") != true)
+	if (new_dma_setting != "")
 	{
-	    // error message
-	    Report::Error(_("Can not enable service 'boot.idedma'."));
-	    ret = false;
+	    // enable service
+	    if (Runlevel::ServiceAdjust("boot.idedma", "default") != true)
+	    {
+		// error message
+		Report::Error(_("Can not enable service 'boot.idedma'."));
+		ret = false;
+	    }
 	}
 
 	return ret;
@@ -409,7 +442,7 @@
 
     /**
      * Set module data
-     * @param void
+     * @param settings set data from YCP
      * @return void
      */
     global define void Set (list settings) ``{

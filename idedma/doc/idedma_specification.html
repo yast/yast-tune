@@ -18,6 +18,7 @@ Changes:
 
 <P>
 <UL>
+  <LI><B>2003-02-14:</B> Update - set transfer DMA mode</LI>
   <LI><B>2002-01-21:</B> Initial version</LI>
 </UL>
 </P>
@@ -25,13 +26,15 @@ Changes:
 <HR>
 
 
-<H3>IDE DMA mode</H3>
+<H3>Why set IDE DMA mode</H3>
 
 <P>Some IDE devices are broken and they do not work properly if they have DMA
-mode enabled (especially CD-ROM drives). DMA mode is enabled by kernel after
-boot, but it can be changed by init script. This YaST2 module is frontend for
-hdparm utility. There is init script which sets DMA mode after boot.
-</P>
+mode enabled (especially CD-ROM drives) or Linux kernel sometimes detect wrong
+maximux DMA transfer mode. DMA mode is enabled by kernel after boot for disk
+devices and disabled for CD-ROMs. Default DMA mode can be changed by
+boot.idedma init script after boot.</P>
+
+<P>This YaST2 module is frontend for hdparm utility.</P>
 
 
 <H3>Module description</H3>
@@ -42,9 +45,15 @@ can be enabled or disabled.</P>
 
 <P>Features of YaST2 module are available <A HREF="idedma_features.txt">here</A>.</P>
 
-<P>Settings are stored in file /etc/sysconfig/hardware. There are variables DEVICES_FORCE_IDE_DMA_ON and
-DEVICES_FORCE_IDE_DMA_OFF with list of devices (e.g. "hdc hdd") on which DMA will be
-enabled/disabled. Other devices have their DMA mode unchanged.</P>
+<P>Settings are stored in file /etc/sysconfig/hardware in variable
+DEVICES_FORCE_IDE_DMA. This variable contains pairs
+&lt;device&gt;:&lt;DMA_mode&gt; separated by space. <EM>Device</EM> is device
+file (e.g. /dev/hdc), <EM>DMA_mode</EM> is on (enable default DMA mode), off
+(disable DMA mode, use PIO mode instead) or DMA mode specification supported by
+hdparm (e.g. mdma2, udma2, udma5,...). </P>
+
+<P>Other devices (not specified in DEVICES_FORCE_IDE_DMA variable) have their
+DMA mode unchanged.</P>
 
 
 <H3>Workflow</H3>
@@ -55,21 +64,17 @@ enabled/disabled. Other devices have their DMA mode unchanged.</P>
 <IMG SRC="idedma.png">
 </P>
 
-<P>There are displayed all attached IDE devices in the table. Column DMA mode 
-contains DMA value which will be set after 'Finish' button is pressed and
-after boot by init script (on, off, no change). Next columns contain device
-information, in the last column is current DMA mode.</P>
+<P>There are displayed all attached IDE devices in the table. Column 'Required
+DMA mode' contains DMA mode which will be set after 'Finish' button is pressed
+and after boot by init script. Other columns contain device information and
+current DMA mode.</P>
 
-<P>To change DMA mode status select device in the table and push a button
-below the table with required DMA status.</P>
+<P>To change DMA mode select device in the table and select required DMA mode
+in combo box below the table. Press Finish to save values to sysconfig/hardware
+file and activate changes. </P>
 
 
 </BODY>
 </HTML>
-
-
-
-
-
 
 

@@ -1,69 +1,80 @@
+Dump	Read test
 Read	.probe.ide [$["dev_name":"/dev/hda", "device":"ABC-13245"], $["dev_name":"/dev/hdc", "device":"XYZ-6789"]]
-Read	.sysconfig.hardware.DEVICES_FORCE_IDE_DMA_ON nil
-Read	.sysconfig.hardware.DEVICES_FORCE_IDE_DMA_OFF nil
+Read	.sysconfig.hardware.DEVICES_FORCE_IDE_DMA nil
 Execute	.target.bash_output "/sbin/hdparm -d /dev/hda" $["exit":0, "stdout":" using_dma    =  1 (on)"]
+Execute	.target.bash_output "/sbin/hdparm -I /dev/hda" $["exit":0, "stdout":" using_dma    =  1 (on)"]
 Execute	.target.bash_output "/sbin/hdparm -d /dev/hdc" $["exit":0, "stdout":" using_dma    =  1 (on)"]
+Execute	.target.bash_output "/sbin/hdparm -I /dev/hdc" $["exit":0, "stdout":" using_dma    =  1 (on)"]
 Return	true
-Dump	[$["current_dma":true, "dev_name":"/dev/hda", "device":"ABC-13245", "device_type":"Unknown device type", "dma_on":nil], $["current_dma":true, "dev_name":"/dev/hdc", "device":"XYZ-6789", "device_type":"Unknown device type", "dma_on":nil]]
+Dump	[$["current_dma":"on", "dev_name":"/dev/hda", "device":"ABC-13245", "device_type":"Unknown device type", "dma_modes":["mdma2", "udma0", "udma2", "udma4", "udma5", "udma6"], "dma_setting":"nochange"], $["current_dma":"on", "dev_name":"/dev/hdc", "device":"XYZ-6789", "device_type":"Unknown device type", "dma_modes":["mdma2", "udma0", "udma2", "udma4", "udma5", "udma6"], "dma_setting":"nochange"]]
+Dump	Read test2
 Read	.probe.ide [$["dev_name":"/dev/hda", "device":"ABC-13245"], $["dev_name":"/dev/hdc", "device":"XYZ-6789"]]
-Read	.sysconfig.hardware.DEVICES_FORCE_IDE_DMA_ON ""
-Read	.sysconfig.hardware.DEVICES_FORCE_IDE_DMA_OFF "hdc"
+Read	.sysconfig.hardware.DEVICES_FORCE_IDE_DMA ""
 Execute	.target.bash_output "/sbin/hdparm -d /dev/hda" $["exit":-1, "stdout":"Error"]
+Execute	.target.bash_output "/sbin/hdparm -I /dev/hda" $["exit":-1, "stdout":"Error"]
 Execute	.target.bash_output "/sbin/hdparm -d /dev/hdc" $["exit":-1, "stdout":"Error"]
+Execute	.target.bash_output "/sbin/hdparm -I /dev/hdc" $["exit":-1, "stdout":"Error"]
 Return	true
-Dump	[$["current_dma":nil, "dev_name":"/dev/hda", "device":"ABC-13245", "device_type":"Unknown device type", "dma_on":nil], $["current_dma":nil, "dev_name":"/dev/hdc", "device":"XYZ-6789", "device_type":"Unknown device type", "dma_on":false]]
+Dump	[$["current_dma":"", "dev_name":"/dev/hda", "device":"ABC-13245", "device_type":"Unknown device type", "dma_modes":["mdma2", "udma0", "udma2", "udma4", "udma5", "udma6"], "dma_setting":"nochange"], $["current_dma":"", "dev_name":"/dev/hdc", "device":"XYZ-6789", "device_type":"Unknown device type", "dma_modes":["mdma2", "udma0", "udma2", "udma4", "udma5", "udma6"], "dma_setting":"nochange"]]
+Dump	Read test3
 Read	.probe.ide [$["dev_name":"/dev/hda", "device":"ABC-13245"], $["dev_name":"/dev/hdc", "device":"XYZ-6789"]]
-Read	.sysconfig.hardware.DEVICES_FORCE_IDE_DMA_ON "hda"
-Read	.sysconfig.hardware.DEVICES_FORCE_IDE_DMA_OFF ""
+Read	.sysconfig.hardware.DEVICES_FORCE_IDE_DMA "/dev/hda:on"
 Execute	.target.bash_output "/sbin/hdparm -d /dev/hda" $["exit":0, "stdout":" using_dma    =  1 (on)"]
+Execute	.target.bash_output "/sbin/hdparm -I /dev/hda" $["exit":0, "stdout":" using_dma    =  1 (on)"]
 Execute	.target.bash_output "/sbin/hdparm -d /dev/hdc" $["exit":0, "stdout":" using_dma    =  1 (on)"]
+Execute	.target.bash_output "/sbin/hdparm -I /dev/hdc" $["exit":0, "stdout":" using_dma    =  1 (on)"]
 Return	true
-Dump	[$["current_dma":true, "dev_name":"/dev/hda", "device":"ABC-13245", "device_type":"Unknown device type", "dma_on":true], $["current_dma":true, "dev_name":"/dev/hdc", "device":"XYZ-6789", "device_type":"Unknown device type", "dma_on":nil]]
+Dump	[$["current_dma":"on", "dev_name":"/dev/hda", "device":"ABC-13245", "device_type":"Unknown device type", "dma_modes":["mdma2", "udma0", "udma2", "udma4", "udma5", "udma6"], "dma_setting":"on"], $["current_dma":"on", "dev_name":"/dev/hdc", "device":"XYZ-6789", "device_type":"Unknown device type", "dma_modes":["mdma2", "udma0", "udma2", "udma4", "udma5", "udma6"], "dma_setting":"nochange"]]
+Dump	Read test4
 Read	.probe.ide [$["dev_name":"/dev/hda", "device":"ABC-13245"], $["dev_name":"/dev/hdc", "device":"XYZ-6789"]]
-Read	.sysconfig.hardware.DEVICES_FORCE_IDE_DMA_ON ""
-Read	.sysconfig.hardware.DEVICES_FORCE_IDE_DMA_OFF "hda"
+Read	.sysconfig.hardware.DEVICES_FORCE_IDE_DMA "/dev/hda:off"
 Execute	.target.bash_output "/sbin/hdparm -d /dev/hda" $["exit":0, "stdout":" using_dma    =  1 (on)"]
+Execute	.target.bash_output "/sbin/hdparm -I /dev/hda" $["exit":0, "stdout":" using_dma    =  1 (on)"]
 Execute	.target.bash_output "/sbin/hdparm -d /dev/hdc" $["exit":0, "stdout":" using_dma    =  1 (on)"]
+Execute	.target.bash_output "/sbin/hdparm -I /dev/hdc" $["exit":0, "stdout":" using_dma    =  1 (on)"]
 Return	true
-Dump	[$["current_dma":true, "dev_name":"/dev/hda", "device":"ABC-13245", "device_type":"Unknown device type", "dma_on":false], $["current_dma":true, "dev_name":"/dev/hdc", "device":"XYZ-6789", "device_type":"Unknown device type", "dma_on":nil]]
-Dump	[$["current_dma":true, "dev_name":"/dev/hda", "device":"ABC-13245", "device_type":"Unknown device type", "dma_on":true], $["current_dma":true, "dev_name":"/dev/hdc", "device":"XYZ-6789", "device_type":"Unknown device type", "dma_on":false]]
-Execute	.target.bash "/sbin/hdparm -d 1 /dev/hda" 0
-Execute	.target.bash_output "/sbin/hdparm -d /dev/hda" $["exit":0, "stdout":" using_dma    =  1 (on)"]
-Execute	.target.bash "/sbin/hdparm -d 0 /dev/hdc" 0
-Execute	.target.bash_output "/sbin/hdparm -d /dev/hdc" $["exit":0, "stdout":" using_dma    =  1 (on)"]
-Log	Device /dev/hdc: Can not set DMA to value 0
-Write	.sysconfig.hardware.DEVICES_FORCE_IDE_DMA_ON "hda" true
-Write	.sysconfig.hardware.DEVICES_FORCE_IDE_DMA_OFF "hdc" true
+Dump	[$["current_dma":"on", "dev_name":"/dev/hda", "device":"ABC-13245", "device_type":"Unknown device type", "dma_modes":["mdma2", "udma0", "udma2", "udma4", "udma5", "udma6"], "dma_setting":"off"], $["current_dma":"on", "dev_name":"/dev/hdc", "device":"XYZ-6789", "device_type":"Unknown device type", "dma_modes":["mdma2", "udma0", "udma2", "udma4", "udma5", "udma6"], "dma_setting":"nochange"]]
+Dump	Write test1
+Dump	[$["current_dma":"on", "dev_name":"/dev/hda", "device":"ABC-13245", "device_type":"Unknown device type", "dma_modes":["mdma2", "udma0", "udma2", "udma4", "udma5", "udma6"], "dma_setting":"on"], $["current_dma":"on", "dev_name":"/dev/hdc", "device":"XYZ-6789", "device_type":"Unknown device type", "dma_modes":["mdma2", "udma0", "udma2", "udma4", "udma5", "udma6"], "dma_setting":"off"]]
+Write	.sysconfig.hardware.DEVICES_FORCE_IDE_DMA "/dev/hda:on /dev/hdc:off" true
+Write	.sysconfig.hardware nil true
+Execute	.target.bash "/etc/init.d/boot.idedma start" 0
 Read	.init.scripts.exists "boot.idedma" true
 Read	.init.scripts.exists "boot.idedma" true
-Read	.init.scripts.runlevel "boot.idedma" nil
-Read	.init.scripts.comment "boot.idedma" nil
+Read	.init.scripts.runlevel "boot.idedma" $["boot.idedma":$["start":["B"], "stop":[]]]
+Read	.init.scripts.comment "boot.idedma" $["boot.idedma":$["defstart":["B"], "defstop":[], "description":"Enable/disable DMA mode on IDE devices.", "provides":["boot.idedma"], "reqstart":[], "reqstop":[]]]
 Execute	.target.bash_output "/sbin/insserv -d /etc/init.d/boot.idedma" $["exit":0, "stdout":" using_dma    =  1 (on)"]
-Return	false
-Dump	[$["current_dma":true, "dev_name":"/dev/hda", "device":"ABC-13245", "device_type":"Unknown device type", "dma_on":false], $["current_dma":true, "dev_name":"/dev/hdc", "device":"XYZ-6789", "device_type":"Unknown device type", "dma_on":false]]
-Execute	.target.bash "/sbin/hdparm -d 0 /dev/hda" 0
-Execute	.target.bash_output "/sbin/hdparm -d /dev/hda" $["exit":0, "stdout":" using_dma    =  1 (on)"]
-Log	Device /dev/hda: Can not set DMA to value 0
-Execute	.target.bash "/sbin/hdparm -d 0 /dev/hdc" 0
-Execute	.target.bash_output "/sbin/hdparm -d /dev/hdc" $["exit":0, "stdout":" using_dma    =  1 (on)"]
-Log	Device /dev/hdc: Can not set DMA to value 0
-Write	.sysconfig.hardware.DEVICES_FORCE_IDE_DMA_ON "" true
-Write	.sysconfig.hardware.DEVICES_FORCE_IDE_DMA_OFF "hda hdc" true
+Return	true
+Dump	Write test2
+Dump	[$["current_dma":"on", "dev_name":"/dev/hda", "device":"ABC-13245", "device_type":"Unknown device type", "dma_modes":["mdma2", "udma0", "udma2", "udma4", "udma5", "udma6"], "dma_setting":"udma5"], $["current_dma":"on", "dev_name":"/dev/hdc", "device":"XYZ-6789", "device_type":"Unknown device type", "dma_modes":["mdma2", "udma0", "udma2", "udma4", "udma5", "udma6"], "dma_setting":"udma2"]]
+Write	.sysconfig.hardware.DEVICES_FORCE_IDE_DMA "/dev/hda:udma5 /dev/hdc:udma2" true
+Write	.sysconfig.hardware nil true
+Execute	.target.bash "/etc/init.d/boot.idedma start" 0
 Read	.init.scripts.exists "boot.idedma" true
 Read	.init.scripts.exists "boot.idedma" true
-Read	.init.scripts.runlevel "boot.idedma" nil
-Read	.init.scripts.comment "boot.idedma" nil
+Read	.init.scripts.runlevel "boot.idedma" $["boot.idedma":$["start":["B"], "stop":[]]]
+Read	.init.scripts.comment "boot.idedma" $["boot.idedma":$["defstart":["B"], "defstop":[], "description":"Enable/disable DMA mode on IDE devices.", "provides":["boot.idedma"], "reqstart":[], "reqstop":[]]]
 Execute	.target.bash_output "/sbin/insserv -d /etc/init.d/boot.idedma" $["exit":0, "stdout":" using_dma    =  1 (on)"]
-Return	false
-Dump	[$["current_dma":true, "dev_name":"/dev/hda", "device":"ABC-13245", "device_type":"Unknown device type", "dma_on":nil], $["current_dma":true, "dev_name":"/dev/hdc", "device":"XYZ-6789", "device_type":"Unknown device type", "dma_on":false]]
-Execute	.target.bash "/sbin/hdparm -d 0 /dev/hdc" 0
-Execute	.target.bash_output "/sbin/hdparm -d /dev/hdc" $["exit":0, "stdout":" using_dma    =  1 (on)"]
-Log	Device /dev/hdc: Can not set DMA to value 0
-Write	.sysconfig.hardware.DEVICES_FORCE_IDE_DMA_ON "" true
-Write	.sysconfig.hardware.DEVICES_FORCE_IDE_DMA_OFF "hdc" true
+Return	true
+Dump	Write test3
+Dump	[$["current_dma":"on", "dev_name":"/dev/hda", "device":"ABC-13245", "device_type":"Unknown device type", "dma_modes":["mdma2", "udma0", "udma2", "udma4", "udma5", "udma6"], "dma_setting":"udma5"], $["current_dma":"on", "dev_name":"/dev/hdc", "device":"XYZ-6789", "device_type":"Unknown device type", "dma_modes":["mdma2", "udma0", "udma2", "udma4", "udma5", "udma6"], "dma_setting":"udma2"]]
+Write	.sysconfig.hardware.DEVICES_FORCE_IDE_DMA "/dev/hda:udma5 /dev/hdc:udma2" true
+Write	.sysconfig.hardware nil true
+Execute	.target.bash "/etc/init.d/boot.idedma start" 0
 Read	.init.scripts.exists "boot.idedma" true
 Read	.init.scripts.exists "boot.idedma" true
-Read	.init.scripts.runlevel "boot.idedma" nil
-Read	.init.scripts.comment "boot.idedma" nil
-Execute	.target.bash_output "/sbin/insserv -d /etc/init.d/boot.idedma" $["exit":0, "stderr":"", "stdout":""]
-Return	false
+Read	.init.scripts.runlevel "boot.idedma" $["boot.idedma":$["start":["B"], "stop":[]]]
+Read	.init.scripts.comment "boot.idedma" $["boot.idedma":$["defstart":["B"], "defstop":[], "description":"Enable/disable DMA mode on IDE devices.", "provides":["boot.idedma"], "reqstart":[], "reqstop":[]]]
+Execute	.target.bash_output "/sbin/insserv -d /etc/init.d/boot.idedma" $["exit":0, "stdout":" using_dma    =  1 (on)"]
+Return	true
+Dump	Write test4
+Dump	[$["current_dma":"on", "dev_name":"/dev/hda", "device":"ABC-13245", "device_type":"Unknown device type", "dma_modes":["mdma2", "udma0", "udma2", "udma4", "udma5", "udma6"], "dma_setting":"nochange"], $["current_dma":"on", "dev_name":"/dev/hdc", "device":"XYZ-6789", "device_type":"Unknown device type", "dma_modes":["mdma2", "udma0", "udma2", "udma4", "udma5", "udma6"], "dma_setting":"udma2"]]
+Write	.sysconfig.hardware.DEVICES_FORCE_IDE_DMA "/dev/hdc:udma2" true
+Write	.sysconfig.hardware nil true
+Execute	.target.bash "/etc/init.d/boot.idedma start" 0
+Read	.init.scripts.exists "boot.idedma" true
+Read	.init.scripts.exists "boot.idedma" true
+Read	.init.scripts.runlevel "boot.idedma" $["boot.idedma":$["start":["B"], "stop":[]]]
+Read	.init.scripts.comment "boot.idedma" $["boot.idedma":$["defstart":["B"], "defstop":[], "description":"Enable/disable DMA mode on IDE devices.", "provides":["boot.idedma"], "reqstart":[], "reqstop":[]]]
+Execute	.target.bash_output "/sbin/insserv -d /etc/init.d/boot.idedma" $["exit":0, "stdout":" using_dma    =  1 (on)"]
+Return	true
