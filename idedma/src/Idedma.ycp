@@ -236,6 +236,13 @@
 	// read information about all IDE devices
 	list<map<string,any> > devices = (list<map<string, any> >) SCR::Read(.probe.ide);
 
+	// remove SATA devices (/dev/sd*)
+	devices = filter(map<string,any> dn, devices, {
+		string d = dn["dev_name"]:"";
+		return regexpmatch(d, "^/dev/hd");
+	    }
+	);
+
 	// read SCSI devices
 	list<map<string,any> > scsi_devices = (list<map<string, any> >) SCR::Read(.probe.scsi);
 

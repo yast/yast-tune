@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Mon Mar 14 17:01:07 CET 2005 - lslezak@suse.cz
+
+- idedma: don't show SATA disks - DMA cannot be changed (#71879)
+
+-------------------------------------------------------------------
 Tue Mar  8 14:12:53 CET 2005 - lslezak@suse.cz
 
 - always retranslate memory string (#71109)
