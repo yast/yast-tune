@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Mon Nov 29 16:44:53 CET 2004 - lslezak@suse.cz
+
+- PCI ID - write hwcfg file to load kernel module by
+  coldplug/hotplug (#48500)
+
+-------------------------------------------------------------------
 Tue Nov 23 11:12:45 CET 2004 - lslezak@suse.cz
 
 - merged PCI ID feature from 9.1 branch (#36084)

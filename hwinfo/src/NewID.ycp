@@ -68,7 +68,7 @@
 
 	    list<string> lines = splitstring(file, "\n");
 
-	    y2internal("lines: %1", lines);
+	    y2debug("lines: %1", lines);
 	    list<string> comment = [];
 
 	    // parse lines
@@ -242,6 +242,78 @@
 	return ret;
     }
 
+    define boolean has_hex_prefix (string in) {
+	if (size(in) < 2)
+	{
+	    return false;
+	}
+
+	// check whether string has hex prefix (0x or 0X)
+	string start = substring(in, 0, 2);
+	return (start == "0x" || start == "0X");
+    }
+
+    define string remove_hex_prefix(string in) {
+	if (!has_hex_prefix(in))
+	{
+	    return in;
+	}
+
+	return substring(in, 2);
+    }
+
+
+    define string HwcfgFileName(map newid) {
+	string ret = "";
+
+	string vendor = remove_hex_prefix(newid["vendor"]:"");
+	string device = remove_hex_prefix(newid["device"]:"");
+
+	if (size(vendor) > 0 && size(device) > 0)
+	{
+	    ret = sformat("vpid-%1-%2", vendor, device);
+
+	    string subvendor = remove_hex_prefix(newid["subvendor"]:"");
+	    string subdevice = remove_hex_prefix(newid["subdevice"]:"");
+
+	    if (size(subvendor) > 0 && size(subdevice) > 0)
+	    {
+		ret = sformat("%1-%2-%3", ret, subvendor, subdevice);
+	    }
+	}
+
+	return ret;
+    }
+
+    define boolean WriteHwcfg(map newid) {
+	boolean ret = false;
+	string cfgname = HwcfgFileName(newid);
+	string driver = newid["driver"]:"";
+
+	y2debug("newid: %1", newid);
+	y2debug("cfgname: %1", cfgname);
+	y2debug("driver: %1", driver);
+
+	if (cfgname != "" && driver != "")
+	{
+	    // prepare hwcfg values
+	    string startmode = "auto";
+	    string module_options = "";
+
+	    path p = .sysconfig.hardware.value + topath(cfgname);
+
+	    // write the values
+	    SCR::Write(p + .MODULE, driver);
+	    SCR::Write(p + .STARTMODE, startmode);
+	    SCR::Write(p + .MODULE_OPTIONS, module_options);
+
+	    // flush the changes
+	    SCR::Write(.sysconfig.hardware, nil);
+	}
+
+	return ret;
+    }
+
     global define boolean Write() {
 	boolean ret = true;
 
@@ -269,6 +341,9 @@
 			current = add(current, install_string);
 			settings[modulename] = current;
 		    }
+
+		    // write hwcfg file to load the driver
+		    WriteHwcfg(newid);
 
 		    // add to /etc/sysconfig/hardware/newids
 		    if (haskey(newid, "comment"))
