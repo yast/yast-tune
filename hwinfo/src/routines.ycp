@@ -13,7 +13,6 @@ textdomain "tune";
 import "Report";
 
 include "hwinfo/classnames.ycp";
-include "ui/file_popups.ycp";
 
 /*
  * translation table- key is replaced by value on it's way to ui
@@ -510,7 +509,7 @@ global define boolean save_hwinfo(string file) ``{
  */
 global define boolean save_hwinfo_to_file(string target_file_name) ``{
     // window title
-    string filename = SaveFileAs(target_file_name);
+    string filename = UI::AskForSaveFileName(target_file_name, "*", _("Save hwinfo output to file"));
     boolean saved = false;
 
     if (size(filename) > 0)

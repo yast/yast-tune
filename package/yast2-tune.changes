@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Wed Nov 19 16:58:03 CET 2003 - lslezak@suse.cz
+
+- use UI:: file popup builtin
+- version 2.9.3
+
+-------------------------------------------------------------------
 Thu Nov 13 12:39:13 CET 2003 - lslezak@suse.cz
 
 - syntax fixes for new interpreter (by jhumpol)

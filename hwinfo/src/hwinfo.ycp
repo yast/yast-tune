@@ -241,7 +241,7 @@ UI::CloseDialog();
 
 term con = `Tree(  `id(`idTree), `opt(`vstretch, `hstretch),
 				title,
-				items[1]:nil);
+				select(items, 1, nil));
 
 Wizard::CreateDialog();
 
