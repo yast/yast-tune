@@ -20,9 +20,12 @@ ynclude_DATA =			\
 if !ARCH_S390
 config_DATA =			\
 	idedma.y2cc
+
+desktop_DATA =			\
+	idedma.desktop
 endif
 
 module_DATA =			\
 	Idedma.ycp
 
-EXTRA_DIST = $(client_DATA) $(ynclude_DATA) $(config_DATA) $(module_DATA)
+EXTRA_DIST = $(client_DATA) $(ynclude_DATA) $(config_DATA) $(module_DATA) $(desktop_DATA)
