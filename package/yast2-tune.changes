@@ -4,6 +4,7 @@ Mon Jul  1 13:12:12 CEST 2002 - lslezak@suse.cz
 - merged yast2-config-hwinfo and  yast2-tune-idedma packages to
   yast2-tune
 - textdomains merged to "tune" textdomain
+- version 2.6.1
 
 -------------------------------------------------------------------
 Tue Jun 25 14:40:26 CEST 2002 - lslezak@suse.cz
