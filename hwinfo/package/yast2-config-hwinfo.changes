@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Fri May 11 13:16:21 CEST 2001 - kkaempf@suse.de
+
+- use bzip2 for packaging
+
+-------------------------------------------------------------------
 Fri May  4 15:07:31 CEST 2001 - dmeszar@suse.cz
 
 - abort button for stopping immediatelly, entries translation, 
