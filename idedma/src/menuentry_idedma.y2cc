@@ -15,7 +15,7 @@ Name = _("IDE DMA mode")
 Group = Hardware
 
 ; icon displayed in y2cc
-Icon = default.png
+Icon = idetune.png
 
 ; *one* *short* descriptive line for y2cc
 Helptext = _("DMA mode configuration of IDE devices")

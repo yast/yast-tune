@@ -1,5 +1,5 @@
 Read	.target.yast2 "classnames.ycp" nil
-Read	.probe.bybus.ide [$["dev_name":"/dev/hda", "device":"ABC-13245"], $["dev_name":"/dev/hdc", "device":"XYZ-6789"]]
+Read	.probe.ide [$["dev_name":"/dev/hda", "device":"ABC-13245"], $["dev_name":"/dev/hdc", "device":"XYZ-6789"]]
 Read	.sysconfig.hardware.DEVICES_FORCE_IDE_DMA_ON nil
 Read	.sysconfig.hardware.DEVICES_FORCE_IDE_DMA_OFF nil
 Execute	.target.bash_output "/sbin/hdparm -d /dev/hda" $["exit":0, "stdout":" using_dma    =  1 (on)"]
@@ -7,7 +7,7 @@ Execute	.target.bash_output "/sbin/hdparm -d /dev/hdc" $["exit":0, "stdout":" us
 Return	true
 Dump	[$["current_dma":true, "dev_name":"/dev/hda", "device":"ABC-13245", "device_type":"Unknown device type", "dma_on":nil], $["current_dma":true, "dev_name":"/dev/hdc", "device":"XYZ-6789", "device_type":"Unknown device type", "dma_on":nil]]
 Read	.target.yast2 "classnames.ycp" nil
-Read	.probe.bybus.ide [$["dev_name":"/dev/hda", "device":"ABC-13245"], $["dev_name":"/dev/hdc", "device":"XYZ-6789"]]
+Read	.probe.ide [$["dev_name":"/dev/hda", "device":"ABC-13245"], $["dev_name":"/dev/hdc", "device":"XYZ-6789"]]
 Read	.sysconfig.hardware.DEVICES_FORCE_IDE_DMA_ON ""
 Read	.sysconfig.hardware.DEVICES_FORCE_IDE_DMA_OFF "hdc"
 Execute	.target.bash_output "/sbin/hdparm -d /dev/hda" $["exit":-1, "stdout":"Error"]
@@ -15,7 +15,7 @@ Execute	.target.bash_output "/sbin/hdparm -d /dev/hdc" $["exit":-1, "stdout":"Er
 Return	true
 Dump	[$["current_dma":nil, "dev_name":"/dev/hda", "device":"ABC-13245", "device_type":"Unknown device type", "dma_on":nil], $["current_dma":nil, "dev_name":"/dev/hdc", "device":"XYZ-6789", "device_type":"Unknown device type", "dma_on":false]]
 Read	.target.yast2 "classnames.ycp" nil
-Read	.probe.bybus.ide [$["dev_name":"/dev/hda", "device":"ABC-13245"], $["dev_name":"/dev/hdc", "device":"XYZ-6789"]]
+Read	.probe.ide [$["dev_name":"/dev/hda", "device":"ABC-13245"], $["dev_name":"/dev/hdc", "device":"XYZ-6789"]]
 Read	.sysconfig.hardware.DEVICES_FORCE_IDE_DMA_ON "hda"
 Read	.sysconfig.hardware.DEVICES_FORCE_IDE_DMA_OFF ""
 Execute	.target.bash_output "/sbin/hdparm -d /dev/hda" $["exit":0, "stdout":" using_dma    =  1 (on)"]
@@ -23,7 +23,7 @@ Execute	.target.bash_output "/sbin/hdparm -d /dev/hdc" $["exit":0, "stdout":" us
 Return	true
 Dump	[$["current_dma":true, "dev_name":"/dev/hda", "device":"ABC-13245", "device_type":"Unknown device type", "dma_on":true], $["current_dma":true, "dev_name":"/dev/hdc", "device":"XYZ-6789", "device_type":"Unknown device type", "dma_on":nil]]
 Read	.target.yast2 "classnames.ycp" nil
-Read	.probe.bybus.ide [$["dev_name":"/dev/hda", "device":"ABC-13245"], $["dev_name":"/dev/hdc", "device":"XYZ-6789"]]
+Read	.probe.ide [$["dev_name":"/dev/hda", "device":"ABC-13245"], $["dev_name":"/dev/hdc", "device":"XYZ-6789"]]
 Read	.sysconfig.hardware.DEVICES_FORCE_IDE_DMA_ON ""
 Read	.sysconfig.hardware.DEVICES_FORCE_IDE_DMA_OFF "hda"
 Execute	.target.bash_output "/sbin/hdparm -d /dev/hda" $["exit":0, "stdout":" using_dma    =  1 (on)"]
@@ -32,7 +32,10 @@ Return	true
 Dump	[$["current_dma":true, "dev_name":"/dev/hda", "device":"ABC-13245", "device_type":"Unknown device type", "dma_on":false], $["current_dma":true, "dev_name":"/dev/hdc", "device":"XYZ-6789", "device_type":"Unknown device type", "dma_on":nil]]
 Dump	[$["current_dma":true, "dev_name":"/dev/hda", "device":"ABC-13245", "device_type":"Unknown device type", "dma_on":true], $["current_dma":true, "dev_name":"/dev/hdc", "device":"XYZ-6789", "device_type":"Unknown device type", "dma_on":false]]
 Execute	.target.bash "/sbin/hdparm -d 1 /dev/hda" 0
+Execute	.target.bash_output "/sbin/hdparm -d /dev/hda" $["exit":0, "stdout":" using_dma    =  1 (on)"]
 Execute	.target.bash "/sbin/hdparm -d 0 /dev/hdc" 0
+Execute	.target.bash_output "/sbin/hdparm -d /dev/hdc" $["exit":0, "stdout":" using_dma    =  1 (on)"]
+Log	Device /dev/hdc: Can not set DMA to value 0
 Write	.sysconfig.hardware.DEVICES_FORCE_IDE_DMA_ON "hda" true
 Write	.sysconfig.hardware.DEVICES_FORCE_IDE_DMA_OFF "hdc" true
 Read	.init.scripts.exists "boot.idedma" true
@@ -40,10 +43,14 @@ Read	.init.scripts.exists "boot.idedma" true
 Read	.init.scripts.runlevel "boot.idedma" nil
 Read	.init.scripts.comment "boot.idedma" nil
 Execute	.target.bash "/sbin/insserv -d boot.idedma" 0
-Return	true
+Return	false
 Dump	[$["current_dma":true, "dev_name":"/dev/hda", "device":"ABC-13245", "device_type":"Unknown device type", "dma_on":false], $["current_dma":true, "dev_name":"/dev/hdc", "device":"XYZ-6789", "device_type":"Unknown device type", "dma_on":false]]
 Execute	.target.bash "/sbin/hdparm -d 0 /dev/hda" 0
+Execute	.target.bash_output "/sbin/hdparm -d /dev/hda" $["exit":0, "stdout":" using_dma    =  1 (on)"]
+Log	Device /dev/hda: Can not set DMA to value 0
 Execute	.target.bash "/sbin/hdparm -d 0 /dev/hdc" 0
+Execute	.target.bash_output "/sbin/hdparm -d /dev/hdc" $["exit":0, "stdout":" using_dma    =  1 (on)"]
+Log	Device /dev/hdc: Can not set DMA to value 0
 Write	.sysconfig.hardware.DEVICES_FORCE_IDE_DMA_ON "" true
 Write	.sysconfig.hardware.DEVICES_FORCE_IDE_DMA_OFF "hda hdc" true
 Read	.init.scripts.exists "boot.idedma" true
@@ -51,9 +58,11 @@ Read	.init.scripts.exists "boot.idedma" true
 Read	.init.scripts.runlevel "boot.idedma" nil
 Read	.init.scripts.comment "boot.idedma" nil
 Execute	.target.bash "/sbin/insserv -d boot.idedma" 0
-Return	true
+Return	false
 Dump	[$["current_dma":true, "dev_name":"/dev/hda", "device":"ABC-13245", "device_type":"Unknown device type", "dma_on":nil], $["current_dma":true, "dev_name":"/dev/hdc", "device":"XYZ-6789", "device_type":"Unknown device type", "dma_on":false]]
 Execute	.target.bash "/sbin/hdparm -d 0 /dev/hdc" 0
+Execute	.target.bash_output "/sbin/hdparm -d /dev/hdc" $["exit":0, "stdout":" using_dma    =  1 (on)"]
+Log	Device /dev/hdc: Can not set DMA to value 0
 Write	.sysconfig.hardware.DEVICES_FORCE_IDE_DMA_ON "" true
 Write	.sysconfig.hardware.DEVICES_FORCE_IDE_DMA_OFF "hdc" true
 Read	.init.scripts.exists "boot.idedma" true
@@ -61,4 +70,4 @@ Read	.init.scripts.exists "boot.idedma" true
 Read	.init.scripts.runlevel "boot.idedma" nil
 Read	.init.scripts.comment "boot.idedma" nil
 Execute	.target.bash "/sbin/insserv -d boot.idedma" 0
-Return	true
+Return	false

@@ -153,16 +153,22 @@ global define symbol WriteDialog () ``{
 
 /**
  * String with DMA on status text
+ * (For translators: translation can be long - text is used in the table
+ * in column "Required DMA mode" and "Current DMA mode")
  */
 global string dma_on_string = _("On");
 
 /**
  * String with DMA off status text
+ * (For translators: translation can be long - text is used in the table
+ * in column "Required DMA mode" and "Current DMA mode")
  */
 global string dma_off_string = _("Off");
 
 /**
  * String with no change of DMA status text
+ * (For translators: translation can be long - text is used in the table
+ * in column "Required DMA mode" and "Current DMA mode")
  */
 global string dma_default_string = _("No change");
 
@@ -302,6 +308,18 @@ global define any DmaConfigDialog () ``{
 	}
 	else if (ret == `next || ret == `back)
 	{
+	    break;
+	}
+	else if (ret == `cancel)
+	{
+	    if (changed == true)
+	    {
+		if (UI::ReallyAbortPopup(true) == false)
+		{
+		    continue;
+		}
+	    }
+	    ret = `abort;
 	    break;
 	}
     };

@@ -9,7 +9,10 @@
 include "testsuite.ycp";
 import "Idedma";
 
-map READ = $[ "probe" : $[ "bybus" : $[ "ide" : [ $["device" : "ABC-13245", "dev_name" : "/dev/hda"], $["device" : "XYZ-6789", "dev_name" : "/dev/hdc"] ] ] ] ];
+// disable displaying errors in Report module
+Report::DisplayErrors(false, 0);
+
+map READ = $[ "probe" : $[ "ide" : [ $["device" : "ABC-13245", "dev_name" : "/dev/hda"], $["device" : "XYZ-6789", "dev_name" : "/dev/hdc"] ] ] ];
 map EXEC = $[ "target" : $["bash_output" : $["stdout" : " using_dma    =  1 (on)", "exit" : 0 ] , "bash" : 0 ] ];
 
 TEST(``(Idedma::Read()), [ READ, $[], EXEC ], nil );

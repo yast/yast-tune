@@ -48,7 +48,7 @@
 	// read id strings from file
 	map class_ids = SCR::Read(.target.yast2, "classnames.ycp");
 	// read information about all IDE devices
-	list devices = SCR::Read(.probe.bybus.ide);
+	list devices = SCR::Read(.probe.ide);
 
 	// read setting from sysconfig
 	string devices_on_str = SCR::Read(.sysconfig.hardware.DEVICES_FORCE_IDE_DMA_ON);
@@ -254,7 +254,10 @@
 
 		    if (dma_on != nil)
 		    {
-			if (SCR::Execute(.target.bash, hdparm_bin + " -d " + dma_str + " " + d_name) != 0)
+			SCR::Execute(.target.bash, hdparm_bin + " -d " + dma_str + " " + d_name);
+			boolean actual = get_device_dma_status(d_name);
+
+			if (dma_on != actual)
 			{
 			    Report::Error(sformat(_("Device %1: Can not set DMA to value %2"), d_name, dma_str));
 			    ret = false;
@@ -309,6 +312,18 @@
      */
     global define map Export () ``{
 	return $[ "settings" : ide_devices ];
+    }
+
+    /**
+     * Set system configuration without reading values from
+     * system - for testing and screenshot mode
+     */
+    global define void set_test_data() ``{
+	ide_devices = [ $["current_dma":true, "dev_name":"/dev/hda",
+	    "device":"IBM-DJNA-351520", "device_type":"Disk", "dma_on":nil],
+	    $["current_dma":true, "dev_name":"/dev/hdc", "device":"CD-532E-B",
+	    "device_type":"CD-ROM", "dma_on":nil]
+	];
     }
 
     /**

@@ -58,10 +58,10 @@ Configure the DMA mode of your IDE devices here.
 </P>
 ") +
 	    // For translators: IDE DMA setup dialog help, part 2 of 4
-_("<P>The table contains information about all attached IDE devices. There is
-column <B>Current DMA mode</B> with actual settings and column <B>Required DMA
-mode</B> with settings which will be applied after button <B>Finish</B> press and
-after boot.</P>") +
+_("<P>The table contains information about all attached IDE devices. The column
+<B>Current DMA mode</B> shows the actual settings. The column <B>Required DMA
+mode</B> shows settings that will be applied after <B>Finish</B> is pressed and
+after each boot.</P>") +
 
 	    // For translators: IDE DMA setup dialog help, part 3 of 4
 _("<P><B><BIG>Change IDE DMA mode</BIG></B><BR>

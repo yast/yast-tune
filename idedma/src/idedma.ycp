@@ -24,6 +24,8 @@
 
     textdomain "idedma";
 
+    import "Mode";
+    import "Idedma";
     include "idedma/ui.ycp";
 
     /* The main () */
@@ -31,7 +33,19 @@
     y2milestone ("----------------------------------------");
 
     /* main ui function */
-    any ret = IdedmaSequence ();
+    any ret = nil;
+
+    if (Mode::test == true)
+    {
+	// in test mode set some data and display only main dialog
+	Idedma::set_test_data();
+	ret = IdedmaAutoSequence();
+    }
+    else
+    {
+	ret = IdedmaSequence ();
+    }
+
     y2debug ("ret == %1", ret);
 
     /* Finish */
