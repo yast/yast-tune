@@ -20,7 +20,7 @@
 
 
 {
-    textdomain "hwinfo";
+    textdomain "tune";
     import "Wizard";
 //    include "ui/wizard_dialog.ycp";
 

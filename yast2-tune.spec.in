@@ -1,0 +1,42 @@
+@HEADER-COMMENT@
+
+# neededforbuild  autoconf automake dejagnu expect tcl yast2 yast2-core yast2-core-devel yast2-devtools yast2-testsuite yast2-runlevel
+
+@HEADER@
+
+Requires:	yast2 yast2-core yast2-runlevel hdparm
+BuildArchitectures:     noarch
+Summary:	System configuration viewer and tuner YaST2 module
+
+Provides:	yast2-config-hwinfo yast2-tune-idedma
+Obsoletes:	yast2-config-hwinfo yast2-tune-idedma
+
+%description
+This package is a part of YaST2. It shows the hardware configuration and allows system tuning.
+
+@PREP@
+
+@BUILD-YCP@
+
+@INSTALL-YCP@
+
+@CLEAN@
+
+%files
+%defattr(-,root,root)
+
+# hwinfo
+@clientdir@/hwinfo.ycp
+@configdir@/hwinfo.y2cc
+@ydatadir@/classnames.ycp
+
+# idedma
+%dir @yncludedir@/idedma
+@yncludedir@/idedma/*
+@clientdir@/idedma.ycp
+@clientdir@/idedma_*.ycp
+@moduledir@/Idedma.ycp
+@configdir@/idedma.y2cc
+@scrconfdir@/cfg_hardware.scr
+%doc @docdir@
+

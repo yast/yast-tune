@@ -1,14 +1,14 @@
 #
-# Makefile.am for y2c_idedma/src
+# Makefile.am for idedma/src
 #
 # $Id$
 #
 
-myncludedir = @yncludedir@/idedma
+yncludedir = @yncludedir@/idedma
 
 client_DATA =			\
 	idedma.ycp		\
-	idedma_auto.ycp	\
+	idedma_auto.ycp		\
 	idedma_summary.ycp	\
 	idedma_write.ycp
 

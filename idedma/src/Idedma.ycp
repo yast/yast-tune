@@ -24,7 +24,7 @@
     import "Report";
     import "Runlevel";
 
-    textdomain "idedma";
+    textdomain "tune";
 
     // Settings: Define all variables needed for configuration of IDE DMA
 

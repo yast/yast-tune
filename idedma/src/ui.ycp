@@ -19,7 +19,7 @@
 
 {
 
-textdomain "idedma";
+textdomain "tune";
 
 import "Wizard";
 import "Idedma";

@@ -22,7 +22,7 @@
      * <h3>Configuration of the IDE DMA mode</h3>
      */
 
-    textdomain "idedma";
+    textdomain "tune";
 
     import "Mode";
     import "Idedma";

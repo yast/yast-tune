@@ -33,7 +33,7 @@ Geometry =
 SortKey = 
 
 ; which textdomain to use for translations (important!)
-Textdomain = idedma
+Textdomain = tune
 
 ; autoinstall features
 Autoinst = all
