@@ -1,1 +1,2 @@
-yast2-config-hwinfo.spec
+*.spec
+*.bz2
