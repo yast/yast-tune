@@ -16,7 +16,8 @@
  *
  * since hardware description string disappeared fro libhd in june-2001
  * this translation table must be used to obtain those descriptions
- * 
+ *
+    textdomain "tune";
  */
 
 
