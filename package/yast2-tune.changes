@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Tue Oct 19 13:46:25 CEST 2004 - lslezak@suse.cz
+
+- updated: class DB, probe agent path translations
+- version 2.11.1
+
+-------------------------------------------------------------------
 Wed Oct 13 14:42:44 CEST 2004 - lslezak@suse.cz
 
 - UML mode enhancements (#40835)
