@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Mon Oct 11 16:46:39 CEST 2004 - jsrain@suse.cz
+
+- adapted to new Arch:: interface
+
+-------------------------------------------------------------------
 Fri Sep  3 13:24:23 CEST 2004 - lslezak@suse.cz
 
 - traslate new device types (wlan, tape)

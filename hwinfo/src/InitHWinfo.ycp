@@ -149,7 +149,7 @@ global define boolean Initialize(boolean force) ``{
 	}
     }
     // PPC architecture - use board and generation information
-    else if (Arch::ppc)
+    else if (Arch::ppc ())
     {
 	string board = "";
 	string generation = "";
