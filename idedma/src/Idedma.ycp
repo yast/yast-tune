@@ -33,7 +33,7 @@
     /**
      * List of all IDE devices with descriptions and DMA settings
      */
-    list<map> ide_devices = [];
+    list<map<string,any> > ide_devices = [];
 
     /**
      * Full path to hdparm binary
@@ -172,7 +172,7 @@
 
 	if (dma_info != nil && dma_info != "")
 	{
-	    list modes = splitstring(dma_info, " ");
+	    list<string> modes = splitstring(dma_info, " ");
 
 	    foreach(string mode, modes, ``{
 		    string current = regexpsub(mode, "^\\*(.*)", "\\1");
@@ -198,7 +198,7 @@
 
 	if (dma_info != nil && dma_info != "")
 	{
-	    list modes = splitstring(dma_info, " ");
+	    list<string> modes = splitstring(dma_info, " ");
 
 	    foreach(string mode, modes, ``{
 
@@ -230,21 +230,21 @@
 	ide_devices = [];
 
 	// read information about all IDE devices
-	list devices = (list) SCR::Read(.probe.ide);
+	list<map<string,any> > devices = (list<map<string, any> >) SCR::Read(.probe.ide);
 
 	// read SCSI devices
-	list scsi_devices = (list) SCR::Read(.probe.scsi);
+	list<map<string,any> > scsi_devices = (list<map<string, any> >) SCR::Read(.probe.scsi);
 
 	if (size(scsi_devices) > 0)
 	{
 	    // leave only devices with IDE-SCSI emulation
-	    scsi_devices = filter(map dev, scsi_devices, ``(dev["driver"]:nil == "ide-scsi"));
+	    scsi_devices = filter(map<string,any> dev, scsi_devices, ``(dev["driver"]:nil == "ide-scsi"));
 	}
 
 	// add ide-scsi devices to ide devices
 	if (size(scsi_devices) > 0)
 	{
-	    devices = merge(devices, scsi_devices);
+	    devices = (list<map<string,any> >) merge(devices, scsi_devices);
 	}
 
 	y2milestone("Detected ide-scsi devices: %1", scsi_devices);
@@ -319,7 +319,7 @@
 
 		    list<string> dma_modes = get_supported_dma_modes(dma_info);
 
-		    map dev_map = $["device" : device, "dev_name" : dev_name, "dma_setting" : dma_setting, "device_type" : subclass_id_string, "current_dma" : current_dma, "dma_modes" : dma_modes];
+		    map<string,any> dev_map = $["device" : device, "dev_name" : dev_name, "dma_setting" : dma_setting, "device_type" : subclass_id_string, "current_dma" : current_dma, "dma_modes" : dma_modes];
 
 		    if (scsi_name != nil)
 		    {
@@ -327,7 +327,7 @@
 			dev_map["scsi_name"] = scsi_name;
 		    }
 
-		    ide_devices = add(ide_devices, dev_map);
+		    ide_devices = (list<map<string,any> >) add(ide_devices, dev_map);
 		}
 	    }
 	);
@@ -409,7 +409,7 @@
 	}
 
 	// store required DMA status
-	ide_devices = maplist(map d, ide_devices, ``{
+	ide_devices = maplist(map<string,any> d, ide_devices, ``{
 		if (d["dev_name"]:nil == device)
 		{
 		    d = add(d, "dma_setting", dma_setting);
@@ -552,7 +552,7 @@
      * @param settings set data from YCP
      * @return void
      */
-    global define void Set (list<map> settings) ``{
+    global define void Set (list<map<string,any> > settings) ``{
 
 	ide_devices = settings;
 	return;
@@ -564,7 +564,7 @@
      * @param settings The YCP structure to be imported.
      * @return boolean True
      */
-    global define boolean Import (list<map> settings) ``{
+    global define boolean Import (list<map<string,any> > settings) ``{
 	if (size(settings) == 0)
 	{
 	    return false;
@@ -617,7 +617,7 @@
 		    if (devname != nil && dmasetting != nil && (all == true || dmasetting != "nochange"))
 		    {
 			// summary text - unknown DMA mode is selected
-			devices = devices + ((richtext) ? "<LI><B>":"") + devname + ":" + ((richtext) ? "</B>":"") + " " + sformat("%1 (%2)", dmasetting, mode_names[dmasetting]:_("Unknown mode")) + ((richtext) ? "</LI>":"\n");
+			devices = devices + ((richtext) ? "<LI><B>":"") + devname + ":" + ((richtext) ? "</B>":"") + " " + sformat("%1 (%2)", dmasetting, mode_names[dmasetting]:_("Unknown Mode")) + ((richtext) ? "</LI>":"\n");
 			found = true;
 		    }
 		}
@@ -628,7 +628,7 @@
 	if (found == false)
 	{
 	    // summary text - none device is configured
-	    devices = ((richtext) ? "<LI>":"") + _("None device") + ((richtext) ? "</LI>":"\n");
+	    devices = ((richtext) ? "<LI>":"") + _("No Device") + ((richtext) ? "</LI>":"\n");
 	}
 
 	return summary + ((richtext) ? "<UL>":"") + devices + ((richtext) ? "</UL>":"");

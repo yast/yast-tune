@@ -54,7 +54,7 @@ y2debug("param=%1", param);
 
 // predefined devices - we don't know which devices will be present in the target system
 // allow setting any possible IDE device to any DMA mode
-list<map> empty_settings = [
+list<map<string,any> > empty_settings = [
 	$[ "current_dma" : nil, "dev_name" : "/dev/hda", "device" : _("Unknown"), "device_type" : _("Unknown"), "dma_modes":["mdma0", "mdma1", "mdma2", "udma0", "udma1", "udma2", "udma3", "udma4", "udma5", "udma6"], "dma_setting":"nochange"],
 	$[ "current_dma" : nil, "dev_name" : "/dev/hdb", "device" : _("Unknown"), "device_type" : _("Unknown"), "dma_modes":["mdma0", "mdma1", "mdma2", "udma0", "udma1", "udma2", "udma3", "udma4", "udma5", "udma6"], "dma_setting":"nochange"],
 	$[ "current_dma" : nil, "dev_name" : "/dev/hdc", "device" : _("Unknown"), "device_type" : _("Unknown"), "dma_modes":["mdma0", "mdma1", "mdma2", "udma0", "udma1", "udma2", "udma3", "udma4", "udma5", "udma6"], "dma_setting":"nochange"],
@@ -76,7 +76,7 @@ if(func == "Import")
     {
 	param = empty_settings;
     }
-    ret = Idedma::Import(param);
+    ret = Idedma::Import((list<map<string,any> >)param);
 }
 /* create a summary */
 else if(func == "Summary")

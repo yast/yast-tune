@@ -56,7 +56,7 @@
 	    ],
 	    "set" : $[
 		// command description
-		"help"      : _("Set dma mode"),
+		"help"      : _("Set DMA mode"),
 		"handler"   : setHandler
 	     ],
 	    "details" : $[

@@ -40,9 +40,9 @@ $[
     // tree node string
     "dev_name"	:   _("Device name"),
     // tree node string
-    "dev_num"	:   _("Device numbers"),
+    "dev_num"	:   _("Device Numbers"),
     // tree node string
-    "sysfs_id"	:   _("Sysfs id"),
+    "sysfs_id"	:   _("Sysfs ID"),
     // tree node string
     "device"	:   _("Device"),
     // tree node string
@@ -187,9 +187,9 @@ $[
     // tree node string - CPU information
     "cache"            :   _("Cache"),
     // tree node string - CPU information
-    "coma_bug" :   _("Coma bug"),
+    "coma_bug" :   _("Coma Bug"),
     // tree node string - CPU information
-    "f00f_bug" :   _("f00f bug"),
+    "f00f_bug" :   _("f00f Bug"),
     // tree node string - CPU information
     "cpuid_level"      :   _("CPU id level"),
     // tree node string - CPU information
@@ -203,7 +203,7 @@ $[
     // tree node string - CPU information
     "fpu_exception"    :   _("Floating Point Unit Exception"),
     // tree node string - CPU information
-    "hlt_bug"  :   _("Halt bug"),
+    "hlt_bug"  :   _("Halt Bug"),
     // tree node string - CPU information
     "processor"        :   _("Processor"),
     // tree node string - CPU information
@@ -234,7 +234,7 @@ define string resolution(any a, map m) ``{
     return m["width"]:"";
 }
 
-define list<string> modules(list<list> val) ``{
+define list<string> modules(list<list<string> > val) ``{
     y2warning("calling modules with param: %1", val);
     list<string> outlist = maplist(list<string> e, val,
     ``{
@@ -250,23 +250,26 @@ define list<string> modules(list<list> val) ``{
  * @return map device info with translated class information
  */
 
-define map translate_hw_entry(map hw) ``{
+define map<string,string> translate_hw_entry(map hw) ``{
+
+    map<string,string> ret = $[];
+
     if (haskey(hw, "class_id"))
     {
 	integer iclassid = hw["class_id"]:0xff;
 	string classid = ClassNames[iclassid, "name"]:"";
 
-	hw = add(hw, "class_id", classid);
+	ret = add(ret, "class_id", classid);
 
 	if (haskey(hw, "sub_class_id"))
 	{
 	    integer isubclassid = hw["sub_class_id"]:0;
 	    string subclassid = ClassNames[iclassid, isubclassid]:"";
-	    hw = add(hw, "sub_class_id", subclassid);
+	    ret = add(ret, "sub_class_id", subclassid);
 	}
 
     }
-    return hw;
+    return ret;
 }
 
 /**
@@ -375,7 +378,7 @@ define string get_representant(map m) ``{
 	    else if (key_name == "modules")
 	    {
 		// Linux kernel modules (drivers)
-		out = _("modules");
+		out = _("Modules");
 	    }
 	    else if (key_name == "width")
 	    {
@@ -479,7 +482,7 @@ define list expandTree(any node) ``{
     if (is(node, map))
     {
 	// if node is map ...
-	map node_map = translate_hw_entry((map) node);
+	map<string,string> node_map = translate_hw_entry((map) node);
 	list ltmp = [];
 	foreach(string key, any v, node_map,
 	``{
@@ -487,7 +490,7 @@ define list expandTree(any node) ``{
 	    // unfortunatelly 'modules' is used in several places and in different meaings...
 	    if(key == "modules" && is(v, list))
 	    {
-		v = modules((list<list>) v);
+		v = modules((list<list<string> >) v);
 	    }
 
 	    // ... explore all pairs
@@ -536,7 +539,7 @@ define boolean save_hwinfo(string file) ``{
  */
 define boolean save_hwinfo_to_file(string target_file_name) ``{
     // window title
-    string filename = UI::AskForSaveFileName(target_file_name, "*", _("Save hwinfo output to file"));
+    string filename = UI::AskForSaveFileName(target_file_name, "*", _("Save hwinfo Output to File"));
     boolean saved = false;
 
     if (size(filename) > 0)
@@ -549,7 +552,7 @@ define boolean save_hwinfo_to_file(string target_file_name) ``{
 	if (saved == false)
 	{
 	    // error popup message
-	    Report::Error(sformat(_("Saving output to the file '%1' failed"), target_file_name));
+	    Report::Error(sformat(_("Saving output to the file '%1' failed."), target_file_name));
 	}
     }
 

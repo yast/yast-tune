@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Mon Mar  1 16:34:29 CET 2004 - lslezak@suse.cz
+
+- merged proofread texts
+- typed lists and maps
+- version 2.9.14
+
+-------------------------------------------------------------------
 Fri Feb 27 16:46:42 CET 2004 - lslezak@suse.cz
 
 - InitHWinfo - only [OK] button in details dialog (#34915)

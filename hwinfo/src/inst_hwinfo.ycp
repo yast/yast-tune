@@ -33,7 +33,7 @@ string selected_device = nil;
  * @param devices map with pairs $["device name" : "model (description)"]
  * @return string selected floppy device name or nil when canceled
  */
-define string floppy_selection(map devices) ``{
+define string floppy_selection(map<string,string> devices) ``{
     list devs = maplist(string d, string m, devices, ``{
 	    return `item(`id(d), sformat("%1 (%2)", m, d));
 	}
@@ -122,7 +122,7 @@ define symbol details_dialog(string model, map info) ``{
     Wizard::ReplaceAbortButton(`PushButton(`id(`ok), `opt(`key_F10), Label::OKButton()));
 
     // help text
-    string help_text = _("<P><B>Details</B></P><P>Here are displayed details of the selected hardware component.</P>");
+    string help_text = _("<P><B>Details</B></P><P>The details of the selected hardware component are displayed here.</P>");
 
     // heading text, %1 is component name (e.g. "USB UHCI Root Hub")
     Wizard::SetContents(sformat(_("Component '%1'"), model), content,
@@ -192,7 +192,7 @@ define symbol detected_dialog() ``{
 		if (cls == nil)
 		{
 		    // device class is unknown
-		    cls = _("Unknown device class");
+		    cls = _("Unknown Device Class");
 		}
 
 		table_cont = add(table_cont, `item(`id(uniq), cls, model));
@@ -210,12 +210,12 @@ define symbol detected_dialog() ``{
 	    // push button label
 	    `PushButton(`id(`details), _("&Details...")),
 	    // menu button label
-	    `MenuButton(`id(`savemenu), _("&Save to file"),
+	    `MenuButton(`id(`savemenu), _("&Save to File"),
 		[
 		    // menu item
-		    `item(`id(`file), _("Save to &file...")),
+		    `item(`id(`file), _("Save to &File...")),
 		    // menu item
-		    `item(`id(`floppy), _("&Save to f&loppy..."))
+		    `item(`id(`floppy), _("Save to F&loppy..."))
 		]
 	    )
 	),
@@ -223,18 +223,18 @@ define symbol detected_dialog() ``{
     );
 
     // help text - part 1/3
-    string help_text = _("<P><B>Detected hardware</B><BR>This table contains all detected hardware components in your system.</P>")
+    string help_text = _("<P><B>Detected Hardware</B><BR>This table contains all hardware components detected in your system.</P>")
     // help text - part 2/3
-    + _("<P><B>Details</B><BR>Select some component and press button <B>Details...</B> to see more detailed description of the component.</P>")
+    + _("<P><B>Details</B><BR>Select some component and press <B>Details...</B> to see a more detailed description of the component.</P>")
     // help text - part 3/3
-    + _("<P><B>Save to File</B><BR>You can save hardware information (<I>hwinfo</I> output) to file or to floppy disk. Select target type in the <B>Save to File</B> menu.</P>");
+    + _("<P><B>Save to File</B><BR>You can save hardware information (<I>hwinfo</I> output) to file or to floppy disk. Select the target type in the <B>Save to File</B> menu.</P>");
 
     Wizard::ReplaceNextButton(`Empty());
     Wizard::ReplaceBackButton(`Empty());
     Wizard::ReplaceAbortButton(`PushButton(`id(`ok), `opt(`key_F10), Label::OKButton()));
 
     // heading text
-    Wizard::SetContents(_("Detected hardware"), content,
+    Wizard::SetContents(_("Detected Hardware"), content,
 			help_text,
 			true, true);
 
@@ -298,7 +298,7 @@ define symbol detected_dialog() ``{
 		else
 		{
 		    // error popup - mount failed, %1 is device file name (e.g. /dev/fd0)
-		    Report::Error(sformat(_("Floppy device '%1' can not be mounted."), save_device));
+		    Report::Error(sformat(_("Floppy device '%1' cannot be mounted."), save_device));
 		}
 
 	    }
