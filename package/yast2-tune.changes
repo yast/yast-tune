@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Thu Feb 12 11:25:55 CET 2004 - arvin@suse.de
+
+- added type names for new udev and sysfs infos (bug #34355)
+
+-------------------------------------------------------------------
 Mon Feb 09 11:30:33 CET 2004 - arvin@suse.de
 
 - removed config files (*.y2cc)

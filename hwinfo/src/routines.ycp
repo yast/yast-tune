@@ -40,6 +40,10 @@ $[
     // tree node string
     "dev_name"	:   _("Device name"),
     // tree node string
+    "dev_num"	:   _("Device numbers"),
+    // tree node string
+    "sysfs_id"	:   _("Sysfs id"),
+    // tree node string
     "device"	:   _("Device"),
     // tree node string
     "device_id"	:   _("Device identifier"),
@@ -49,6 +53,12 @@ $[
     "driver"	:   _("Driver"),
     // tree node string
     "type"	: _("Type"),
+    // tree node string
+    "major"	: _("Major"),
+    // tree node string
+    "minor"	: _("Minor"),
+    // tree node string
+    "range"	: _("Range"),
     // tree node string (System Management BIOS)
     "smbios"	: _("SMBIOS"),
     // tree node string
