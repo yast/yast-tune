@@ -38,7 +38,7 @@ Read	.init.scripts.exists "boot.idedma" true
 Read	.init.scripts.exists "boot.idedma" true
 Read	.init.scripts.runlevel "boot.idedma" nil
 Read	.init.scripts.comment "boot.idedma" nil
-Execute	.target.bash "/sbin/insserv -d boot.idedma" 0
+Execute	.target.bash_output "/sbin/insserv -d /etc/init.d/boot.idedma" $["exit":0, "stdout":" using_dma    =  1 (on)"]
 Return	false
 Dump	[$["current_dma":true, "dev_name":"/dev/hda", "device":"ABC-13245", "device_type":"Unknown device type", "dma_on":false], $["current_dma":true, "dev_name":"/dev/hdc", "device":"XYZ-6789", "device_type":"Unknown device type", "dma_on":false]]
 Execute	.target.bash "/sbin/hdparm -d 0 /dev/hda" 0
@@ -53,7 +53,7 @@ Read	.init.scripts.exists "boot.idedma" true
 Read	.init.scripts.exists "boot.idedma" true
 Read	.init.scripts.runlevel "boot.idedma" nil
 Read	.init.scripts.comment "boot.idedma" nil
-Execute	.target.bash "/sbin/insserv -d boot.idedma" 0
+Execute	.target.bash_output "/sbin/insserv -d /etc/init.d/boot.idedma" $["exit":0, "stdout":" using_dma    =  1 (on)"]
 Return	false
 Dump	[$["current_dma":true, "dev_name":"/dev/hda", "device":"ABC-13245", "device_type":"Unknown device type", "dma_on":nil], $["current_dma":true, "dev_name":"/dev/hdc", "device":"XYZ-6789", "device_type":"Unknown device type", "dma_on":false]]
 Execute	.target.bash "/sbin/hdparm -d 0 /dev/hdc" 0
@@ -65,5 +65,5 @@ Read	.init.scripts.exists "boot.idedma" true
 Read	.init.scripts.exists "boot.idedma" true
 Read	.init.scripts.runlevel "boot.idedma" nil
 Read	.init.scripts.comment "boot.idedma" nil
-Execute	.target.bash "/sbin/insserv -d boot.idedma" 0
+Execute	.target.bash_output "/sbin/insserv -d /etc/init.d/boot.idedma" $["exit":0, "stderr":"", "stdout":""]
 Return	false

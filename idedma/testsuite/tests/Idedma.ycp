@@ -41,21 +41,26 @@ DUMP(Idedma::get_ide_devices());
 
 map WRITE = $[];
 READ = add(READ, "init", $[ "scripts" : $[ "exists" : true ] ]);
+map EXEC2 = $[
+    "target": $[
+	"bash_output": $[ "exit": 0, "stdout": "", "stderr": "", ],
+	],
+    ];
 
 Idedma::set_dma("/dev/hda", true);
 Idedma::set_dma("/dev/hdc", false);
 DUMP(Idedma::get_ide_devices());
-TEST(``(Idedma::Write()), [ READ, WRITE, EXEC ], nil );
+TEST(``(Idedma::Write()), [ READ, WRITE, [EXEC, EXEC, EXEC2] ], nil );
 
 Idedma::set_dma("/dev/hda", false);
 Idedma::set_dma("/dev/hdc", false);
 DUMP(Idedma::get_ide_devices());
-TEST(``(Idedma::Write()), [ READ, WRITE, EXEC ], nil );
+TEST(``(Idedma::Write()), [ READ, WRITE, [EXEC, EXEC, EXEC2] ], nil );
 
 Idedma::set_dma("/dev/hda", nil);
 Idedma::set_dma("/dev/hdx", false);
 DUMP(Idedma::get_ide_devices());
-TEST(``(Idedma::Write()), [ READ, WRITE, EXEC ], nil );
+TEST(``(Idedma::Write()), [ READ, WRITE, [EXEC, EXEC, EXEC2] ], nil );
 
 
 }
