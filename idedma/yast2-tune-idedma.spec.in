@@ -21,11 +21,11 @@ configure DMA of IDE devices.
 
 %files
 %defattr(-,root,root)
-%dir @YAST2DIR@/include/idedma
-@YAST2DIR@/include/idedma/*
-@YAST2DIR@/clients/idedma.ycp
-@YAST2DIR@/clients/idedma_*.ycp
-@YAST2DIR@/modules/Idedma.ycp
-@YAST2DIR@/menuentries/menuentry_idedma.y2cc
-@YAST2DIR@/scrconf/cfg_hardware.scr
-%doc @DOCDIR@
+%dir @yincludedir@/idedma
+@yincludedir@/idedma/*
+@clientdir@/idedma.ycp
+clientdir@/idedma_*.ycp
+@moduledir@/Idedma.ycp
+@configdir@idedma.y2cc
+@scrconfdir@/cfg_hardware.scr
+%doc @docdir@

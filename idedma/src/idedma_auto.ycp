@@ -38,19 +38,19 @@
 	y2error ("Did not get the settings, probably some mistake...");
 	return false;
     }
-    if ( !is ( Args (0), map ) )
+    if ( !is ( Args (0), list ) )
     {
 	y2error ("Bad argument for idedma_auto: %1", Args (0));
 	return false;
     }
 
     // The settings are in the first argument
-    map settings = select (args, 0);
+    list settings = select (args, 0, []);
     y2milestone("Imported: (%1)", settings);
 
     if (size(settings) == 0)
     {
-	settings = $[ "settings" : [
+	settings = [
 		$[ "current_dma" : nil, "dev_name" : "/dev/hda", "device" : _("Unknown"), "device_type" : _("Unknown"), "dma_on" : nil],
 		$[ "current_dma" : nil, "dev_name" : "/dev/hdb", "device" : _("Unknown"), "device_type" : _("Unknown"), "dma_on" : nil],
 		$[ "current_dma" : nil, "dev_name" : "/dev/hdc", "device" : _("Unknown"), "device_type" : _("Unknown"), "dma_on" : nil],
@@ -62,17 +62,52 @@
 		$[ "current_dma" : nil, "dev_name" : "/dev/hdi", "device" : _("Unknown"), "device_type" : _("Unknown"), "dma_on" : nil],
 		$[ "current_dma" : nil, "dev_name" : "/dev/hdj", "device" : _("Unknown"), "device_type" : _("Unknown"), "dma_on" : nil],
 		$[ "current_dma" : nil, "dev_name" : "/dev/hdk", "device" : _("Unknown"), "device_type" : _("Unknown"), "dma_on" : nil],
-		$[ "current_dma" : nil, "dev_name" : "/dev/hdl", "device" : _("Unknown"), "device_type" : _("Unknown"), "dma_on" : nil]
-	    ]
+		$[ "current_dma" : nil, "dev_name" : "/dev/hdl", "device" : _("Unknown"), "device_type" : _("Unknown"), "dma_on" : nil]	  
 	];
     }
 
     Idedma::Import ( settings );
-
-    if (IdedmaAutoSequence() != `next)
-    {
-	return $[];
+    define set_contents()
+	``{
+	term contents =
+	    `VBox(
+		  `VSpacing(1),
+		  `RichText( `id(`summary), Idedma::Summary()),
+		  `VSpacing(0.5),
+		  `HBox(
+			`PushButton(`id(`configure), _("&Configure IDE DMA mode")),
+			`HStretch(),
+			`PushButton(`id(`reset), _("&Reset Configuration"))
+			),
+		  `VSpacing(1)
+		  );
+	Wizard::SetContents(_("NIS Configuration"),
+			    contents, "", true, true);
     }
+    
+    set_contents();
+    any result = nil;
+    any ret = nil;
+    repeat {
+	ret = UI::UserInput();
+	if (ret == `configure)
+	{
+	    result = IdedmaAutoSequence();
+	    if (result == `next || result == `finish)
+	    {
+		settings = Idedma::Export ();
+	    }
+	    Idedma::Set(settings);
+	    set_contents();
+	}
+	else if ( ret == `reset)
+	{
+	    settings= $[];
+	    Idedma::Set(settings);
+	    set_contents();
+	}
+    } until (ret == `back || ret == `next || ret ==`key);
 
-    return Idedma::Export ();
+    return [ret, settings];
+
 }

@@ -295,23 +295,34 @@
      * @param settings The YCP structure to be imported.
      * @return boolean True
      */
-    global define boolean Import (map settings) ``{
-	if (!haskey(settings, "settings"))
+    global define boolean Import (list settings) ``{
+	if (size(settings) == 0)
 	{
 	    return false;
 	}
 
-	ide_devices = lookup(settings, "settings", []);
+	Set(settings);
 	return true;
     }
 
     /**
+     * Set module data
+     * @param void
+     * @return void
+     */ 
+    global define void Set (list settings) ``{
+
+	ide_devices = settings;
+	return;
+    }
+    
+    /**
      * Dump the IDE DMA settings to a single map
      * (For use by autoinstallation.)
-     * @return map Dumped settings (later acceptable by Import ())
+     * @return list Dumped settings (later acceptable by Import ())
      */
-    global define map Export () ``{
-	return $[ "settings" : ide_devices ];
+    global define list Export () ``{
+	return ide_devices ;
     }
 
     /**
