@@ -50,7 +50,7 @@
 	      // this is a heading
 	      "rich_text_title"	:	_("System"),
 	      // this is a menu entry
-	      "menu_title"	:	_("&System"),
+	      "menu_title"	:	_("S&ystem"),
 	      "id"		:	"init_hwinfo"
 	    ];
     }
