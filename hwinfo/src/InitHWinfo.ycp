@@ -27,6 +27,8 @@ boolean initialized = false;
 string cpu_string = "";
 // memory summary string
 string memory_string = "";
+// system summary string
+string system_string= "";
 
 // list of detected devices
 list detectedHW = nil;
@@ -107,6 +109,48 @@ global define boolean Initialize(boolean force) ``{
 
     memory_string = String::FormatSize(memory_size);
 
+    // initialize system string
+    list bios = (list) SCR::Read(.probe.bios);
+
+    if (size(bios) != 1)
+    {
+	y2warning("Warning: BIOS list size is %1", size(bios));
+    }
+
+    map biosinfo = (map)(bios[0]:$[]);
+    list<map> smbios = (list<map>)(biosinfo["smbios"]:[]);
+
+    map sysinfo = $[];
+
+    foreach(map inf, smbios, ``{
+	    if (inf["type"]:"" == "sysinfo")
+	    {
+		sysinfo = inf;
+	    }
+	}
+    );
+
+    system_string = "";
+
+    if (size(sysinfo) > 0)
+    {
+	// system manufacturer is unknown
+	string manufacturer = (string)(sysinfo["manufacturer"]:_("Unknown"));
+	// system product name is unknown
+	string product = (string)(sysinfo["product"]:_("Unknown"));
+	string version = (string)(sysinfo["version"]:"");
+
+	system_string = sformat("%1 - %2", manufacturer, product);
+
+	if (size(version) > 0)
+	{
+	    system_string = system_string + sformat(" (%1)", version);
+	}
+    }
+
+    y2milestone("System string: %1", system_string);
+
+
     initialized = true;
 
     return true;
@@ -119,7 +163,26 @@ global define boolean Initialize(boolean force) ``{
  */
 global define list<string> MakeProposal(boolean reset) ``{
     Initialize(reset);
-    return [ _("Processor: ") + cpu_string, _("Main memory: ") + memory_string ];
+
+    // the installation proposal item
+    // %1 is processor name
+    list<string> ret = [ sformat(_("Processor: %1"), cpu_string),
+	// the installation proposal item
+	// %1 is memory size string
+	sformat(_("Main memory: %1"), memory_string)
+    ];
+
+    // add system string
+    if (size(system_string) > 0)
+    {
+	// the installation proposal item
+	// %1 is system name
+	ret = prepend(ret, sformat(_("System: %1"), system_string));
+    }
+
+    y2internal("proposal: %1", ret);
+
+    return ret;
 }
 
 /**

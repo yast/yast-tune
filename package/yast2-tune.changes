@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Tue Jan 13 12:40:04 CET 2004 - lslezak@suse.cz
+
+- init_hwinfo - read system name (SMBIOS entry), NI fixes
+- idedma - use Service:: module
+- version 2.9.5
+
+-------------------------------------------------------------------
 Mon Dec  1 14:27:52 CET 2003 - lslezak@suse.cz
 
 - fixes for the new interpreter

@@ -22,7 +22,7 @@
     // Set the name of the module
     module "Idedma";
     import "Report";
-    import "Runlevel";
+    import "Service";
 
     include "hwinfo/classnames.ycp";
 
@@ -536,7 +536,7 @@
 	if (new_dma_setting != "")
 	{
 	    // enable service
-	    if (Runlevel::ServiceAdjust("boot.idedma", "default") != true)
+	    if (Service::Enable("boot.idedma") != true)
 	    {
 		// error message
 		Report::Error(_("Can not enable service 'boot.idedma'."));
