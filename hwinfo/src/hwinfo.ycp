@@ -50,7 +50,7 @@ map trans_table = eval(
 $[
     // tree node string
     "architecture"	:   _("Architecture"),
-    // tree node string
+    // tree node string - means "hardware bus"
     "bus"		:   _("Bus"),
     // tree node string
     "cache"		:   _("Cache"),
@@ -58,7 +58,7 @@ $[
     "card_type"	:   _("Card type"),
     // tree node string
     "cardtype"	:   _("Card type"),
-    // tree node string
+    // tree node string - means "class of hardware"
     "class_id"	:   _("Class"),
     // tree node string
     "cdtype"	:   _("CD type"),
@@ -68,7 +68,7 @@ $[
     "device"	:   _("Device"),
     // tree node string
     "device_id"	:   _("Device identifier"),
-    // tree node string
+    // tree node string - means "hardware drivers"
     "drivers"	:   _("Drivers"),
     // tree node string
     "prog_if"	:   _("Prog. interface"),
