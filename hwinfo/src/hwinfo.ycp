@@ -49,7 +49,7 @@ UI::OpenDialog(
  * .probe.mouse doesn't like running X
  * other paths are not user-interesting
  */
-list exclude_list = [.probe.byclass, .probe.bybus, .probe.ihw_data, .probe.system, .probe.status, .probe.cdb_isdn];
+list exclude_list = [.probe.byclass, .probe.bybus, .probe.ihw_data, .probe.system, .probe.status, .probe.cdb_isdn, .probe.boot_disk];
 
 /*
  * if xserver is running, don't probe for mouse and chipcard

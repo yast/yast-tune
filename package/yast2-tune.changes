@@ -1,4 +1,18 @@
 -------------------------------------------------------------------
+Tue May 25 15:04:58 CEST 2004 - lslezak@suse.cz
+
+- don't show .boot_disk value (not reliable and works only on
+  some i386 systems) (#40949)
+- new subpath names (is_uml, redasd, block)
+- version 2.9.22
+
+-------------------------------------------------------------------
+Tue May  4 14:49:57 CEST 2004 - lslezak@suse.cz
+
+- merged proofread texts
+- version 2.9.21
+
+-------------------------------------------------------------------
 Fri Apr  2 16:28:00 CEST 2004 - lslezak@suse.cz
 
 - changed license to GPL

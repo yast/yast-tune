@@ -96,6 +96,10 @@ $[
     // tree node string
     "boot_disk"        :   _("Boot disk"),
     // tree node string
+    "block"		: _("Block devices"),
+    // tree node string
+    "redasd"		: _("DASD disks"),
+    // tree node string
     "cdrom"            :   _("CDROM"),
     // tree node string
     "cpu"              :   _("CPU"),
@@ -113,6 +117,8 @@ $[
     "has_pcmcia"       :   _("Has PCMCIA"),
     // tree node string (multiprocessing)
     "has_smp"  :   _("Has SMP"),
+    // tree node string - UML = User Mode Linux
+    "is_uml"	:	_("UML system"),
     // tree node string
     "ihw_data" :   _("Hardware data"),
     // tree node string

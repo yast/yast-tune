@@ -241,7 +241,7 @@ global define list<map> DetectedHardware(boolean force, block<boolean> abort) ``
     // probe by device class
     list<string> paths = [ "cpu", "memory", "cdrom", "floppy", "disk", "display", "mouse", "keyboard", "sound", "isdn", "modem", "storage", "netcard", "monitor", "printer", "tv", "dvb", "scanner", "camera", "chipcard", "usbctrl", "ieee1394ctrl", "hub", "braille", "joystick", "bios", "pppoe" ];
 
-    Progress::New(_("Detecting hardware..."), "", size(paths), [_("Hardware Detection")], [_("Detecting hardware...")], _("Hardware detection is in progress, please wait."));
+    Progress::New(_("Detecting hardware..."), "", size(paths), [_("Hardware Detection")], [_("Detecting hardware...")], _("Hardware detection is in progress. Please wait."));
 
     Progress::NextStage();
 
