@@ -6,6 +6,8 @@ Requires:	yast2 hdparm
 
 Provides:	yast2-config-hwinfo yast2-tune-idedma
 Obsoletes:	yast2-config-hwinfo yast2-tune-idedma
+Provides:	yast2-trans-hwinfo yast2-trans-idedma
+Obsoletes:	yast2-trans-hwinfo yast2-trans-idedma
 
 BuildArchitectures:     noarch
 
