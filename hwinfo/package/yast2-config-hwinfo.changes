@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Wed Aug  8 14:55:21 CEST 2001 - dmeszar@suse.cz
+
+- now arrows are used as a fallback for list items.
+  each item should have reasonable label. 
+- documented & formated sources
+
+-------------------------------------------------------------------
 Tue Jul 31 19:00:08 CEST 2001 - dmeszar@suse.cz
 
 - model or device_name (if presesnt) is used instead of arrows in lists

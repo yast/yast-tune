@@ -20,8 +20,16 @@
     textdomain "hwinfo";
     include "ui/wizard_dialog.ycp";
 
+
+    /* 
+     *	this global variable is needed for skipping out from recursed function
+     */
     boolean abortPressed=false;
 
+
+    /* 
+     * open progress bar window 
+     */
     UI(`OpenDialog(`VBox(
 	`Label(_("Probing:")),
 	`HBox(
@@ -33,16 +41,25 @@
 	)
     ));
 
-//    UI(`ChangeWidget (`id(`initLab), `Enabled, false));
 
-    list exclude_list=[.probe.byclass, .probe.bybus, .probe.mouse, .probe.ihw_data];    
+    /*
+     * these paths will be excluded from probing.
+     * .probe.mouse doesn't like running X
+     * other paths are not user-interesting
+     */
+    list exclude_list=[.probe.byclass, .probe.bybus, .probe.mouse, .probe.ihw_data, .probe.system];    
 
+    /*
+     * translation table- key is replaced by value on it's way to ui
+     * must be done this way, because keys are machine-generated
+     */
     map trans_table=eval(
     $[
 	"architecture": _("Architecture"),
 	"bus": _("Bus"),
 	"cache": _("Cache"),
 	"card_type": _("Card type"),
+	"cardtype": _("Card type"),
 	"class_id": _("Class"),
 	"cdtype": _("CD type"),
 	"dev_name": _("Device name"),
@@ -54,6 +71,7 @@
 	"resource": _("Resources"),
 	"rev": _("Rev"),
 	"sub_class_id" : _("Class (spec)"),
+	"sub_device":	_("Device (spec)"),
 	"sub_device_id" : _("Device identifier (spec)"),
 	"sub_vendor" : _("Sub Vendor"),
 	"sub_vendor_id" : _("Sub vendor identifier"),
@@ -70,6 +88,7 @@
 	"disk": _("Disk"),
 	"display": _("Display"),
 	"floppy": _("Floppy disk"),
+	"framebuffer": "Framebuffer",
 	"has_apm": _("Has APM"),
 	"has_pcmcia": _("Has PCMCIA"),
 	"has_smp": _("Has SMP"),
@@ -107,21 +126,26 @@
 	
     ]);
 
-    // if xserver is running, don't probe for mouse
-
+    /*
+     * if xserver is running, don't probe for mouse
+     */
     map Xres=SCR (`Execute (.target.bash_output, "/bin/ps -A | /bin/grep X", $[] ));
     if(size(lookup(Xres, "stdout", ""))==0)
     {
 	exclude_list=add(exclude_list, .probe.mouse);
     }
-    
-    define trans_str(any str)
-    ``{
+
+    /*
+     * translate string - looks to the translation table and returns value
+     */    
+    define trans_str(any str) ``{
 	    return lookup(trans_table, str, str);
     }
 
-    define trans_bool(any b)
-    ``{
+    /*
+     * translate boolean to Yes/No
+     */
+    define trans_bool(any b) ``{
 	if(is(b, boolean))
 	{
 	    return b?UI(_("Yes")):UI(_("No"));
@@ -129,11 +153,20 @@
 	return b;
     }
 
+    /*
+     * read the classnames database for translation id's to hardware names
+     */
     map classdb=SCR(`Read (.target.yast2, "classnames.ycp"));
+    /*
+     * translate strings...
+     */ 
     classdb=eval(classdb);
 
-	    /* converts (scalar/nested) lists and maps to tree datastructure
-	    */
+
+    /*
+     * tries to determine hardware name by class_id and sub_class_id
+     * and substitues them in given map. returns modified map
+     */
 
     define translate_hw_entry(map hw) ``{
 	if(haskey(hw, "class_id"))
@@ -153,6 +186,10 @@
 	}
 	return hw;
     }
+
+    /*
+     * reads .proc.cpuinfo and creates hardware map
+     */
 
     define add_cpu_info(map hw) ``{
 	map inf=SCR(`Read(.proc.cpuinfo));
@@ -195,8 +232,11 @@
 	return hw;
     }
 
-    define scalar(any node)
-    ``{
+    /*
+     * evals to true if given value is scalar (not map or term or list)
+     */
+
+    define scalar(any node) ``{
 	if( is(node, string) ||
 	    is(node, boolean) ||
 	    is(node, integer) ||
@@ -209,8 +249,99 @@
 	return false;
     }
 
-    define expandTree(any node)
-    ``{
+    // hack, TODO: remove this
+    define tohexstring(integer i) ``{
+	string out="";
+	list nums=["0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "a", "b", "c", "d", "e", "f"];
+	while(i>0)
+	{
+	    out=sformat("%1"+out, select(nums, i % 16));  
+	    i=i / 16;
+	}
+	return "0x"+out;
+    }
+
+    /*
+     * reads values from map and creates label for this entry
+     */
+
+    define resolution(any a, map m) ``{
+	if(haskey(m, "height"))
+	{
+	    return sformat("%1x%2", lookup(m, "width"), lookup(m, "height"));
+	}
+	return lookup(m, width);
+    }
+
+    define classtostring(any a, map m) ``{
+	return lookup(translate_hw_entry(m), "sub_class_id", "");
+    }
+
+    /*
+     * order table: list of lists.
+     * first item of nested list is key name
+     * second is term that should be used for formating the key- takes key name as first argument
+     * if third item is true, the whole map will be passed to term as second argument
+     */
+
+    list order=[
+	    ["sub_device",  nil], 
+	    ["device",	    nil],
+	    ["model",	    nil],
+	    ["irq",	    nil],
+	    ["start",	    ``tohexstring(), false], // tohex
+	    ["name",	    nil],
+	    ["xkbmodel",    nil],
+	    ["server",	    nil],
+	    ["size",	    nil],
+	    ["unit",	    nil],
+	    ["width",	    ``resolution(), true],
+	    ["cylinders",   ``sformat("cylinders/heads/sectors"), false],
+	    ["dev_name",    nil],
+	    ["modules",	    ``sformat("modules"), false],
+	    ["sub_class_id", ``(classtostring()), true]
+	    ];	
+
+    /*
+     * if expandTree function tries to explore list, it should use some
+     * label for each item. it tree items are maps, this function decides
+     * which value from map will be used as label
+     */
+
+    define getRepresentant(map m) ``{
+	string out="";
+	integer i=0;
+	// search the 'order' table
+	while(i<size(order))
+	{
+	    if(haskey(m, select(select(order, i), 0)))
+	    {
+		if(select(select(order, i), 1)!=nil)
+		{
+		    term t=select(select(order, i), 1);
+		    t=add(t, lookup(m, select(select(order, i), 0)));
+		    if(size(select(order, i))>2 && select(select(order, i), 2))
+		    {
+			t=add(t, m);
+		    }
+		    out=sformat("%1", eval(t));
+		}
+		else
+		{
+		    out=sformat("%1", lookup(m, select(select(order, i), 0)));
+		}
+		break;
+	    }
+	    i=i+1;
+	}
+	return out;
+    }
+    
+    /* 
+     *converts (scalar/nested) lists and maps to tree datastructure
+     */
+
+    define expandTree(any node) ``{
 	if(node==nil) 
 	{
 	    return [];
@@ -220,10 +351,11 @@
 	{	
 	    return [`item(sformat("%1", node))];
 	}
-	
+
+
 	if(is(node, list))
 	{
-	    y2error("node is list: %1", node);
+	    // if node is list ... 
 	    list lout=[];
 	    integer q=size(node);
 	    integer pos=0;
@@ -232,20 +364,14 @@
 		string lab=UI(`Glyph(`ArrowRight));
 		if(is(e, map))
 		{
-		    if(haskey(e, "device"))
+		    // ... create label for each item ...
+		    string s=getRepresentant(e);
+		    if(s!="")
 		    {
-			lab=lookup(e, "device", UI(`Glyph(`ArrowRight)));
-		    }
-		    else if(haskey(e, "model"))
-		    {
-			lab=lookup(e, "model", UI(`Glyph(`ArrowRight)));
-		    }
-		    else if(haskey(e, "dev_name"))
-		    {
-			lab=lookup(e, "dev_name", UI(`Glyph(`ArrowRight)));
+			lab=s;
 		    }
 		}
-    
+		// ... and add it to item list
 		lout=add(lout, `item(lab, expandTree(e)));
 		pos=pos+1;
 	    });
@@ -253,10 +379,12 @@
 	}
 	if(is(node, map))
 	{
+	    // if node is map ...
 	    node=translate_hw_entry(node);
 	    list ltmp=[];
-	    ltmp=foreach(`key, `v, node,
+	    foreach(`key, `v, node,
 	    ``{
+		// ... explore all pairs
 		if(scalar(v))
 		{
 		    ltmp=add(ltmp, `item(sformat("%1 : %2", trans_str(key), trans_bool(v))));
@@ -265,16 +393,19 @@
 		{
 		    ltmp=add(ltmp, `item(trans_str(sformat("%1", key)), expandTree(v)));
 		}
-		return ltmp;
 	    });
+	    // ... and finally sort the items alphabetically
 	    return sort(ltmp);
 	}
 
 	return [];
    }
 
-    define afterLast(string str)
-    ``{
+    /*
+     * returns string that is behind the last dot of given string (extract last part of path)
+     */
+
+    define afterLast(string str) ``{
 	list strs=splitstring(str, ".");
 	return select(strs, size(strs)-1);
     }
@@ -284,8 +415,7 @@
     *	progMin, progMax are bounds for progressBar (because of recursion)
     */
 
-    define buildHwTree(string p, integer progMin, integer progMax) 
-    ``{
+    define buildHwTree(string p, integer progMin, integer progMax) ``{
 
 	any a=UI(`PollInput());
 	if(a==`cancel || a==`abort)
@@ -319,7 +449,6 @@
 	    {
 		if(afterLast(p)=="cpu")
 		{
-		    y2error("cpu: %1", val);
 		    val=maplist(`e, val, ``(add_cpu_info(e)));
 		}
 		return `item(trans_str(afterLast(p)), expandTree(val));
@@ -357,22 +486,27 @@
 	return nil;
     }
 
-
+    // tree item list
     any items=nil;
+    // default initial path
     path pat=.probe;
     if(size(Args()) >0)
     {
+	// initial path overriden by module argument
 	pat=Args(0);
     }
     
+    // build the tree
     items=buildHwTree(sformat("%1", pat), 0, 1000);
 
+    // interrupted
     if(abortPressed)
     {
 	UI(`CloseDialog());
 	return;
     }
-
+    
+    // title label
     string title="All entries";
     if(pat!=.probe)
     {
@@ -395,10 +529,10 @@ details of your computer. Click any node for more info</p>"), false, true));
     
     any event=nil;   
  
+    // wait for finish
     while(event!=`abort && event !=`next && event != `cancel)
     {
 	    event=UI(`UserInput());
-	    y2error(sformat("%1", event));	    
     }    
     UI(`CloseDialog());
 }
