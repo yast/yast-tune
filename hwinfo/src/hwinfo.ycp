@@ -96,8 +96,6 @@ $[
     "vendor_id"	:   _("Vendor identifier"),
 
     // tree node string
-    "architecture"	:   _("Architecture"),
-    // tree node string
     "bios_video"	:   _("Bios video"),
     // tree node string
     "boot_arch"	:   _("Boot architecture"),
@@ -171,6 +169,22 @@ $[
     "usbctrl"	:   _("USB Controller"),
     // tree node
     "hub"	:   _("USB Hub"),
+    // tree node
+    "ieee1394ctrl"	:  _("IEEE1394 Controller"),
+    // tree node
+    "scsi"	:   "SCSI",
+    // tree node
+    "scanner"	:   _("Scanner"),
+    // tree node
+    "mouse"	:   _("Mouse"),
+    // tree node
+    "joystick"	:   _("Joystick"),
+    // tree node
+    "braille"	:   _("Braille Display"),
+    // tree node
+    "chipcard"	:   _("Chipcard Reader"),
+    // tree node - Digital camera or WebCam
+    "camera"	:   _("Camera"),
 
     // tree node string - CPU information
     "bogomips"	:   _("Bogus Millions of Instructions Per Second"),
@@ -191,7 +205,7 @@ $[
     // tree node string - CPU information
     "fpu"		:   _("Floating point unit"),
     // tree node string - CPU information
-    "fpu_exception"	:   "Floating point unit exception",
+    "fpu_exception"	:   _("Floating point unit exception"),
     // tree node string - CPU information
     "hlt_bug"	:   "Halt bug",
     // tree node string - CPU information
@@ -210,12 +224,16 @@ $[
 ]);
 
 /*
- * if xserver is running, don't probe for mouse
+ * if xserver is running, don't probe for mouse and chipcard
+ * because it has bad side effect (moving cursor)
  */
 if (SCR::Execute(.target.bash, "/bin/ps -C X") == 0)
 {
-    y2warning("X server is running - mouse will not be probed");
+    y2warning("X server is running - mouse and chipcard will not be probed");
     exclude_list = add(exclude_list, .probe.mouse);
+
+    // .probe.chipcard has same effect as .probe.mouse
+    exclude_list = add(exclude_list, .probe.chipcard);
 }
 
 /**
@@ -609,7 +627,7 @@ if (abortPressed)
 }
 
 // title label
-string title = _("All entries"); //this wasn't marked for translation in 8.0
+string title = _("&All entries"); //this wasn't marked for translation in 8.0
 if(pat != .probe)
 {
     title = trans_str(afterLast(sformat("%1", pat)));

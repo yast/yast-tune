@@ -10,6 +10,8 @@
  *
  * Since hardware description string disappeared from libhd in june-2001
  * this translation table must be used to obtain those descriptions.
+ *
+ * see file src/ids/src/class in hwinfo sources
  */
 
 {
@@ -44,13 +46,16 @@ $[
 	0x01:	_("Token ring network controller"),
 	0x02:	_("FDDI network controller"),
 	0x03:	_("ATM network controller"),
-	0x80:	_("Network controller")
+	0x04:	_("ISDN controller"),
+	0x80:	_("Network controller"),
+	0x81:	_("Myrinet controller")
 ],
 0x003:
 $[
 	"name":_("Display controller"),
 	0x00:	_("VGA compatible controller"),
 	0x01:	_("XGA compatible controller"),
+	0x02:	_("3D controller"),
 	0x80:	_("Display controller")
 ],
 0x004:
@@ -58,6 +63,7 @@ $[
 	"name":_("Multimedia controller"),
 	0x00:	_("Multimedia video controller"),
 	0x01:	_("Multimedia audio controller"),
+	0x02:	_("Computer telephony device"),
 	0x80:	_("Multimedia controller")
 ],
 0x005:
@@ -78,6 +84,9 @@ $[
 	0x05:	_("PCMCIA bridge"),
 	0x06:	_("NuBus bridge"),
 	0x07:	_("CardBus bridge"),
+	0x08:	_("RACEway bridge"),
+	0x09:	_("Semi-transparent PCI-to-PCI bridge"),
+	0x0a:	_("InfiniBand to PCI host bridge"),
 	0x80:	_("Bridge")
 ],
 0x007:
@@ -85,6 +94,8 @@ $[
 	"name":_("Communication controller"),
 	0x00:	_("Serial controller"),
 	0x01:	_("Parallel controller"),
+	0x02:	_("Multiport serial controller"),
+	0x03:	_("Modem"),
 	0x80:	_("Communication controller")
 ],
 0x008:
@@ -94,6 +105,7 @@ $[
 	0x01:	_("DMA controller"),
 	0x02:	_("Timer"),
 	0x03:	_("RTC"),
+	0x04:	_("PCI Hot-plug controller"),
 	0x80:	_("System peripheral")
 ],
 0x009:
@@ -102,6 +114,8 @@ $[
 	0x00:	_("Keyboard controller"),
 	0x01:	_("Digitizer Pen"),
 	0x02:	_("Mouse controller"),
+	0x03:	_("Scanner controller"),
+	0x04:	_("Gameport controller"),
 	0x80:	_("Input device controller")
 ],
 0x00a:
@@ -118,6 +132,7 @@ $[
 	0x02:	_("Pentium"),
 	0x10:	_("Alpha"),
 	0x20:	_("Power PC"),
+	0x30:	_("MIPS"),
 	0x40:	_("Co-processor")
 ],
 0x00c:
@@ -127,12 +142,45 @@ $[
 	0x01:	_("ACCESS Bus"),
 	0x02:	_("SSA"),
 	0x03:	_("USB Controller"),
-	0x04:	_("Fiber Channel")
+	0x04:	_("Fiber Channel"),
+	0x05:	_("SMBus"),
+	0x06:	_("InfiniBand")
+],
+0x00d:
+$[
+	"name":_("Wireless controller"),
+	0x00:	_("IRDA controller"),
+	0x01:	_("Consumer IR controller"),
+	0x10:	_("RF controller"),
+	0x80:	_("Wireless controller")
 ],
 0x00e:
 $[
 	"name":_("Intelligent controller"),
 	0x00:	_("I2O")
+],
+0x00f:
+$[
+	"name":_("Satellite communications controller"),
+	0x00:	_("Satellite TV controller"),
+	0x01:	_("Satellite audio communication controller"),
+	0x03:	_("Satellite voice communication controller"),
+	0x04:	_("Satellite data communication controller")
+],
+0x010:
+$[
+	"name":_("Encryption controller"),
+	0x00:	_("Network and computing encryption device"),
+	0x10:	_("Entertainment encryption device"),
+	0x80:	_("Encryption controller")
+],
+0x011:
+$[
+	"name":_("Signal processing controller"),
+	0x00:	_("DPIO module"),
+	0x01:	_("Performance counters"),
+	0x10:	_("Communication synchronizer"),
+	0x80:	_("Signal processing controller")
 ],
 0x0ff:
 $[
@@ -177,7 +225,8 @@ $[
 	0x00:	_("PS/2 Mouse"),
 	0x01:	_("Serial Mouse"),
 	0x02:	_("Bus Mouse"),
-	0x03:	_("USB Mouse")
+	0x03:	_("USB Mouse"),
+	0x80:	_("Mouse")
 ],
 0x106:
 $[
@@ -195,6 +244,12 @@ $[
 	0x01:	_("Ethernet"),
 	0x02:	_("Tokenring"),
 	0x03:	_("FDDI"),
+	0x04:	_("CTC"),
+	0x05:	_("IUCV"),
+	0x06:	_("HSI"),
+	0x07:	_("QETH"),
+	0x08:	_("ESCON"),
+	0x09:	_("Myrinet"),
 	0x80:	_("Network Interface")
 ],
 0x108:
@@ -207,12 +262,49 @@ $[
 	"name":_("Printer")
 ],
 0x10a:
-$["name":_("Hub"),
+$[
+	"name":_("Hub"),
 	0x01:	_("USB Hub")
 ],
 0x10b:
 $[
 	"name":_("Braille Display")
+],
+0x10c:
+$[
+	"name":_("Scanner")
+],
+0x10d:
+$[
+	"name":_("Joystick"),
+	0x01:	_("Gamepad")
+],
+0x10e:
+$[
+	"name":_("Chipcard Reader")
+],
+0x10f:
+$[
+	"name":_("Camera"),
+	0x01:	_("WebCam"),
+	0x02:	_("Digital Camera")
+],
+0x110:
+$[
+	"name":_("Framebuffer"),
+	0x01:	_("VESA Framebuffer")
+],
+0x111:
+$[
+	"name":_("DVB Card"),
+	0x01:	_("DVB-C Card"),
+	0x02:	_("DVB-S Card"),
+	0x03:	_("DVB-T Card")
+],
+0x112:
+$[
+	"name":_("TV Card")
+
 ]
 
 ];

@@ -1,4 +1,13 @@
 -------------------------------------------------------------------
+Fri Feb  7 15:14:54 CET 2003 - lslezak@suse.de
+
+- don't probe for chipcards when X server is running
+  (moves mouse cursor)
+- updated class names (hwinfo 5.51)
+- updated probe agent mapping (from path to translateable string)
+- version 2.7.3
+
+-------------------------------------------------------------------
 Mon Feb  3 15:30:08 CET 2003 - lslezak@suse.cz
 
 - merged proof-read texts
