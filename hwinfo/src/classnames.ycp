@@ -1,3 +1,25 @@
+/**
+ * File:
+ *   classnames.ycp
+ *
+ * Module:
+ *   hwinfo
+ *
+ * Summary:
+ *   database file
+ *
+ * Authors:
+ *   Dan Meszaros <dmeszar@suse.cz>
+ *
+ *
+ * $Id$
+ *
+ * since hardware description string disappeared fro libhd in june-2001
+ * this translation table must be used to obtain those descriptions
+ * 
+ */
+
+
 $[
 0x000:	
 $[

@@ -1,3 +1,22 @@
+/**
+ * File:
+ *   menuentry_hwinfo.ycp
+ *
+ * Module:
+ *   hwinfo
+ *
+ * Summary:
+ *   menuentry file
+ *
+ * Authors:
+ *   Dan Meszaros <dmeszar@suse.cz>
+ *
+ *
+ * $Id$
+ *
+ * 
+ */
+
 {
   ////////////////////////////////////////////////////////////////////////////////////////
   // set the textdomain, (generally the name of the module for example "lan" for y2c_lan
