@@ -526,8 +526,8 @@
                                     title,
                                     select(items,1));
 
-    UI::Wizard::CreateDialog();
-    UI::Wizard::SetContents (_("Hardware info"), con, _("<P><B>Hardware info</B> module displays the hardware 
+    Wizard::CreateDialog();
+    Wizard::SetContents (_("Hardware info"), con, _("<P><B>Hardware info</B> module displays the hardware 
 details of your computer. Click any node for more info</p>"), false, true);
 
     UI::ReplaceWidget(`id(`rep_back), `HStretch());
