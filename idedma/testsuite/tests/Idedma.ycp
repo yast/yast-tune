@@ -9,50 +9,50 @@
 include "testsuite.ycp";
 import "Idedma";
 
-map read = $[ "probe" : $[ "bybus" : $[ "ide" : [ $["device" : "ABC-13245", "dev_name" : "/dev/hda"], $["device" : "XYZ-6789", "dev_name" : "/dev/hdc"] ] ] ] ];
-map exec = $[ "target" : $["bash_output" : $["stdout" : " using_dma    =  1 (on)", "exit" : 0 ] , "bash" : 0 ] ];
+map READ = $[ "probe" : $[ "bybus" : $[ "ide" : [ $["device" : "ABC-13245", "dev_name" : "/dev/hda"], $["device" : "XYZ-6789", "dev_name" : "/dev/hdc"] ] ] ] ];
+map EXEC = $[ "target" : $["bash_output" : $["stdout" : " using_dma    =  1 (on)", "exit" : 0 ] , "bash" : 0 ] ];
 
-TEST(``(Idedma::Read()), [ read, $[], exec ], nil );
+TEST(``(Idedma::Read()), [ READ, $[], EXEC ], nil );
 DUMP(Idedma::get_ide_devices());
 
 
-read = add(read, "sysconfig", $["hardware" : $[ "DEVICES_FORCE_IDE_DMA_ON" : "", "DEVICES_FORCE_IDE_DMA_OFF" : "hdc"] ]);
-exec = $["target" : $["bash_output" : $["stdout" : "Error", "exit" : -1 ] ] ];
+READ = add(READ, "sysconfig", $["hardware" : $[ "DEVICES_FORCE_IDE_DMA_ON" : "", "DEVICES_FORCE_IDE_DMA_OFF" : "hdc"] ]);
+EXEC = $["target" : $["bash_output" : $["stdout" : "Error", "exit" : -1 ] ] ];
 
-TEST(``(Idedma::Read()), [ read, $[], exec ], nil );
+TEST(``(Idedma::Read()), [ READ, $[], EXEC ], nil );
 DUMP(Idedma::get_ide_devices());
 
 
-read = add(read, "sysconfig", $["hardware" : $[ "DEVICES_FORCE_IDE_DMA_ON" : "hda", "DEVICES_FORCE_IDE_DMA_OFF" : ""] ]);
-exec = $[ "target" : $["bash_output" : $["stdout" : " using_dma    =  1 (on)", "exit" : 0 ] ] ];
+READ = add(READ, "sysconfig", $["hardware" : $[ "DEVICES_FORCE_IDE_DMA_ON" : "hda", "DEVICES_FORCE_IDE_DMA_OFF" : ""] ]);
+EXEC = $[ "target" : $["bash_output" : $["stdout" : " using_dma    =  1 (on)", "exit" : 0 ] ] ];
 
-TEST(``(Idedma::Read()), [ read, $[], exec ], nil );
+TEST(``(Idedma::Read()), [ READ, $[], EXEC ], nil );
 DUMP(Idedma::get_ide_devices());
 
 
-read = add(read, "sysconfig", $["hardware" : $[ "DEVICES_FORCE_IDE_DMA_ON" : "", "DEVICES_FORCE_IDE_DMA_OFF" : "hda"] ]);
+READ = add(READ, "sysconfig", $["hardware" : $[ "DEVICES_FORCE_IDE_DMA_ON" : "", "DEVICES_FORCE_IDE_DMA_OFF" : "hda"] ]);
 
-TEST(``(Idedma::Read()), [ read, $[], exec ], nil );
+TEST(``(Idedma::Read()), [ READ, $[], EXEC ], nil );
 DUMP(Idedma::get_ide_devices());
 
 
-map write = $[];
-read = add(read, "init", $[ "scripts" : $[ "exists" : true ] ]);
+map WRITE = $[];
+READ = add(READ, "init", $[ "scripts" : $[ "exists" : true ] ]);
 
 Idedma::set_dma("/dev/hda", true);
 Idedma::set_dma("/dev/hdc", false);
 DUMP(Idedma::get_ide_devices());
-TEST(``(Idedma::Write()), [ read, write, exec ], nil );
+TEST(``(Idedma::Write()), [ READ, WRITE, EXEC ], nil );
 
 Idedma::set_dma("/dev/hda", false);
 Idedma::set_dma("/dev/hdc", false);
 DUMP(Idedma::get_ide_devices());
-TEST(``(Idedma::Write()), [ read, write, exec ], nil );
+TEST(``(Idedma::Write()), [ READ, WRITE, EXEC ], nil );
 
 Idedma::set_dma("/dev/hda", nil);
 Idedma::set_dma("/dev/hdx", false);
 DUMP(Idedma::get_ide_devices());
-TEST(``(Idedma::Write()), [ read, write, exec ], nil );
+TEST(``(Idedma::Write()), [ READ, WRITE, EXEC ], nil );
 
 
 }

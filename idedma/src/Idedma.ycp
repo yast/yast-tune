@@ -256,7 +256,7 @@
 		    {
 			if (SCR::Execute(.target.bash, hdparm_bin + " -d " + dma_str + " " + d_name) != 0)
 			{
-			    Report::Error(_("Device '%1': Can not set DMA to value '%2'"), d_name, dma_str);
+			    Report::Error(sformat(_("Device %1: Can not set DMA to value %2"), d_name, dma_str));
 			    ret = false;
 			}
 		    }

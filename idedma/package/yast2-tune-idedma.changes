@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Mon Feb 11 09:00:08 CET 2002 - lslezak@suse.cz
+
+- fixed testsuite
+- fixed error reporting
+- version 2.5.7
+
+-------------------------------------------------------------------
 Thu Feb  7 16:37:25 CET 2002 - lslezak@suse.cz
 
 - fixed: refresh selected mode in right column
