@@ -128,6 +128,8 @@ define symbol details_dialog(string model, map info) ``{
     Wizard::SetContents(sformat(_("Component '%1'"), model), content,
 			help_text,
 			true, true);
+    if ( Mode::initial )
+	Wizard::SetTitleIcon( "hardware_info" );
 
     y2debug("tree content: %1", l);
 
