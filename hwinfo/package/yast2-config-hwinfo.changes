@@ -4,12 +4,6 @@ Fri May 11 18:01:32 CEST 2001 - dmeszar@suse.cz
 - item numbering changed from 'first' 'second' .. to '1.' '2.' (#8150)
 
 ------------------------------------------------------------------------
-Fri May 11 17:44:20 2001 - ke@suse.de
-
-- Update to version 2.3.5.
-- Update cs, de, and ja.
-
--------------------------------------------------------------------
 Fri May 11 13:16:21 CEST 2001 - kkaempf@suse.de
 
 - use bzip2 for packaging
