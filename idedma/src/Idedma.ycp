@@ -211,12 +211,12 @@
 	string dma_on_string = "";
 	string dma_off_string = "";
 
+	boolean first_on = true;
+	boolean first_off = true;
+
 	foreach(`d, ide_devices, ``{
 		string d_name = lookup(d, "dev_name", nil);
 		string dev_name_base = substring(d_name, findlastof(d_name, "/") + 1);
-
-		boolean first_on = true;
-		boolean first_off = true;
 
 		if (d_name != nil)
 		{
@@ -225,10 +225,10 @@
 
 		    if (dma_on == true)
 		    {
-			if (first_on)
+			if (first_on == true)
 			{
 			    dma_on_string = dev_name_base;
-			    first_on = true;
+			    first_on = false;
 			}
 			else
 			{
@@ -239,7 +239,7 @@
 		    }
 		    else if (dma_on == false)
 		    {
-			if (first_off)
+			if (first_off == true)
 			{
 			    dma_off_string = dev_name_base;
 			    first_off = false;

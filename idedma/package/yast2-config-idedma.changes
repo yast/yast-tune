@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Mon Jan 28 15:43:03 CET 2002 - lslezak@suse.cz
+
+- added testsuite
+- fixed writing more than one device to sysconfig variable
+- version 2.5.2
+
+-------------------------------------------------------------------
 Thu Jan 24 10:03:31 CET 2002 - lslezak@suse.cz
 
 - read/write configuration to /etc/sysconfig/hardware
