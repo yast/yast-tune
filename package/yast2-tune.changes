@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Sun Aug 11 22:47:28 CEST 2002 - mvidner@suse.cz
+
+- Fix building (testsuite adapted to changes in yast2.rpm, due to #17608).
+- 2.6.8
+
+-------------------------------------------------------------------
 Fri Aug 09 14:59:35 CEST 2002 - arvin@suse.de
 
 - added some more translation texts
