@@ -72,6 +72,7 @@
 
 	// for each detected IDE device build internal
 	foreach(`dev, devices, ``{
+		// device model name is unknown
 		string device = lookup(dev, "device", _("Unknown device"));
 		string dev_name = lookup(dev, "dev_name", nil);
 
@@ -94,7 +95,7 @@
 			dma_on = false;
 		    }
 
-		    // get textual information about device type (disk, CD-ROM, tape, ...) from identification number
+		    // get textual information about device type (disk, CD-ROM, tape, ...) from identification number - device type was not found
 		    string subclass_id_string = eval(lookup(lookup(class_ids, class_id, $[]), subclass_id, _("Unknown device type")));
 
 		    // get current DMA setting
@@ -259,6 +260,7 @@
 
 			if (dma_on != actual)
 			{
+			    // error message - %1 is device file (e.g. /dev/hda), %2 is 0 (DMA disabled) or 1 (DMA enabled)
 			    Report::Error(sformat(_("Device %1: Can not set DMA to value %2"), d_name, dma_str));
 			    ret = false;
 			}
@@ -274,6 +276,7 @@
 	if ((SCR::Write(.sysconfig.hardware.DEVICES_FORCE_IDE_DMA_ON, dma_on_string)
 	    && SCR::Write(.sysconfig.hardware.DEVICES_FORCE_IDE_DMA_OFF, dma_off_string)) == false)
 	{
+	    // error message
 	    Report::Error(_("Unable to write settings to '/etc/sysconfig/hardware'."));
 	    ret = false;
 	}
@@ -282,6 +285,7 @@
 	// enable service
 	if (Runlevel::ServiceAdjust("boot.idedma", "default") != true)
 	{
+	    // error message
 	    Report::Error(_("Can not enable service 'boot.idedma'."));
 	    ret = false;
 	}

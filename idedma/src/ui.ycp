@@ -60,7 +60,10 @@ global define any IdedmaSequence() ``{
 	]
     ];
 
+    // dialog header
     string caption = _("IDE DMA setup");
+
+    // progress label
     term contents = `Label (_("Initializing ..."));
 
     Wizard::CreateDialog();
@@ -82,7 +85,9 @@ global define any IdedmaSequence() ``{
  * @return any Result from WizardSequencer() function
  */
 global define any IdedmaAutoSequence () ``{
+    // dialog header
     string caption = _("IDE DMA setup");
+    // progress label
     term contents = `Label (_("Initializing ..."));
 
     Wizard::CreateDialog ();
@@ -196,6 +201,7 @@ global define list get_table_items() ``{
 		dma = dma_off_string;
 	    }
 
+	    // current DMA mode is unknown
 	    string current_dma = _("Unknown");
 
 	    if (lookup(d, "current_dma", nil) == true)
@@ -208,8 +214,11 @@ global define list get_table_items() ``{
 		current_dma = dma_off_string;
 	    }
 
+	    // device model name is unknown
 	    string device_name = lookup(d, "device", _("Unknown device"));
+	    // device file name is unknown
 	    string device = lookup(d, "dev_name", _("Unknown"));
+	    // device type (disk, cdrom,...) is unknown
 	    string device_type = lookup(d, "device_type", _("Unknown type"));
 
 	    table_items = add(table_items, `item(`id(id), current_dma, device_name, device_type, device, dma));
@@ -226,17 +235,22 @@ global define list get_table_items() ``{
  * @return any Result from UserInput()
  */
 global define any DmaConfigDialog () ``{
+    // dialog header
     string caption = _("IDE DMA setup");
     boolean changed = false;
     list items = get_table_items();
 
     term contents = `VBox(
+			// table header
 			`Table(`id(`device_table), `header(_("Current DMA mode"), _("Device name"), _("Type"), _("Device"), _("Required DMA mode")), items),
 			`HBox(
+			    // push button label
 			    `PushButton(`id(`dma_enable), _("&DMA on")),
 			    `HSpacing(2),
+			    // push button label
 			    `PushButton(`id(`dma_disable), _("D&MA off")),
 			    `HSpacing(2),
+			    // push button label
 			    `PushButton(`id(`dma_default), _("&No change"))
 			),
 			`VSpacing(0.5)
@@ -274,6 +288,7 @@ global define any DmaConfigDialog () ``{
 		    // enabling DMA on device with currnet DMA off
 		    if (ret == `dma_enable && curr_dma == dma_off_string)
 		    {
+			// warning popup message
 			UI::WarningPopup(_("Enabling DMA on some devices can cause\ndata loss or system lock."));
 		    }
 

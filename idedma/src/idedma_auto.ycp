@@ -75,13 +75,16 @@
 		  `RichText( `id(`summary), Idedma::Summary()),
 		  `VSpacing(0.5),
 		  `HBox(
+			// push button label
 			`PushButton(`id(`configure), _("&Configure IDE DMA mode")),
 			`HStretch(),
+			// push button label
 			`PushButton(`id(`reset), _("&Reset Configuration"))
 			),
 		  `VSpacing(1)
 		  );
-	Wizard::SetContents(_("NIS Configuration"),
+	// dialog header
+	Wizard::SetContents(_("IDE DMA Configuration"),
 			    contents, "", true, true);
     }
 

@@ -1,4 +1,12 @@
 -------------------------------------------------------------------
+Tue Aug  6 10:56:12 CEST 2002 - lslezak@suse.de
+
+- added help texts for translators
+- removed yast2-runlevel from Requires and #neededforbuild
+- hwinfo: added new path descriptions for translation
+- version 2.6.4
+
+-------------------------------------------------------------------
 Fri Jul 12 16:28:16 CEST 2002 - arvin@suse.de
 
 - use proper namespace for Args and CallFunction (#16776)

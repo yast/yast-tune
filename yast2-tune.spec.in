@@ -1,8 +1,8 @@
 @HEADER-COMMENT@
-# neededforbuild yast2-devel-packages yast2-runlevel
+# neededforbuild yast2-devel-packages
 
 @HEADER@
-Requires:	yast2 yast2-runlevel hdparm
+Requires:	yast2 hdparm
 
 Provides:	yast2-config-hwinfo yast2-tune-idedma
 Obsoletes:	yast2-config-hwinfo yast2-tune-idedma

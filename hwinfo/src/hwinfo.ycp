@@ -25,10 +25,12 @@ boolean abortPressed = false;
  * open progress bar window
  */
 UI::OpenDialog(`VBox(
+    // popup dialog header
     `Label(_("Probing:")),
     `HBox(
 	`HWeight(1, `Label(`id(`initLab), ""))
     ),
+    // progress bar label
     `ProgressBar(`id(`initProg), _("Progress:"), 1000, 0),
     `PushButton(`id(`abort), UI::AbortButtonLabel()))
     );
@@ -46,73 +48,155 @@ list exclude_list = [.probe.byclass, .probe.bybus, .probe.mouse, .probe.ihw_data
  */
 map trans_table = eval(
 $[
+    // tree node string
     "architecture"	:   _("Architecture"),
+    // tree node string
     "bus"		:   _("Bus"),
+    // tree node string
     "cache"		:   _("Cache"),
+    // tree node string
     "card_type"	:   _("Card type"),
+    // tree node string
     "cardtype"	:   _("Card type"),
+    // tree node string
     "class_id"	:   _("Class"),
+    // tree node string
     "cdtype"	:   _("CD type"),
+    // tree node string
     "dev_name"	:   _("Device name"),
+    // tree node string
     "device"	:   _("Device"),
+    // tree node string
     "device_id"	:   _("Device identifier"),
-    "family"	:   _("Family"),
-    "model"		:   _("Model"),
+    // tree node string
     "prog_if"	:   _("Prog. interface"),
+    // tree node string
     "resource"	:   _("Resources"),
+    // tree node string
     "rev"		:   _("Rev"),
+    // tree node string
     "sub_class_id"	:   _("Class (spec)"),
+    // tree node string
     "sub_device"	:   _("Device (spec)"),
+    // tree node string
     "sub_device_id" :   _("Device identifier (spec)"),
+    // tree node string
     "sub_vendor"	:   _("Sub Vendor"),
+    // tree node string
     "sub_vendor_id" :   _("Sub vendor identifier"),
+    // tree node string
     "unique_key"	:   _("Unique key"),
+    // tree node string
     "vendor"	:   _("Vendor"),
+    // tree node string
     "vendor_id"	:   _("Vendor identifier"),
 
+    // tree node string
     "architecture"	:   _("Architecture"),
+    // tree node string
     "bios_video"	:   _("Bios video"),
+    // tree node string
     "boot_arch"	:   _("Boot architecture"),
+    // tree node string
     "boot_disk"	:   _("Boot disk"),
+    // tree node string
     "cdrom"		:   _("CDROM"),
+    // tree node string
     "cpu"		:   _("CPU"),
+    // tree node string
     "disk"		:   _("Disk"),
+    // tree node string
     "display"	:   _("Display"),
+    // tree node string
     "floppy"	:   _("Floppy disk"),
+    // tree node string
     "framebuffer"	:   "Framebuffer",
+    // tree node string
     "has_apm"	:   _("Has APM"),
+    // tree node string
     "has_pcmcia"	:   _("Has PCMCIA"),
+    // tree node string
     "has_smp"	:   _("Has SMP"),
+    // tree node string
     "ihw_data"	:   _("Hardware data"),
+    // tree node string
     "isdn"		:   _("ISDN"),
+    // tree node string
     "keyboard"	:   _("Keyboard"),
+    // tree node string
     "monitor"	:   _("Monitor"),
+    // tree node string
     "netdev"	:   _("Network devices"),
+    // tree node string
     "netif"		:   _("Network interface"),
+    // tree node string
     "printer"	:   _("Printer"),
+    // tree node string
     "modem"		:   _("Modem"),
+    // tree node string
     "sound"		:   _("Sound"),
+    // tree node string
     "storage"	:   _("Storage media"),
+    // tree node string
     "system"	:   _("System"),
+    // tree node string
     "tv"		:   _("TV Card"),
+    // tree node string
     "usb_type"	:   _("USB type"),
+    // tree node string
     "version"	:   _("Version"),
+    // tree node string - memory (RAM) information
+    "memory"	:   _("Memory"),
+    // tree node string
+    "netcard"	:   _("Network card"),
+    // tree node string
+    "bios"	:   _("BIOS"),
+    // tree node string
+    "fbdev"	:   _("Framebuffer device"),
+    // tree node string - bus type
+    "ide"	:   _("IDE"),
+    // tree node string - bus type
+    "pci"	:   _("PCI"),
+    // tree node string - bus type
+    "usb"	:   _("USB"),
+    // tree node
+    "usbctrl"	:   _("USB Controller"),
+    // tree node
+    "hub"	:   _("USB Hub"),
 
-    // cpu stuff
+    // tree node string - CPU information
     "bogomips"	:   _("Bogus Millions of Instructions Per Second"),
+    // tree node string - CPU information
     "cache"		:   _("Cache"),
+    // tree node string - CPU information
     "coma_bug"	:   "Coma bug",
+    // tree node string - CPU information
     "f00f_bug"	:   "f00f bug",
+    // tree node string - CPU information
     "cpuid_level"	:   _("CPU id level"),
+    // tree node string - CPU information
     "mhz"		:   _("Frequency"),
+    // tree node string - CPU information
     "fdiv_bug"	:   "Floating point division bug",
+    // tree node string - CPU information
     "flags"		:   _("Flags"),
+    // tree node string - CPU information
     "fpu"		:   _("Floating point unit"),
+    // tree node string - CPU information
     "fpu_exception"	:   "Floating point unit exception",
+    // tree node string - CPU information
     "hlt_bug"	:   "Halt bug",
+    // tree node string - CPU information
     "processor"	:   _("Processor"),
+    // tree node string - CPU information
     "stepping"	:   _("Stepping"),
+    // tree node string - CPU information
     "vendor_id"	:   _("Vendor identifier"),
+    // tree node string - CPU information
+    "family"	:   _("Family"),
+    // tree node string - CPU information
+    "model"		:   _("Model"),
+    // tree node string - CPU information
     "wp"		:   _("WP")
 
 ]);
@@ -139,6 +223,7 @@ define string trans_str(any str) ``{
 define string trans_bool(any b) ``{
     if (is(b, boolean))
     {
+	// yes/no strings
 	return b ? _("Yes") : _("No");
     }
     return b;
@@ -431,6 +516,8 @@ define term buildHwTree(string p, integer progMin, integer progMax) ``{
     UI::ChangeWidget(`id(`initLab), `Value, trans_str(afterLast(p)));
     path pat = topath(p);
 
+    y2debug("Reading path: %1", p);
+
     if (contains(exclude_list, pat))
     {
 	return nil;
@@ -543,7 +630,11 @@ UI::ReplaceWidget(`id(`rep_back), `HStretch());
 UI::ReplaceWidget(`id(`rep_next), `HStretch());
 UI::ReplaceWidget(`id(`rep_abort), `PushButton(`id(`next), UI::CloseButtonLabel()));
 
-Wizard::SetContents (_("Hardware info"), con, _("<P><B>Hardware info</B> module displays the hardware 
+// dialog header
+Wizard::SetContents (_("Hardware info"), con,
+
+// help text
+ _("<P><B>Hardware info</B> module displays the hardware 
 details of your computer. Click any node for more info</p>"), false, true);
 
 any event = nil;
