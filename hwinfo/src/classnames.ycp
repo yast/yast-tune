@@ -1,28 +1,27 @@
 /**
- * File:
- *   classnames.ycp
- *
- * Module:
- *   hwinfo
- *
- * Summary:
- *   database file
- *
- * Authors:
- *   Dan Meszaros <dmeszar@suse.cz>
- *
+ * File:	include/hwinfo/classnames.ycp
+ * Module:	Hardware information
+ * Summary:	Class DB file
+ * Authors:	Dan Meszaros <dmeszar@suse.cz>
+ *		Ladislav Slezak <lslezak@suse.cz>
+ *		Michal Svec <msvec@suse.cz>
  *
  * $Id$
  *
- * since hardware description string disappeared fro libhd in june-2001
- * this translation table must be used to obtain those descriptions
- *
-    textdomain "tune";
+ * Since hardware description string disappeared fro libhd in june-2001
+ * this translation table must be used to obtain those descriptions.
  */
 
+{
 
-$[
-0x000:	
+textdomain "tune";
+
+/**
+ * Class names collected
+ */
+global map ClassNames = $[
+
+0x000:
 $[
 	"name":_("Unclassified device"),
 	0x00:	_("Unclassified device"),
@@ -81,7 +80,7 @@ $[
 	0x07:	_("CardBus bridge"),
 	0x80:	_("Bridge")
 ],
-0x007: 
+0x007:
 $[
 	"name":_("Communication controller"),
 	0x00:	_("Serial controller"),
@@ -147,7 +146,7 @@ $[
 	0x01:	_("CRT Monitor"),
 	0x02:	_("LCD Monitor")
 ],
-0x101:	
+0x101:
 $[
 	"name":_("Internally Used Class"),
 	0x01:	_("ISA PnP Interface"),
@@ -207,7 +206,7 @@ $[	"name":_("Keyboard"),
 $[
 	"name":_("Printer")
 ],
-0x10a:	
+0x10a:
 $["name":_("Hub"),
 	0x01:	_("USB Hub")
 ],
@@ -215,4 +214,8 @@ $["name":_("Hub"),
 $[
 	"name":_("Braille Display")
 ]
-]
+
+];
+
+/* EOF */
+}

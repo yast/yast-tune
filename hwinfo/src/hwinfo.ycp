@@ -1,578 +1,559 @@
 /**
- * File:
- *   hwinfo.ycp
- *
- * Module:
- *   hwinfo
- *
- * Summary:
- *   Main file
- *
- * Authors:
- *   Dan Meszaros <dmeszar@suse.cz>
- *
+ * File:	clients/hwinfo.ycp
+ * Module:	Hardware information
+ * Summary:	Main file
+ * Authors:	Dan Meszaros <dmeszar@suse.cz>
+ *		Ladislav Slezak <lslezak@suse.cz>
+ *		Michal Svec <msvec@suse.cz>
  *
  * $Id$
- *
- * Main file for hwinfo viewer
- *
  */
 
-
 {
-    textdomain "tune";
-    import "Wizard";
-//    include "ui/wizard_dialog.ycp";
 
+textdomain "tune";
+import "Wizard";
 
-    /*
-     *	this global variable is needed for skipping out from recursed function
-     */
-    boolean abortPressed = false;
+include "hwinfo/classnames.ycp";
 
+/**
+ * this global variable is needed for skipping out from recursed function
+ */
+boolean abortPressed = false;
 
-    /*
-     * open progress bar window
-     */
-    UI::OpenDialog(`VBox(
-	`Label(_("Probing:")),
-	`HBox(
-	    `HWeight(1, `Label(`id(`initLab), ""))
-	),
-	`ProgressBar(`id(`initProg), _("Progress:"), 1000, 0),
-	`PushButton(`id(`abort), UI::AbortButtonLabel()))
-	);
+/*
+ * open progress bar window
+ */
+UI::OpenDialog(`VBox(
+    `Label(_("Probing:")),
+    `HBox(
+	`HWeight(1, `Label(`id(`initLab), ""))
+    ),
+    `ProgressBar(`id(`initProg), _("Progress:"), 1000, 0),
+    `PushButton(`id(`abort), UI::AbortButtonLabel()))
+    );
 
+/*
+ * these paths will be excluded from probing.
+ * .probe.mouse doesn't like running X
+ * other paths are not user-interesting
+ */
+list exclude_list = [.probe.byclass, .probe.bybus, .probe.mouse, .probe.ihw_data, .probe.system, .probe.status];
 
-    /*
-     * these paths will be excluded from probing.
-     * .probe.mouse doesn't like running X
-     * other paths are not user-interesting
-     */
-    list exclude_list = [.probe.byclass, .probe.bybus, .probe.mouse, .probe.ihw_data, .probe.system, .probe.status];
+/*
+ * translation table- key is replaced by value on it's way to ui
+ * must be done this way, because keys are machine-generated
+ */
+map trans_table = eval(
+$[
+    "architecture"	:   _("Architecture"),
+    "bus"		:   _("Bus"),
+    "cache"		:   _("Cache"),
+    "card_type"	:   _("Card type"),
+    "cardtype"	:   _("Card type"),
+    "class_id"	:   _("Class"),
+    "cdtype"	:   _("CD type"),
+    "dev_name"	:   _("Device name"),
+    "device"	:   _("Device"),
+    "device_id"	:   _("Device identifier"),
+    "family"	:   _("Family"),
+    "model"		:   _("Model"),
+    "prog_if"	:   _("Prog. interface"),
+    "resource"	:   _("Resources"),
+    "rev"		:   _("Rev"),
+    "sub_class_id"	:   _("Class (spec)"),
+    "sub_device"	:   _("Device (spec)"),
+    "sub_device_id" :   _("Device identifier (spec)"),
+    "sub_vendor"	:   _("Sub Vendor"),
+    "sub_vendor_id" :   _("Sub vendor identifier"),
+    "unique_key"	:   _("Unique key"),
+    "vendor"	:   _("Vendor"),
+    "vendor_id"	:   _("Vendor identifier"),
 
-    /*
-     * translation table- key is replaced by value on it's way to ui
-     * must be done this way, because keys are machine-generated
-     */
-    map trans_table = eval(
-    $[
-	"architecture"	:   _("Architecture"),
-	"bus"		:   _("Bus"),
-	"cache"		:   _("Cache"),
-	"card_type"	:   _("Card type"),
-	"cardtype"	:   _("Card type"),
-	"class_id"	:   _("Class"),
-	"cdtype"	:   _("CD type"),
-	"dev_name"	:   _("Device name"),
-	"device"	:   _("Device"),
-	"device_id"	:   _("Device identifier"),
-	"family"	:   _("Family"),
-	"model"		:   _("Model"),
-	"prog_if"	:   _("Prog. interface"),
-	"resource"	:   _("Resources"),
-	"rev"		:   _("Rev"),
-	"sub_class_id"	:   _("Class (spec)"),
-	"sub_device"	:   _("Device (spec)"),
-	"sub_device_id" :   _("Device identifier (spec)"),
-	"sub_vendor"	:   _("Sub Vendor"),
-	"sub_vendor_id" :   _("Sub vendor identifier"),
-	"unique_key"	:   _("Unique key"),
-	"vendor"	:   _("Vendor"),
-	"vendor_id"	:   _("Vendor identifier"),
+    "architecture"	:   _("Architecture"),
+    "bios_video"	:   _("Bios video"),
+    "boot_arch"	:   _("Boot architecture"),
+    "boot_disk"	:   _("Boot disk"),
+    "cdrom"		:   _("CDROM"),
+    "cpu"		:   _("CPU"),
+    "disk"		:   _("Disk"),
+    "display"	:   _("Display"),
+    "floppy"	:   _("Floppy disk"),
+    "framebuffer"	:   "Framebuffer",
+    "has_apm"	:   _("Has APM"),
+    "has_pcmcia"	:   _("Has PCMCIA"),
+    "has_smp"	:   _("Has SMP"),
+    "ihw_data"	:   _("Hardware data"),
+    "isdn"		:   _("ISDN"),
+    "keyboard"	:   _("Keyboard"),
+    "monitor"	:   _("Monitor"),
+    "netdev"	:   _("Network devices"),
+    "netif"		:   _("Network interface"),
+    "printer"	:   _("Printer"),
+    "modem"		:   _("Modem"),
+    "sound"		:   _("Sound"),
+    "storage"	:   _("Storage media"),
+    "system"	:   _("System"),
+    "tv"		:   _("TV Card"),
+    "usb_type"	:   _("USB type"),
+    "version"	:   _("Version"),
 
-	"architecture"	:   _("Architecture"),
-	"bios_video"	:   _("Bios video"),
-	"boot_arch"	:   _("Boot architecture"),
-	"boot_disk"	:   _("Boot disk"),
-	"cdrom"		:   _("CDROM"),
-	"cpu"		:   _("CPU"),
-	"disk"		:   _("Disk"),
-	"display"	:   _("Display"),
-	"floppy"	:   _("Floppy disk"),
-	"framebuffer"	:   "Framebuffer",
-	"has_apm"	:   _("Has APM"),
-	"has_pcmcia"	:   _("Has PCMCIA"),
-	"has_smp"	:   _("Has SMP"),
-	"ihw_data"	:   _("Hardware data"),
-	"isdn"		:   _("ISDN"),
-	"keyboard"	:   _("Keyboard"),
-	"monitor"	:   _("Monitor"),
-	"netdev"	:   _("Network devices"),
-	"netif"		:   _("Network interface"),
-	"printer"	:   _("Printer"),
-	"modem"		:   _("Modem"),
-	"sound"		:   _("Sound"),
-	"storage"	:   _("Storage media"),
-	"system"	:   _("System"),
-	"tv"		:   _("TV Card"),
-	"usb_type"	:   _("USB type"),
-	"version"	:   _("Version"),
+    // cpu stuff
+    "bogomips"	:   _("Bogus Millions of Instructions Per Second"),
+    "cache"		:   _("Cache"),
+    "coma_bug"	:   "Coma bug",
+    "f00f_bug"	:   "f00f bug",
+    "cpuid_level"	:   _("CPU id level"),
+    "mhz"		:   _("Frequency"),
+    "fdiv_bug"	:   "Floating point division bug",
+    "flags"		:   _("Flags"),
+    "fpu"		:   _("Floating point unit"),
+    "fpu_exception"	:   "Floating point unit exception",
+    "hlt_bug"	:   "Halt bug",
+    "processor"	:   _("Processor"),
+    "stepping"	:   _("Stepping"),
+    "vendor_id"	:   _("Vendor identifier"),
+    "wp"		:   _("WP")
 
-	// cpu stuff
-	"bogomips"	:   _("Bogus Millions of Instructions Per Second"),
-	"cache"		:   _("Cache"),
-	"coma_bug"	:   "Coma bug",
-	"f00f_bug"	:   "f00f bug",
-	"cpuid_level"	:   _("CPU id level"),
-	"mhz"		:   _("Frequency"),
-	"fdiv_bug"	:   "Floating point division bug",
-	"flags"		:   _("Flags"),
-	"fpu"		:   _("Floating point unit"),
-	"fpu_exception"	:   "Floating point unit exception",
-	"hlt_bug"	:   "Halt bug",
-	"processor"	:   _("Processor"),
-	"stepping"	:   _("Stepping"),
-	"vendor_id"	:   _("Vendor identifier"),
-	"wp"		:   _("WP")
+]);
 
-    ]);
+/*
+ * if xserver is running, don't probe for mouse
+ */
+map Xres = SCR::Execute (.target.bash_output, "/bin/ps -A | /bin/grep X", $[] );
+if(size(lookup(Xres, "stdout", "")) == 0)
+{
+    exclude_list = add(exclude_list, .probe.mouse);
+}
 
-    /*
-     * if xserver is running, don't probe for mouse
-     */
-    map Xres = SCR::Execute (.target.bash_output, "/bin/ps -A | /bin/grep X", $[] );
-    if(size(lookup(Xres, "stdout", "")) == 0)
+/**
+ * translate string - looks to the translation table and returns value
+ */
+define string trans_str(any str) ``{
+	return lookup(trans_table, str, str);
+}
+
+/**
+ * translate boolean to Yes/No
+ */
+define string trans_bool(any b) ``{
+    if (is(b, boolean))
     {
-	exclude_list = add(exclude_list, .probe.mouse);
+	return b ? _("Yes") : _("No");
     }
+    return b;
+}
 
-    /*
-     * translate string - looks to the translation table and returns value
-     */
-    define string trans_str(any str) ``{
-	    return lookup(trans_table, str, str);
-    }
+/**
+ * tries to determine hardware name by class_id and sub_class_id
+ * and substitues them in given map. returns modified map
+ */
 
-    /*
-     * translate boolean to Yes/No
-     */
-    define string trans_bool(any b) ``{
-	if (is(b, boolean))
+define map translate_hw_entry(map hw) ``{
+    if (haskey(hw, "class_id"))
+    {
+	integer iclassid = lookup(hw, "class_id", 0xff);
+	string classid = lookup(lookup(ClassNames, iclassid, $[]), "name", "");
+
+	hw = add(hw, "class_id", classid);
+
+	if (haskey(hw, "sub_class_id"))
 	{
-	    return b ? _("Yes") : _("No");
-	}
-	return b;
-    }
-
-    /*
-     * read the classnames database for translation id's to hardware names
-     */
-    map classdb = SCR::Read (.target.yast2, "classnames.ycp");
-    /*
-     * translate strings...
-     */
-    classdb = eval(classdb);
-
-
-    /*
-     * tries to determine hardware name by class_id and sub_class_id
-     * and substitues them in given map. returns modified map
-     */
-
-    define map translate_hw_entry(map hw) ``{
-	if (haskey(hw, "class_id"))
-	{
-	    integer iclassid = lookup(hw, "class_id", 0xff);
-	    string classid = lookup(lookup(classdb, iclassid, $[]), "name", "");
-
-	    hw = add(hw, "class_id", classid);
-
-	    if (haskey(hw, "sub_class_id"))
-	    {
-		integer isubclassid = lookup(hw, "sub_class_id", 0);
-		string subclassid = lookup(lookup(classdb, iclassid, $[]), isubclassid, "");
-		hw = add(hw, "sub_class_id", subclassid);
-	    }
-
-	}
-	return hw;
-    }
-
-    /*
-     * reads .proc.cpuinfo and creates hardware map
-     */
-
-    define map add_cpu_info(map hw) ``{
-	map inf = SCR::Read(.proc.cpuinfo);
-
-	foreach(`key, `val, inf,
-	``{
-	    if (key == "model_name")
-	    {
-		return;
-	    }
-	    if (key == "flags")
-	    {
-		string s = "";
-		foreach(`e, val,
-		``{
-		    if (size(s) > 0)
-		    {
-			s = s + ", ";
-		    }
-		    s = s + e;
-		}
-		);
-		hw = add(hw, key, s);
-		return;
-	    }
-	    if (is(val, float))
-	    {
-		hw = add(hw, key, tointeger(val));
-	    }
-	    else
-	    {
-		hw = add(hw, key, val);
-	    }
-	}
-	);
-
-	hw = add(hw, "mhz", sformat("%1 MHz", tointeger(lookup(inf, "mhz", 0))));
-	hw = add(hw, "cache", sformat("%1 KB", lookup(inf, "cache", 0)));
-	hw = add(hw, "device", lookup(inf, "model_name", ""));
-	return hw;
-    }
-
-    /*
-     * evals to true if given value is scalar (not map or term or list)
-     */
-
-    define boolean scalar(any node) ``{
-	if (
-	    is(node, string) ||
-	    is(node, boolean) ||
-	    is(node, integer) ||
-	    is(node, float) ||
-	    is(node, locale) ||
-	    is(node, path))
-	{
-	    return true;
-	}
-	return false;
-    }
-
-    /*
-     * reads values from map and creates label for this entry
-     */
-
-    define string resolution(any a, map m) ``{
-	if (haskey(m, "height"))
-	{
-	    return sformat("%1x%2", lookup(m, "width", ""), lookup(m, "height", ""));
-	}
-	return lookup(m, width, "");
-    }
-
-    define string classtostring(any a, map m) ``{
-	return lookup(translate_hw_entry(m), "sub_class_id", "");
-    }
-
-    define string modules(list val) ``{
-	y2error("calling modules with param: %1", val);
-	list outlist = maplist(`e, val,
-	``{
-	    return "modprobe " + mergestring(e, " ");
-	});
-	return outlist;
-    }
-
-    /*
-     * order table: list of lists.
-     * first item of nested list is key name
-     * second is term that should be used for formating the key- takes key name as first argument
-     * if third item is true, the whole map will be passed to term as second argument
-     */
-
-    list order=[
-	    ["sub_device",  nil],
-	    ["device",	    nil],
-	    ["model",	    nil],
-	    ["vendor",	    nil],
-	    ["irq",	    nil],
-	    ["start",	    ``(tohexstring()), false], // tohex
-	    ["name",	    nil],
-	    ["xkbmodel",    nil],
-	    ["server",	    nil],
-	    ["size",	    nil],
-	    ["unit",	    nil],
-	    ["width",	    ``(resolution()), true],
-	    ["cylinders",   ``(sformat("cylinders/heads/sectors")), false],
-	    ["dev_name",    nil],
-	    ["modules",	    ``(sformat("modules")), false],
-	    ["sub_class_id", ``(classtostring()), true],
-	    ["modules",	    ``(modules()), true]
-	    ];
-
-    /*
-     * if expandTree function tries to explore list, it should use some
-     * label for each item. it tree items are maps, this function decides
-     * which value from map will be used as label
-     */
-
-    define string getRepresentant(map m) ``{
-	string out = "";
-	integer i = 0;
-	// search the 'order' table
-	while(i < size(order))
-	{
-	    if (haskey(m, select(select(order, i, []), 0, "")))
-	    {
-		if (select(select(order, i, []), 1, nil) != nil)
-		{
-		    term t = select(select(order, i, []), 1, nil);
-		    t = add(t, lookup(m, select(select(order, i, []), 0, nil), nil));
-		    if(size(select(order, i, 0)) > 2 && select(select(order, i, nil), 2, true))
-		    {
-			t = add(t, m);
-		    }
-		    out = sformat("%1", eval(t));
-		}
-		else
-		{
-		    out = sformat("%1", lookup(m, select(select(order, i, []), 0, $[]), nil));
-		}
-		break;
-	    }
-	    i = i + 1;
-	}
-	return out;
-    }
-
-    /*
-     *converts (scalar/nested) lists and maps to tree datastructure
-     */
-
-    define list expandTree(any node) ``{
-	if (node == nil)
-	{
-	    return [];
-	}
-	// if node is scalar, we just return the new item.
-	if (scalar(node))
-	{
-	    return [`item(sformat("%1", node))];
+	    integer isubclassid = lookup(hw, "sub_class_id", 0);
+	    string subclassid = lookup(lookup(ClassNames, iclassid, $[]), isubclassid, "");
+	    hw = add(hw, "sub_class_id", subclassid);
 	}
 
+    }
+    return hw;
+}
 
-	if (is(node, list))
+/**
+ * reads .proc.cpuinfo and creates hardware map
+ */
+
+define map add_cpu_info(map hw) ``{
+    map inf = SCR::Read(.proc.cpuinfo);
+
+    foreach(`key, `val, inf,
+    ``{
+	if (key == "model_name")
 	{
-	    // if node is list ...
-	    list    lout = [];
-	    integer q = size(node);
-	    integer pos = 0;
-	    foreach(`e, node,
+	    return;
+	}
+	if (key == "flags")
+	{
+	    string s = "";
+	    foreach(`e, val,
 	    ``{
-		if (scalar(e))
+		if (size(s) > 0)
 		{
-		    if (e != nil)
-		    {
-			lout = add(lout, `item(sformat("%1", e)));
-		    }
+		    s = s + ", ";
 		}
-		else
-		{
-		    string lab = UI::Glyph(`ArrowRight);
-		    if (is(e, map))
-		    {
-			// ... create label for each item ...
-			string s = getRepresentant(e);
-			if(s != "")
-			{
-			    lab = s;
-			}
-		    }
-		    lout = add(lout, `item(lab, expandTree(e)));
-		}
-		// ... and add it to item list
-		pos = pos + 1;
+		s = s + e;
 	    }
 	    );
-	    return lout;
+	    hw = add(hw, key, s);
+	    return;
 	}
-	if (is(node, map))
+	if (is(val, float))
 	{
-	    // if node is map ...
-	    node = translate_hw_entry(node);
-	    list ltmp = [];
-	    foreach(`key, `v, node,
-	    ``{
-		// haha, hack! we need to translate the 'modules' entry into some more readable form...
-		// unfortunatelly 'modules' is used in several places and in different meaings...
-		if(key == "modules" && is(v, list))
-		{
-		    v = modules(v);
-		}
-
-		// ... explore all pairs
-		if(scalar(v) || v == $[] || v == [])
-		{
-		    ltmp = add(ltmp, `item(sformat("%1 : %2", trans_str(key), trans_bool(v))));
-		}
-		else if (v == [""])
-		{
-		    ltmp = add(ltmp, `item(sformat("%1", trans_str(key))));
-		}
-		else
-		{
-		    ltmp = add(ltmp, `item(trans_str(sformat("%1", key)), expandTree(v)));
-		}
-	    }
-	    );
-	    // ... and finally sort the items alphabetically
-	    return sort(ltmp);
-	}
-
-	return [];
-   }
-
-    /*
-     * returns string that is behind the last dot of given string (extract last part of path)
-     */
-
-    define string afterLast(string str) ``{
-	list strs = splitstring(str, ".");
-	return select(strs, size(strs) - 1, "");
-    }
-
-    /*
-    *	returns list of values read from string->path p
-    *	progMin, progMax are bounds for progressBar (because of recursion)
-    */
-
-    define term buildHwTree(string p, integer progMin, integer progMax) ``{
-
-	any a = UI::PollInput();
-	if (a == `cancel || a == `abort)
-	{
-	    abortPressed = true;
-	    return nil;
-	}
-
-	UI::ChangeWidget(`id(`initLab), `Value, trans_str(afterLast(p)));
-	path pat = topath(p);
-
-	if (contains(exclude_list, pat))
-	{
-	    return nil;
-	}
-
-	list dir = SCR::Dir(pat);
-
-	if (dir == nil)
-	{
-	    any val = SCR::Read(pat);
-	    if (scalar(val))
-	    {
-		return `item(sformat("%1 : %2", trans_str(afterLast(p)), trans_bool(val)));
-	    }
-	    else if (val == nil ||  val == [] || val == $[])
-	    {
-		return nil;
-	    }
-	    else
-	    {
-		if (afterLast(p) == "cpu")
-		{
-		    val = maplist(`e, val, ``(add_cpu_info(e)));
-		}
-		return `item(trans_str(afterLast(p)), expandTree(val));
-	    }
+	    hw = add(hw, key, tointeger(val));
 	}
 	else
 	{
+	    hw = add(hw, key, val);
+	}
+    }
+    );
 
-	    // remove duplicates from the list
-	    list uniq = [];
+    hw = add(hw, "mhz", sformat("%1 MHz", tointeger(lookup(inf, "mhz", 0))));
+    hw = add(hw, "cache", sformat("%1 KB", lookup(inf, "cache", 0)));
+    hw = add(hw, "device", lookup(inf, "model_name", ""));
+    return hw;
+}
 
-	    foreach(string d, dir, ``{
-		    if (!contains(uniq, d))
+/**
+ * evals to true if given value is scalar (not map or term or list)
+ */
+
+define boolean scalar(any node) ``{
+    if (
+	is(node, string) ||
+	is(node, boolean) ||
+	is(node, integer) ||
+	is(node, float) ||
+	is(node, locale) ||
+	is(node, path))
+    {
+	return true;
+    }
+    return false;
+}
+
+/**
+ * reads values from map and creates label for this entry
+ */
+
+define string resolution(any a, map m) ``{
+    if (haskey(m, "height"))
+    {
+	return sformat("%1x%2", lookup(m, "width", ""), lookup(m, "height", ""));
+    }
+    return lookup(m, width, "");
+}
+
+define string classtostring(any a, map m) ``{
+    return lookup(translate_hw_entry(m), "sub_class_id", "");
+}
+
+define string modules(list val) ``{
+    y2error("calling modules with param: %1", val);
+    list outlist = maplist(`e, val,
+    ``{
+	return "modprobe " + mergestring(e, " ");
+    });
+    return outlist;
+}
+
+/**
+ * order table: list of lists.
+ * first item of nested list is key name
+ * second is term that should be used for formating the key- takes key name as first argument
+ * if third item is true, the whole map will be passed to term as second argument
+ */
+
+list order=[
+	["sub_device",  nil],
+	["device",	    nil],
+	["model",	    nil],
+	["vendor",	    nil],
+	["irq",	    nil],
+	["start",	    ``(tohexstring()), false], // tohex
+	["name",	    nil],
+	["xkbmodel",    nil],
+	["server",	    nil],
+	["size",	    nil],
+	["unit",	    nil],
+	["width",	    ``(resolution()), true],
+	["cylinders",   ``(sformat("cylinders/heads/sectors")), false],
+	["dev_name",    nil],
+	["modules",	    ``(sformat("modules")), false],
+	["sub_class_id", ``(classtostring()), true],
+	["modules",	    ``(modules()), true]
+	];
+
+/**
+ * if expandTree function tries to explore list, it should use some
+ * label for each item. it tree items are maps, this function decides
+ * which value from map will be used as label
+ */
+
+define string getRepresentant(map m) ``{
+    string out = "";
+    integer i = 0;
+    // search the 'order' table
+    while(i < size(order))
+    {
+	if (haskey(m, select(select(order, i, []), 0, "")))
+	{
+	    if (select(select(order, i, []), 1, nil) != nil)
+	    {
+		term t = select(select(order, i, []), 1, nil);
+		t = add(t, lookup(m, select(select(order, i, []), 0, nil), nil));
+		if(size(select(order, i, 0)) > 2 && select(select(order, i, nil), 2, true))
+		{
+		    t = add(t, m);
+		}
+		out = sformat("%1", eval(t));
+	    }
+	    else
+	    {
+		out = sformat("%1", lookup(m, select(select(order, i, []), 0, $[]), nil));
+	    }
+	    break;
+	}
+	i = i + 1;
+    }
+    return out;
+}
+
+/**
+ *converts (scalar/nested) lists and maps to tree datastructure
+ */
+
+define list expandTree(any node) ``{
+    if (node == nil)
+    {
+	return [];
+    }
+    // if node is scalar, we just return the new item.
+    if (scalar(node))
+    {
+	return [`item(sformat("%1", node))];
+    }
+
+
+    if (is(node, list))
+    {
+	// if node is list ...
+	list    lout = [];
+	integer q = size(node);
+	integer pos = 0;
+	foreach(`e, node,
+	``{
+	    if (scalar(e))
+	    {
+		if (e != nil)
+		{
+		    lout = add(lout, `item(sformat("%1", e)));
+		}
+	    }
+	    else
+	    {
+		string lab = UI::Glyph(`ArrowRight);
+		if (is(e, map))
+		{
+		    // ... create label for each item ...
+		    string s = getRepresentant(e);
+		    if(s != "")
 		    {
-			uniq = add(uniq, d);
+			lab = s;
 		    }
 		}
-	    );
-
-	    dir = uniq;
-
-	    integer step=1000;
-	    if (size(dir)!=0)
-	    {
-		step = (progMax - progMin) / size(dir);
+		lout = add(lout, `item(lab, expandTree(e)));
 	    }
-	    integer prog = progMin;
-
-	    integer pos = size(dir)-1;
-	    list    lout = [];
-	    term    itm = nil;
-	    while(pos >= 0)
-	    {
-		itm = buildHwTree(p + "."+select(dir, pos, nil), prog, prog + step);
-		if (abortPressed)
-		{
-		    return nil;
-		}
-		if (itm != nil)
-		{
-		    lout = add(lout, itm);
-		}
-		pos = pos - 1;
-		prog = prog + step;
-		UI::ChangeWidget(`id(`initProg), `Value, prog);
-	    }
-	    return `item(afterLast(p), sort(lout));
+	    // ... and add it to item list
+	    pos = pos + 1;
 	}
+	);
+	return lout;
+    }
+    if (is(node, map))
+    {
+	// if node is map ...
+	node = translate_hw_entry(node);
+	list ltmp = [];
+	foreach(`key, `v, node,
+	``{
+	    // haha, hack! we need to translate the 'modules' entry into some more readable form...
+	    // unfortunatelly 'modules' is used in several places and in different meaings...
+	    if(key == "modules" && is(v, list))
+	    {
+		v = modules(v);
+	    }
+
+	    // ... explore all pairs
+	    if(scalar(v) || v == $[] || v == [])
+	    {
+		ltmp = add(ltmp, `item(sformat("%1 : %2", trans_str(key), trans_bool(v))));
+	    }
+	    else if (v == [""])
+	    {
+		ltmp = add(ltmp, `item(sformat("%1", trans_str(key))));
+	    }
+	    else
+	    {
+		ltmp = add(ltmp, `item(trans_str(sformat("%1", key)), expandTree(v)));
+	    }
+	}
+	);
+	// ... and finally sort the items alphabetically
+	return sort(ltmp);
+    }
+
+    return [];
+}
+
+/**
+ * returns string that is behind the last dot of given string (extract last part of path)
+ */
+
+define string afterLast(string str) ``{
+    list strs = splitstring(str, ".");
+    return select(strs, size(strs) - 1, "");
+}
+
+/**
+*	returns list of values read from string->path p
+*	progMin, progMax are bounds for progressBar (because of recursion)
+*/
+
+define term buildHwTree(string p, integer progMin, integer progMax) ``{
+
+    any a = UI::PollInput();
+    if (a == `cancel || a == `abort)
+    {
+	abortPressed = true;
 	return nil;
     }
 
-    // tree item list
-    any items = nil;
-    // default initial path
-    path pat = .probe;
-    if (size(Args()) > 0)
+    UI::ChangeWidget(`id(`initLab), `Value, trans_str(afterLast(p)));
+    path pat = topath(p);
+
+    if (contains(exclude_list, pat))
     {
-	// initial path overriden by module argument
-	pat = Args(0);
+	return nil;
     }
 
-    // build the tree
-    items = buildHwTree(sformat("%1", pat), 0, 1000);
+    list dir = SCR::Dir(pat);
 
-    // interrupted
-    if (abortPressed)
+    if (dir == nil)
     {
-	UI::CloseDialog();
-	return;
+	any val = SCR::Read(pat);
+	if (scalar(val))
+	{
+	    return `item(sformat("%1 : %2", trans_str(afterLast(p)), trans_bool(val)));
+	}
+	else if (val == nil ||  val == [] || val == $[])
+	{
+	    return nil;
+	}
+	else
+	{
+	    if (afterLast(p) == "cpu")
+	    {
+		val = maplist(`e, val, ``(add_cpu_info(e)));
+	    }
+	    return `item(trans_str(afterLast(p)), expandTree(val));
+	}
     }
-
-    // title label
-    string title = _("All entries"); //this wasn't marked for translation in 8.0
-    if(pat != .probe)
+    else
     {
-	title = trans_str(afterLast(sformat("%1", pat)));
-    }
 
+	// remove duplicates from the list
+	list uniq = [];
+
+	foreach(string d, dir, ``{
+		if (!contains(uniq, d))
+		{
+		    uniq = add(uniq, d);
+		}
+	    }
+	);
+
+	dir = uniq;
+
+	integer step=1000;
+	if (size(dir)!=0)
+	{
+	    step = (progMax - progMin) / size(dir);
+	}
+	integer prog = progMin;
+
+	integer pos = size(dir)-1;
+	list    lout = [];
+	term    itm = nil;
+	while(pos >= 0)
+	{
+	    itm = buildHwTree(p + "."+select(dir, pos, nil), prog, prog + step);
+	    if (abortPressed)
+	    {
+		return nil;
+	    }
+	    if (itm != nil)
+	    {
+		lout = add(lout, itm);
+	    }
+	    pos = pos - 1;
+	    prog = prog + step;
+	    UI::ChangeWidget(`id(`initProg), `Value, prog);
+	}
+	return `item(afterLast(p), sort(lout));
+    }
+    return nil;
+}
+
+// tree item list
+any items = nil;
+// default initial path
+path pat = .probe;
+if (size(Args()) > 0)
+{
+    // initial path overriden by module argument
+    pat = Args(0);
+}
+
+// build the tree
+items = buildHwTree(sformat("%1", pat), 0, 1000);
+
+// interrupted
+if (abortPressed)
+{
     UI::CloseDialog();
+    return;
+}
 
-    term con = `Tree(  `id(`idTree), `opt(`vstretch, `hstretch),
-                                    title,
-                                    select(items, 1, nil));
+// title label
+string title = _("All entries"); //this wasn't marked for translation in 8.0
+if(pat != .probe)
+{
+    title = trans_str(afterLast(sformat("%1", pat)));
+}
 
-    Wizard::CreateDialog();
+UI::CloseDialog();
 
-    UI::ReplaceWidget(`id(`rep_back), `HStretch());
-    UI::ReplaceWidget(`id(`rep_next), `HStretch());
-    UI::ReplaceWidget(`id(`rep_abort), `PushButton(`id(`next), UI::CloseButtonLabel()));
+term con = `Tree(  `id(`idTree), `opt(`vstretch, `hstretch),
+				title,
+				select(items, 1, nil));
 
-    Wizard::SetContents (_("Hardware info"), con, _("<P><B>Hardware info</B> module displays the hardware 
+Wizard::CreateDialog();
+
+UI::ReplaceWidget(`id(`rep_back), `HStretch());
+UI::ReplaceWidget(`id(`rep_next), `HStretch());
+UI::ReplaceWidget(`id(`rep_abort), `PushButton(`id(`next), UI::CloseButtonLabel()));
+
+Wizard::SetContents (_("Hardware info"), con, _("<P><B>Hardware info</B> module displays the hardware 
 details of your computer. Click any node for more info</p>"), false, true);
 
-    any event = nil;
+any event = nil;
 
-    // wait for finish
-    while(event != `abort && event !=`next && event != `cancel)
-    {
-	    event = UI::UserInput();
-    }
-    UI::CloseDialog();
+// wait for finish
+while(event != `abort && event !=`next && event != `cancel)
+{
+	event = UI::UserInput();
+}
+UI::CloseDialog();
+
+/* EOF */
 }
