@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Tue Feb  5 16:19:43 CET 2002 - dmeszar@suse.cz
+
+- shows 'modules' entry of some devices in more readable form
+
+-------------------------------------------------------------------
 Tue Dec 18 11:56:22 CET 2001 - dmeszar@suse.cz
 
 - 3rd param for 'select', fixed specfile

@@ -267,6 +267,15 @@
 	return lookup(translate_hw_entry(m), "sub_class_id", "");
     }
 
+    define string modules(list val) ``{
+	y2error("calling modules with param: %1", val);
+	list outlist = maplist(`e, val,
+	``{
+	    return "modprobe " + mergestring(e, " ");
+	});
+	return outlist;
+    }
+
     /*
      * order table: list of lists.
      * first item of nested list is key name
@@ -290,7 +299,8 @@
 	    ["cylinders",   ``(sformat("cylinders/heads/sectors")), false],
 	    ["dev_name",    nil],
 	    ["modules",	    ``(sformat("modules")), false],
-	    ["sub_class_id", ``(classtostring()), true]
+	    ["sub_class_id", ``(classtostring()), true],
+	    ["modules",	    ``(modules()), true]
 	    ];
 
     /*
@@ -352,18 +362,28 @@
 	    integer pos = 0;
 	    foreach(`e, node,
 	    ``{
-		string lab = UI::Glyph(`ArrowRight);
-		if (is(e, map))
+		if (scalar(e))
 		{
-		    // ... create label for each item ...
-		    string s = getRepresentant(e);
-		    if(s != "")
+		    if (e != nil)
 		    {
-			lab = s;
+			lout = add(lout, `item(e));
 		    }
 		}
+		else
+		{
+		    string lab = UI::Glyph(`ArrowRight);
+		    if (is(e, map))
+		    {
+			// ... create label for each item ...
+			string s = getRepresentant(e);
+			if(s != "")
+			{
+			    lab = s;
+			}
+		    }
+		    lout = add(lout, `item(lab, expandTree(e)));
+		}
 		// ... and add it to item list
-		lout = add(lout, `item(lab, expandTree(e)));
 		pos = pos + 1;
 	    }
 	    );
@@ -376,6 +396,13 @@
 	    list ltmp = [];
 	    foreach(`key, `v, node,
 	    ``{
+		// haha, hack! we need to translate the 'modules' entry into some more readable form...
+		// unfortunatelly 'modules' is used in several places and in different meaings...
+		if(key == "modules" && is(v, list))
+		{
+		    v = modules(v);
+		}
+
 		// ... explore all pairs
 		if(scalar(v))
 		{
