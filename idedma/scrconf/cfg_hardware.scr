@@ -19,5 +19,5 @@
 .sysconfig.hardware
 
 `ag_ini(
-    SCR::SysConfigFile("/etc/sysconfig/hardware")
+    SysConfigFile("/etc/sysconfig/hardware")
 )
