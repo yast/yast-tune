@@ -15,7 +15,7 @@
  * $Id$
  *
  * Main file for hwinfo viewer
- * 
+ *
  */
 
 
@@ -25,14 +25,14 @@
 //    include "ui/wizard_dialog.ycp";
 
 
-    /* 
+    /*
      *	this global variable is needed for skipping out from recursed function
      */
     boolean abortPressed = false;
 
 
-    /* 
-     * open progress bar window 
+    /*
+     * open progress bar window
      */
     UI::OpenDialog(`VBox(
 	`Label(_("Probing:")),
@@ -49,14 +49,14 @@
      * .probe.mouse doesn't like running X
      * other paths are not user-interesting
      */
-    list exclude_list = [.probe.byclass, .probe.bybus, .probe.mouse, .probe.ihw_data, .probe.system];    
+    list exclude_list = [.probe.byclass, .probe.bybus, .probe.mouse, .probe.ihw_data, .probe.system];
 
     /*
      * translation table- key is replaced by value on it's way to ui
      * must be done this way, because keys are machine-generated
      */
     map trans_table = eval(
-    $[ 
+    $[
 	"architecture"	:   _("Architecture"),
 	"bus"		:   _("Bus"),
 	"cache"		:   _("Cache"),
@@ -125,7 +125,7 @@
 	"stepping"	:   _("Stepping"),
 	"vendor_id"	:   _("Vendor identifier"),
 	"wp"		:   _("WP")
-	
+
     ]);
 
     /*
@@ -139,7 +139,7 @@
 
     /*
      * translate string - looks to the translation table and returns value
-     */    
+     */
     define trans_str(any str) ``{
 	    return lookup(trans_table, str, str);
     }
@@ -161,7 +161,7 @@
     map classdb = SCR::Read (.target.yast2, "classnames.ycp");
     /*
      * translate strings...
-     */ 
+     */
     classdb = eval(classdb);
 
 
@@ -175,7 +175,7 @@
 	{
 	    integer iclassid = lookup(hw, "class_id", 0xff);
 	    string classid = lookup(lookup(classdb, iclassid, $[]), "name", "");
-    
+
 	    hw = add(hw, "class_id", classid);
 
 	    if (haskey(hw, "sub_class_id"))
@@ -184,7 +184,7 @@
 		string subclassid = lookup(lookup(classdb, iclassid, $[]), isubclassid, "");
 		hw = add(hw, "sub_class_id", subclassid);
 	    }
-		
+
 	}
 	return hw;
     }
@@ -196,8 +196,6 @@
     define add_cpu_info(map hw) ``{
 	map inf = SCR::Read(.proc.cpuinfo);
 
-	
-
 	foreach(`key, `val, inf,
 	``{
 	    if (key == "model_name")
@@ -205,14 +203,14 @@
 		return;
 	    }
 	    if (key == "flags")
-	    {	
+	    {
 		string s = "";
-		foreach(`e, val, 
+		foreach(`e, val,
 		``{
 		    if (size(s) > 0)
-    		    {
+		    {
 			s = s + ", ";
-		    }	
+		    }
 		    s = s + e;
 		}
 		);
@@ -229,7 +227,7 @@
 	    }
 	}
 	);
-	
+
 	hw = add(hw, "mhz", sformat("%1 MHz", tointeger(lookup(inf, "mhz", 0))));
 	hw = add(hw, "cache", sformat("%1 KB", lookup(inf, "cache", 0)));
 	hw = add(hw, "device", lookup(inf, "model_name", ""));
@@ -259,7 +257,7 @@
 	list nums = ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "a", "b", "c", "d", "e", "f"];
 	while (i > 0)
 	{
-	    out = sformat("%1" + out, select(nums, i % 16));  
+	    out = sformat("%1" + out, select(nums, i % 16, ""));
 	    i = i / 16;
 	}
 	return "0x" + out;
@@ -289,7 +287,7 @@
      */
 
     list order=[
-	    ["sub_device",  nil], 
+	    ["sub_device",  nil],
 	    ["device",	    nil],
 	    ["model",	    nil],
 	    ["vendor",	    nil],
@@ -305,7 +303,7 @@
 	    ["dev_name",    nil],
 	    ["modules",	    ``(sformat("modules")), false],
 	    ["sub_class_id", ``(classtostring()), true]
-	    ];	
+	    ];
 
     /*
      * if expandTree function tries to explore list, it should use some
@@ -319,13 +317,13 @@
 	// search the 'order' table
 	while(i < size(order))
 	{
-	    if (haskey(m, select(select(order, i), 0)))
+	    if (haskey(m, select(select(order, i, []), 0, "")))
 	    {
-		if (select(select(order, i), 1) != nil)
+		if (select(select(order, i, []), 1, nil) != nil)
 		{
-		    term t = select(select(order, i), 1);
-		    t = add(t, lookup(m, select(select(order, i), 0), nil));
-		    if(size(select(order, i)) > 2 && select(select(order, i), 2))
+		    term t = select(select(order, i, []), 1, nil);
+		    t = add(t, lookup(m, select(select(order, i, []), 0, nil), nil));
+		    if(size(select(order, i, 0)) > 2 && select(select(order, i, nil), 2, true))
 		    {
 			t = add(t, m);
 		    }
@@ -333,7 +331,7 @@
 		}
 		else
 		{
-		    out = sformat("%1", lookup(m, select(select(order, i), 0), nil));
+		    out = sformat("%1", lookup(m, select(select(order, i, []), 0, $[]), nil));
 		}
 		break;
 	    }
@@ -341,26 +339,26 @@
 	}
 	return out;
     }
-    
-    /* 
+
+    /*
      *converts (scalar/nested) lists and maps to tree datastructure
      */
 
     define expandTree(any node) ``{
-	if (node == nil) 
+	if (node == nil)
 	{
 	    return [];
 	}
 	// if node is scalar, we just return the new item.
 	if (scalar(node))
-	{	
+	{
 	    return [`item(sformat("%1", node))];
 	}
 
 
 	if (is(node, list))
 	{
-	    // if node is list ... 
+	    // if node is list ...
 	    list    lout = [];
 	    integer q = size(node);
 	    integer pos = 0;
@@ -414,7 +412,7 @@
 
     define afterLast(string str) ``{
 	list strs = splitstring(str, ".");
-	return select(strs, size(strs) - 1);
+	return select(strs, size(strs) - 1, "");
     }
 
     /*
@@ -438,7 +436,7 @@
 	{
 	    return nil;
 	}
-	
+
 	list dir = SCR::Dir(pat);
 
 	if (dir == nil)
@@ -466,16 +464,16 @@
 	    integer step=1000;
 	    if (size(dir)!=0)
 	    {
-		step = (progMax - progMin) / size(dir); 
+		step = (progMax - progMin) / size(dir);
 	    }
 	    integer prog = progMin;
-    
+
 	    integer pos = size(dir)-1;
 	    list    lout = [];
 	    term    itm = nil;
 	    while(pos >= 0)
 	    {
-		itm = buildHwTree(p + "."+select(dir, pos), prog, prog + step);
+		itm = buildHwTree(p + "."+select(dir, pos, nil), prog, prog + step);
 		if (abortPressed)
 		{
 		    return nil;
@@ -502,7 +500,7 @@
 	// initial path overriden by module argument
 	pat = Args(0);
     }
-    
+
     // build the tree
     items = buildHwTree(sformat("%1", pat), 0, 1000);
 
@@ -512,7 +510,7 @@
 	UI::CloseDialog();
 	return;
     }
-    
+
     // title label
     string title = "All entries";
     if(pat != .probe)
@@ -524,7 +522,7 @@
 
     term con = `Tree(  `id(`idTree), `opt(`vstretch, `hstretch),
                                     title,
-                                    select(items,1));
+                                    select(items, 1, nil));
 
     Wizard::CreateDialog();
     Wizard::SetContents (_("Hardware info"), con, _("<P><B>Hardware info</B> module displays the hardware 
@@ -533,13 +531,13 @@ details of your computer. Click any node for more info</p>"), false, true);
     UI::ReplaceWidget(`id(`rep_back), `HStretch());
     UI::ReplaceWidget(`id(`rep_next), `HStretch());
     UI::ReplaceWidget(`id(`rep_abort), `PushButton(`id(`next), UI::CloseButtonLabel()));
-    
-    any event = nil;   
- 
+
+    any event = nil;
+
     // wait for finish
     while(event != `abort && event !=`next && event != `cancel)
     {
 	    event = UI::UserInput();
-    }    
+    }
     UI::CloseDialog();
 }
