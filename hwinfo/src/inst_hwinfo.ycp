@@ -19,6 +19,7 @@ import "Label";
 import "Report";
 import "Popup";
 import "Sequencer";
+import "Mode";
 
 include "hwinfo/routines.ycp";
 include "hwinfo/classnames.ycp";
