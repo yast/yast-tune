@@ -35,9 +35,4 @@ SortKey =
 ; which textdomain to use for translations (important!)
 Textdomain = tune
 
-; autoinstall features
-Autoinst = all
-
-AutoinstDataType = list
-
 ; vim:syntax=dosini

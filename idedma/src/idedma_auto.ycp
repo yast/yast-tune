@@ -47,7 +47,7 @@
     // The settings are in the first argument
     list settings = select (args, 0, []);
     y2milestone("Imported: (%1)", settings);
-
+/*
     if (size(settings) == 0)
     {
 	settings = [
@@ -62,10 +62,10 @@
 		$[ "current_dma" : nil, "dev_name" : "/dev/hdi", "device" : _("Unknown"), "device_type" : _("Unknown"), "dma_on" : nil],
 		$[ "current_dma" : nil, "dev_name" : "/dev/hdj", "device" : _("Unknown"), "device_type" : _("Unknown"), "dma_on" : nil],
 		$[ "current_dma" : nil, "dev_name" : "/dev/hdk", "device" : _("Unknown"), "device_type" : _("Unknown"), "dma_on" : nil],
-		$[ "current_dma" : nil, "dev_name" : "/dev/hdl", "device" : _("Unknown"), "device_type" : _("Unknown"), "dma_on" : nil]	  
+		$[ "current_dma" : nil, "dev_name" : "/dev/hdl", "device" : _("Unknown"), "device_type" : _("Unknown"), "dma_on" : nil]
 	];
     }
-
+*/
     Idedma::Import ( settings );
     define set_contents()
 	``{
@@ -84,7 +84,7 @@
 	Wizard::SetContents(_("NIS Configuration"),
 			    contents, "", true, true);
     }
-    
+
     set_contents();
     any result = nil;
     any ret = nil;
