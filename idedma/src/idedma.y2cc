@@ -8,7 +8,7 @@
 [Y2Module idedma]
 
 ; name of the entry, shown in y2cc
-Name = _("IDE DMA mode")
+Name = _("IDE DMA Mode")
 
 ; "raw" group name to which this module belongs
 ; see /usr/lib/YaST2/etc/y2controlcentericons.y2cc for valid values

@@ -266,8 +266,8 @@ global define void refresh_combo() ``{
 
 	list combo_list = [
 	    `item(`id(`nochange), _("No change"), current == "nochange"),
-	    `item(`id(`off), _("DMA off"), current == "off"),
-	    `item(`id(`on), _("DMA on (default mode)"), current == "on"),
+	    `item(`id(`off), _("DMA Off"), current == "off"),
+	    `item(`id(`on), _("DMA On (default mode)"), current == "on"),
 	];
 
 	if (contains(supported_dma_modes, "mdma2"))
@@ -297,11 +297,11 @@ global define void refresh_combo() ``{
 
 	y2milestone("combo: %1", combo_list);
 
-	UI::ReplaceWidget(`id(`rp), `ComboBox(`id(`dma_combo), `opt(`notify), _("&DMA mode:"), combo_list));
+	UI::ReplaceWidget(`id(`rp), `ComboBox(`id(`dma_combo), `opt(`notify), _("&DMA Mode:"), combo_list));
     }
     else
     {
-	UI::ReplaceWidget(`id(`rp), `ComboBox(`id(`dma_combo), _("&DMA mode:"), []));
+	UI::ReplaceWidget(`id(`rp), `ComboBox(`id(`dma_combo), _("&DMA Mode:"), []));
     }
 }
 

@@ -212,7 +212,7 @@ $[
     // tree node string - CPU information
     "fpu"		:   _("Floating point unit"),
     // tree node string - CPU information
-    "fpu_exception"	:   _("Floating point unit exception"),
+    "fpu_exception"	:   _("Floating Point Unit Exception"),
     // tree node string - CPU information
     "hlt_bug"	:   "Halt bug",
     // tree node string - CPU information
@@ -634,7 +634,7 @@ if (abortPressed)
 }
 
 // title label
-string title = _("&All entries"); //this wasn't marked for translation in 8.0
+string title = _("&All Entries"); //this wasn't marked for translation in 8.0
 if(pat != .probe)
 {
     title = trans_str(afterLast(sformat("%1", pat)));

@@ -46,16 +46,16 @@ $[
 	0x01:	_("Token ring network controller"),
 	0x02:	_("FDDI network controller"),
 	0x03:	_("ATM network controller"),
-	0x04:	_("ISDN controller"),
+	0x04:	_("ISDN Controller"),
 	0x80:	_("Network controller"),
-	0x81:	_("Myrinet controller")
+	0x81:	_("Myrinet Controller")
 ],
 0x003:
 $[
 	"name":_("Display controller"),
 	0x00:	_("VGA compatible controller"),
 	0x01:	_("XGA compatible controller"),
-	0x02:	_("3D controller"),
+	0x02:	_("3D Controller"),
 	0x80:	_("Display controller")
 ],
 0x004:
@@ -63,7 +63,7 @@ $[
 	"name":_("Multimedia controller"),
 	0x00:	_("Multimedia video controller"),
 	0x01:	_("Multimedia audio controller"),
-	0x02:	_("Computer telephony device"),
+	0x02:	_("Computer Telephony Device"),
 	0x80:	_("Multimedia controller")
 ],
 0x005:
@@ -84,9 +84,9 @@ $[
 	0x05:	_("PCMCIA bridge"),
 	0x06:	_("NuBus bridge"),
 	0x07:	_("CardBus bridge"),
-	0x08:	_("RACEway bridge"),
-	0x09:	_("Semi-transparent PCI-to-PCI bridge"),
-	0x0a:	_("InfiniBand to PCI host bridge"),
+	0x08:	_("RACEway Bridge"),
+	0x09:	_("Semitransparent PCI-to-PCI Bridge"),
+	0x0a:	_("InfiniBand to PCI Host Bridge"),
 	0x80:	_("Bridge")
 ],
 0x007:
@@ -94,7 +94,7 @@ $[
 	"name":_("Communication controller"),
 	0x00:	_("Serial controller"),
 	0x01:	_("Parallel controller"),
-	0x02:	_("Multiport serial controller"),
+	0x02:	_("Multiport Serial Controller"),
 	0x03:	_("Modem"),
 	0x80:	_("Communication controller")
 ],
@@ -105,7 +105,7 @@ $[
 	0x01:	_("DMA controller"),
 	0x02:	_("Timer"),
 	0x03:	_("RTC"),
-	0x04:	_("PCI Hot-plug controller"),
+	0x04:	_("PCI Hotplug Controller"),
 	0x80:	_("System peripheral")
 ],
 0x009:
@@ -114,8 +114,8 @@ $[
 	0x00:	_("Keyboard controller"),
 	0x01:	_("Digitizer Pen"),
 	0x02:	_("Mouse controller"),
-	0x03:	_("Scanner controller"),
-	0x04:	_("Gameport controller"),
+	0x03:	_("Scanner Controller"),
+	0x04:	_("Gameport Controller"),
 	0x80:	_("Input device controller")
 ],
 0x00a:
@@ -148,11 +148,11 @@ $[
 ],
 0x00d:
 $[
-	"name":_("Wireless controller"),
-	0x00:	_("IRDA controller"),
-	0x01:	_("Consumer IR controller"),
-	0x10:	_("RF controller"),
-	0x80:	_("Wireless controller")
+	"name":_("Wireless Controller"),
+	0x00:	_("IRDA Controller"),
+	0x01:	_("Consumer IR Controller"),
+	0x10:	_("RF Controller"),
+	0x80:	_("Wireless Controller")
 ],
 0x00e:
 $[
@@ -161,26 +161,26 @@ $[
 ],
 0x00f:
 $[
-	"name":_("Satellite communications controller"),
-	0x00:	_("Satellite TV controller"),
-	0x01:	_("Satellite audio communication controller"),
-	0x03:	_("Satellite voice communication controller"),
-	0x04:	_("Satellite data communication controller")
+	"name":_("Satellite Communications Controller"),
+	0x00:	_("Satellite TV Controller"),
+	0x01:	_("Satellite Audio Communication Controller"),
+	0x03:	_("Satellite Voice Communication Controller"),
+	0x04:	_("Satellite Data Communication Controller")
 ],
 0x010:
 $[
-	"name":_("Encryption controller"),
-	0x00:	_("Network and computing encryption device"),
-	0x10:	_("Entertainment encryption device"),
-	0x80:	_("Encryption controller")
+	"name":_("Encryption Controller"),
+	0x00:	_("Network and Computing Encryption Device"),
+	0x10:	_("Entertainment Encryption Device"),
+	0x80:	_("Encryption Controller")
 ],
 0x011:
 $[
-	"name":_("Signal processing controller"),
-	0x00:	_("DPIO module"),
-	0x01:	_("Performance counters"),
-	0x10:	_("Communication synchronizer"),
-	0x80:	_("Signal processing controller")
+	"name":_("Signal Processing Controller"),
+	0x00:	_("DPIO Module"),
+	0x01:	_("Performance Counters"),
+	0x10:	_("Communication Synchronizer"),
+	0x80:	_("Signal Processing Controller")
 ],
 0x0ff:
 $[
