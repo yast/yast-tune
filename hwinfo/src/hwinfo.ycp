@@ -508,10 +508,10 @@ define term buildHwTree(string p, integer progMin, integer progMax) ``{
 any items = nil;
 // default initial path
 path pat = .probe;
-if (size(Args()) > 0)
+if (size(WFM::Args()) > 0)
 {
     // initial path overriden by module argument
-    pat = Args(0);
+    pat = WFM::Args(0);
 }
 
 // build the tree

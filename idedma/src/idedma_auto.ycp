@@ -22,7 +22,7 @@
  * @param first a map of idedma settings
  * @return boolean success of operation
  * @example map mm = $[ "dma_on" : false, ...];
- * @example map ret = CallModule ("idedma_auto", [ mm ]);
+ * @example map ret = WFM::CallModule ("idedma_auto", [ mm ]);
  */
 
 {
@@ -32,15 +32,15 @@
 
     include "idedma/ui.ycp";
 
-    list args = Args ();
+    list args = WFM::Args ();
     if ( size (args) <= 0 )
     {
 	y2error ("Did not get the settings, probably some mistake...");
 	return false;
     }
-    if ( !is ( Args (0), list ) )
+    if ( !is ( WFM::Args (0), list ) )
     {
-	y2error ("Bad argument for idedma_auto: %1", Args (0));
+	y2error ("Bad argument for idedma_auto: %1", WFM::Args (0));
 	return false;
     }
 

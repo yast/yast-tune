@@ -21,7 +21,7 @@
  * @param first a map of idedma settings
  * @return boolean success of operation
  * @example map mm = $[ "dma_on" : false, ... ];
- * @example any ret = CallModule ("idedma_write", [ mm ]);
+ * @example any ret = WFM::CallModule ("idedma_write", [ mm ]);
  */
 
 {
@@ -29,15 +29,15 @@
 
     import "Idedma";
 
-    list args = Args ();
+    list args = WFM::Args ();
     if ( size (args) <= 0 )
     {
 	y2error ("NOT writing, probably some mistake...");
 	return false;
     }
-    if ( !is ( Args (0), map ) )
+    if ( !is ( WFM::Args (0), map ) )
     {
-	y2error ("Bad argument for idedma write: %1", Args (0));
+	y2error ("Bad argument for idedma write: %1", WFM::Args (0));
 	return false;
     }
 
