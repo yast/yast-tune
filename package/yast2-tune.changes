@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Tue Aug 12 13:08:12 CEST 2003 - lslezak@suse.cz
+
+- detect and configure ide-scsi devices correctly (#25640)
+- updated testsuite
+- version 2.8.3
+
+-------------------------------------------------------------------
 Mon Aug 11 09:36:18 CEST 2003 - lslezak@suse.de
 
 - merged proofread texts

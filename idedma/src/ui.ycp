@@ -216,7 +216,7 @@ global define list get_table_items() ``{
 
     // prepare table items
     list table_items = [];
-    integer id = 1;
+    integer id = 0;
 
     foreach(`d, ide, ``{
 	    string mode = d["dma_setting"]:"";
@@ -227,11 +227,19 @@ global define list get_table_items() ``{
 	    current_dma = mode_names[current_dma]:_("Unknown");
 
 	    // device model name is unknown
-	    string device_name = lookup(d, "device", _("Unknown device"));
+	    string device_name = d["device"]:_("Unknown device");
 	    // device file name is unknown
-	    string device = lookup(d, "dev_name", _("Unknown"));
+	    string device = d["dev_name"]:_("Unknown");
+
+	    // add scsi device name for ide-scsi devices
+	    if (d["scsi_name"]:nil != nil)
+	    {
+		// device model name is unknown
+		device = sformat("%1 (%2)", device, d["scsi_name"]:_("Unknown device"));
+	    }
+
 	    // device type (disk, cdrom,...) is unknown
-	    string device_type = lookup(d, "device_type", _("Unknown type"));
+	    string device_type = d["device_type"]:_("Unknown type");
 
 	    table_items = add(table_items, `item(`id(id), current_dma, device_name, device_type, device, dma));
 
@@ -251,11 +259,10 @@ global define void refresh_combo() ``{
 
     if (curr != nil)
     {
-	// get table item (whole line)
-	term table_item = UI::QueryWidget(`id(`device_table), `Item(curr));
+	list ide_devs = Idedma::get_ide_devices();
 
 	// get device name from the table
-	string dn = select(table_item, 4, nil);
+	string dn = ide_devs[curr, "dev_name"]:nil;
 
 	// get current setting
 	string current = Idedma::selected_mode(dn);
@@ -336,6 +343,8 @@ global define any DmaConfigDialog () ``{
     // set combo widget content
     refresh_combo();
 
+    list ide_devs = Idedma::get_ide_devices();
+
     any ret = nil;
     while (true)
     {
@@ -354,11 +363,10 @@ global define any DmaConfigDialog () ``{
 
 	    if (curr != nil)
 	    {
-		term table_item = UI::QueryWidget(`id(`device_table), `Item(curr));
-		// get device name from the table
-		string dn = select(table_item, 4, nil);
+		// get device name
+		string dn = ide_devs[curr, "dev_name"]:nil;
 		// get current DMA
-		string curr_dma = select(table_item, 1, nil);
+		string curr_dma = ide_devs[curr, "current_dma"]:nil;
 
 		y2milestone("dn: %1", dn);
 
@@ -373,7 +381,7 @@ global define any DmaConfigDialog () ``{
 		    y2debug("ret: %1, curr_dma: %2, new_setting: %3", ret, curr_dma, new_setting);
 
 		    // enabling DMA on device with currnet DMA off
-		    if (ret == `dma_combo && curr_dma == dma_off_string && new_setting != "off" && new_setting != "nochange")
+		    if (ret == `dma_combo && curr_dma == "off" && new_setting != "off" && new_setting != "nochange")
 		    {
 			// warning popup message
 			Popup::Warning(_("Enabling DMA on some devices can cause\ndata loss or system lock."));

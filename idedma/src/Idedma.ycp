@@ -50,6 +50,23 @@
 	// read information about all IDE devices
 	list devices = SCR::Read(.probe.ide);
 
+	// read SCSI devices
+	list scsi_devices = SCR::Read(.probe.scsi);
+
+	if (size(scsi_devices) > 0)
+	{
+	    // leave only devices with IDE-SCSI emulation
+	    scsi_devices = filter(map dev, scsi_devices, ``(dev["driver"]:nil == "ide-scsi"));
+	}
+
+	// add ide-scsi devices to ide devices
+	if (size(scsi_devices) > 0)
+	{
+	    devices = merge(devices, scsi_devices);
+	}
+
+	y2milestone("Detected ide-scsi devices: %1", scsi_devices);
+
 	// read setting from sysconfig
 	string devices_setting_str = SCR::Read(.sysconfig.hardware.DEVICES_FORCE_IDE_DMA);
 
@@ -77,21 +94,29 @@
 	y2milestone("Read config: %1", device_setting_map);
 
 	// for each detected IDE device build internal
-	foreach(`dev, devices, ``{
+	foreach(map dev, devices, ``{
 		// device model name is unknown
-		string device = lookup(dev, "device", _("Unknown device"));
-		string dev_name = lookup(dev, "dev_name", nil);
+		string device = dev["device"]:_("Unknown device");
+		string dev_name = dev["dev_name"]:nil;
+		string scsi_name = nil;
+
+		if (dev["driver"]:nil == "ide-scsi")
+		{
+		    // this is ide-scsi device
+		    // set device name to IDE name
+		    dev_name = dev["dev_name2"]:nil;
+		    scsi_name = dev["dev_name"]:nil;
+		}
 
 		if (dev_name != nil)
 		{
-		    integer subclass_id = lookup(dev, "sub_class_id", nil);
-		    integer class_id = lookup(dev, "class_id", nil);
+		    integer subclass_id = dev["sub_class_id"]:nil;
+		    integer class_id = dev["class_id"]:nil;
 
 		    string dma_setting = device_setting_map[dev_name]:"nochange";
-		    string dev_name_base = substring(dev_name, findlastof(dev_name, "/") + 1);
 
 		    // get textual information about device type (disk, CD-ROM, tape, ...) from identification number - device type was not found
-		    string subclass_id_string = eval(lookup(lookup(ClassNames, class_id, $[]), subclass_id, _("Unknown device type")));
+		    string subclass_id_string = eval(ClassNames[class_id, subclass_id]: _("Unknown device type"));
 
 		    // get current DMA setting
 		    string current_dma = get_device_dma_status(dev_name);
@@ -107,13 +132,20 @@
 
 		    list(string) dma_modes = get_supported_dma_modes(dma_info);
 
-		    ide_devices = add(ide_devices, $["device" : device, "dev_name" : dev_name, "dma_setting" : dma_setting, "device_type" : subclass_id_string, "current_dma" : current_dma, "dma_modes" : dma_modes]);
+		    map dev_map = $["device" : device, "dev_name" : dev_name, "dma_setting" : dma_setting, "device_type" : subclass_id_string, "current_dma" : current_dma, "dma_modes" : dma_modes];
+
+		    if (scsi_name != nil)
+		    {
+			// add scsi name if device is ide-scsi
+			dev_map["scsi_name"] = scsi_name;
+		    }
+
+		    ide_devices = add(ide_devices, dev_map);
 		}
 	    }
 	);
 
-	y2debug("IDE devices: %1", ide_devices);
-	y2milestone("IDE devices: %1", ide_devices);
+	y2milestone("Detected IDE devices: %1", ide_devices);
 
 	return true;
     }
@@ -184,7 +216,7 @@
 	    // run hdparm to get DMA status
 	    map out = SCR::Execute(.target.bash_output, hdparm_bin + " -d " + device);
 
-	    if (lookup(out, "exit", -1) == 0)
+	    if (out["exit"]:-1 == 0)
 	    {
 		list output = splitstring(out["stdout"]:"", "\n");
 
@@ -311,7 +343,7 @@
     global define void refresh_status() ``{
 	// for each stored device get current DMA status
 	ide_devices = maplist(`d, ide_devices, ``{
-		string dev = lookup(d, "dev_name", nil);
+		string dev = d["dev_name"]:nil;
 
 		boolean status = get_device_dma_status(dev);
 
@@ -336,7 +368,7 @@
 
 	// store required DMA status
 	ide_devices = maplist(`d, ide_devices, ``{
-		if (lookup(d, "dev_name", nil) == device)
+		if (d["dev_name"]:nil == device)
 		{
 		    d = add(d, "dma_setting", dma_setting);
 		}

@@ -13,7 +13,9 @@ import "Idedma";
 // disable displaying errors in Report module
 Report::DisplayErrors(false, 0);
 
-map READ = $[ "probe" : $[ "ide" : [ $["device" : "ABC-13245", "dev_name" : "/dev/hda"], $["device" : "XYZ-6789", "dev_name" : "/dev/hdc"] ] ] ];
+map READ = $[ "probe" : $[ "ide" : [ $["device" : "ABC-13245", "dev_name" : "/dev/hda"], $["device" : "XYZ-6789", "dev_name" : "/dev/hdc"] ] ,
+    "scsi" : [ $["class_id":262, "dev_name":"/dev/sr0", "dev_name2":"/dev/hdb", "device":"TOSHIBA DVD-ROM SD-M1402", "driver":"ide-scsi", "sub_class_id":2 ]] ]];
+
 map EXEC = $[ "target" : $["bash_output" : $["stdout" : " using_dma    =  1 (on)", "exit" : 0 ] , "bash" : 0 ] ];
 
 DUMP("Read test");
