@@ -48,6 +48,10 @@ $[
     // tree node string - means "hardware driver"
     "driver"	:   _("Driver"),
     // tree node string
+    "type"	: _("Type"),
+    // tree node string (System Management BIOS)
+    "smbios"	: _("SMBIOS"),
+    // tree node string
     "prog_if"	:   _("Prog. interface"),
     // tree node string
     "resource"	:   _("Resources"),
@@ -290,7 +294,8 @@ global list<string> representant_order = [
     "dev_name",
     "modules",
     "sub_class_id",
-    "modules"
+    "modules",
+    "type"
 ];
 
 /**

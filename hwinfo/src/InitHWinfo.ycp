@@ -153,7 +153,7 @@ global define list DetectedHardware(boolean force) ``{
 	    path p = add(.probe, subpath);
 
 	    // translate path name
-	    string pathname = trans_table[subpath]:nil;
+	    string pathname = trans_str(subpath);
 
 	    // use untranslated string if translation failed
 	    if (pathname == nil)
@@ -181,9 +181,9 @@ global define list DetectedHardware(boolean force) ``{
 
 		    if (size(result) > 0)
 		    {
-			foreach(map f, result, ``{
-				string device = f["dev_name"]:nil;
-				string model = f["model"]:nil;
+			foreach(map<string,any> f, result, ``{
+				string device = (string)(f["dev_name"]:nil);
+				string model = (string)(f["model"]:nil);
 
 				if (device != nil && model != nil)
 				{

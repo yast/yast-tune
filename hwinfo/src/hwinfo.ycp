@@ -138,7 +138,7 @@ define term buildHwTree(string p, integer progMin, integer progMax) ``{
 	return nil;
     }
 
-    list dir = SCR::Dir(pat);
+    list<string> dir = (list<string>) SCR::Dir(pat);
 
     if (dir == nil)
     {

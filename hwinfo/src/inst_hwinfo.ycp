@@ -128,7 +128,7 @@ global define symbol details_dialog(string model, map info) ``{
 
     y2debug("tree content: %1", l);
 
-    symbol ret = nil;
+    symbol ret = `dummy;
     while (ret != `next && ret != `back && ret != `close && ret != `abort)
     {
 	ret = (symbol)UI::UserInput();
@@ -223,11 +223,13 @@ global define symbol detected_dialog() ``{
 	UI::ChangeWidget(`id(`hwtable), `CurrentItem, selected_device);
     }
 
-    symbol ret = nil;
+    symbol ret = `dummy;
 
     while (ret != `next && ret != `back && ret != `close && ret != `abort && ret != `details)
     {
 	ret = (symbol)UI::UserInput();
+
+	y2debug("UserInput: %1", ret);
 
 	if (ret == `details || ret == `hwtable)
 	{
@@ -235,7 +237,7 @@ global define symbol detected_dialog() ``{
 
 	    if (selected_device != nil)
 	    {
-		map device_info = find(map i, hw, ``((string)(i["info", "unique_key"]:nil) == selected_device));
+		map device_info = find(map<any,any> i, hw, ``((string)(i["info", "unique_key"]:nil) == selected_device));
 
 		if (device_info != nil)
 		{
@@ -246,12 +248,12 @@ global define symbol detected_dialog() ``{
 		}
 		else
 		{
-		    ret = nil;
+		    ret = `dummy;
 		}
 	    }
 	    else
 	    {
-		ret = nil;
+		ret = `dummy;
 	    }
 	}
 	else if (ret == `floppy)
@@ -289,6 +291,8 @@ global define symbol detected_dialog() ``{
 
     Wizard::RestoreNextButton();
 
+    y2debug("detected_dialog result: %1", ret);
+
     return ret;
 }
 
@@ -311,7 +315,10 @@ map sequence = $[
     "detected" :
     $[
 	`abort	: `abort,
-	`next	: `next,
+	// return `abort even when module was correctly finished
+	// (avoids restarting installation proposal of all other modules
+	//  which doesn't make sense - InitHWinfo is read only module)
+	`next	: `abort,
 	`details	: "details"
     ],
     "details" :
