@@ -1,0 +1,433 @@
+{
+/*
+ * translation table- key is replaced by value on it's way to ui
+ * must be done this way, because keys are machine-generated
+ */
+global map trans_table = eval(
+$[
+    // tree node string
+    "architecture"	:   _("Architecture"),
+    // tree node string - means "hardware bus"
+    "bus"		:   _("Bus"),
+    // tree node string
+    "cache"		:   _("Cache"),
+    // tree node string
+    "card_type"	:   _("Card type"),
+    // tree node string
+    "cardtype"	:   _("Card type"),
+    // tree node string - means "class of hardware"
+    "class_id"	:   _("Class"),
+    // tree node string
+    "cdtype"	:   _("CD type"),
+    // tree node string
+    "dev_name"	:   _("Device name"),
+    // tree node string
+    "device"	:   _("Device"),
+    // tree node string
+    "device_id"	:   _("Device identifier"),
+    // tree node string - means "hardware drivers"
+    "drivers"	:   _("Drivers"),
+    // tree node string
+    "prog_if"	:   _("Prog. interface"),
+    // tree node string
+    "resource"	:   _("Resources"),
+    // tree node string
+    "requires"	:   _("Requires"),
+    // tree node string
+    "rev"		:   _("Rev"),
+    // tree node string
+    "sub_class_id"	:   _("Class (spec)"),
+    // tree node string
+    "sub_device"	:   _("Device (spec)"),
+    // tree node string
+    "sub_device_id" :   _("Device identifier (spec)"),
+    // tree node string
+    "sub_vendor"	:   _("Sub Vendor"),
+    // tree node string
+    "sub_vendor_id" :   _("Sub vendor identifier"),
+    // tree node string
+    "unique_key"	:   _("Unique key"),
+    // tree node string
+    "vendor"	:   _("Vendor"),
+    // tree node string
+    "vendor_id"        :   _("Vendor identifier"),
+    // tree node string
+    "bios_video"       :   _("Bios video"),
+    // tree node string
+    "boot_arch"        :   _("Boot architecture"),
+    // tree node string
+    "boot_disk"        :   _("Boot disk"),
+    // tree node string
+    "cdrom"            :   _("CDROM"),
+    // tree node string
+    "cpu"              :   _("CPU"),
+    // tree node string
+    "disk"             :   _("Disk"),
+    // tree node string
+    "display"  :   _("Display"),
+    // tree node string
+    "floppy"   :   _("Floppy disk"),
+    // tree node string
+    "framebuffer"      :   _("Framebuffer"),
+    // tree node string
+    "has_apm"  :   _("Has APM"),
+    // tree node string
+    "has_pcmcia"       :   _("Has PCMCIA"),
+    // tree node string
+    "has_smp"  :   _("Has SMP"),
+    // tree node string
+    "ihw_data" :   _("Hardware data"),
+    // tree node string
+    "isdn"             :   _("ISDN"),
+    // tree node string
+    "keyboard" :   _("Keyboard"),
+    // tree node string
+    "monitor"  :   _("Monitor"),
+    // tree node string
+    "netdev"   :   _("Network devices"),
+    // tree node string
+    "netif"            :   _("Network interface"),
+    // tree node string
+    "printer"  :   _("Printer"),
+    // tree node string
+    "modem"            :   _("Modem"),
+    // tree node string
+    "sound"            :   _("Sound"),
+    // tree node string
+    "storage"  :   _("Storage media"),
+    // tree node string
+    "system"   :   _("System"),
+    // tree node string
+    "tv"               :   _("TV Card"),
+    // tree node string
+    "dvb"              :   _("DVB Card"),
+    // tree node string
+    "usb_type" :   _("USB type"),
+    // tree node string
+    "version"  :   _("Version"),
+    // tree node string - memory (RAM) information
+    "memory"   :   _("Memory"),
+    // tree node string
+    "netcard"  :   _("Network card"),
+    // tree node string
+    "bios"     :   _("BIOS"),
+    // tree node string
+    "fbdev"    :   _("Framebuffer device"),
+    // tree node string - bus type
+    "ide"      :   _("IDE"),
+    // tree node string - bus type
+    "pci"      :   _("PCI"),
+    // tree node string - bus type
+    "usb"      :   _("USB"),
+    // tree node string - bus type
+    "isapnp"   :   _("ISA PnP"),
+    // tree node
+    "usbctrl"  :   _("USB Controller"),
+    // tree node
+    "hub"      :   _("USB Hub"),
+    // tree node
+    "ieee1394ctrl"     :  _("IEEE1394 Controller"),
+    // tree node
+    "scsi"     :   "SCSI",
+    // tree node
+    "scanner"  :   _("Scanner"),
+    // tree node
+    "mouse"    :   _("Mouse"),
+    // tree node
+    "joystick" :   _("Joystick"),
+    // tree node
+    "braille"  :   _("Braille Display"),
+    // tree node
+    "chipcard" :   _("Chipcard Reader"),
+    // tree node - Digital camera or WebCam
+    "camera"   :   _("Camera"),
+    // Point-to-Point Protocol Over Ethernet
+    "pppoe"    :   _("PPP over Ethernet"),
+
+    // tree node string - CPU information
+    "bogomips" :   _("Bogus Millions of Instructions Per Second"),
+    // tree node string - CPU information
+    "cache"            :   _("Cache"),
+    // tree node string - CPU information
+    "coma_bug" :   "Coma bug",
+    // tree node string - CPU information
+    "f00f_bug" :   "f00f bug",
+    // tree node string - CPU information
+    "cpuid_level"      :   _("CPU id level"),
+    // tree node string - CPU information
+    "mhz"              :   _("Frequency"),
+    // tree node string - CPU information
+    "fdiv_bug" :   "Floating point division bug",
+    // tree node string - CPU information
+    "flags"            :   _("Flags"),
+    // tree node string - CPU information
+    "fpu"              :   _("Floating point unit"),
+    // tree node string - CPU information
+    "fpu_exception"    :   _("Floating Point Unit Exception"),
+    // tree node string - CPU information
+    "hlt_bug"  :   "Halt bug",
+    // tree node string - CPU information
+    "processor"        :   _("Processor"),
+    // tree node string - CPU information
+    "stepping" :   _("Stepping"),
+    // tree node string - CPU information
+    "vendor_id"        :   _("Vendor identifier"),
+    // tree node string - CPU information
+    "family"   :   _("Family"),
+    // tree node string - CPU information
+    "model"            :   _("Model"),
+    // tree node string - CPU information
+    "wp"               :   _("WP")
+
+]);
+
+/**
+ * order table: list of lists.
+ * first item of nested list is key name
+ * second is term that should be used for formating the key- takes key name as first argument
+ * if third item is true, the whole map will be passed to term as second argument
+ */
+
+global list order=[
+	["sub_device",  nil],
+	["device",	    nil],
+	["model name",	    nil],
+	["model",	    nil],
+	["vendor",	    nil],
+	["irq",	    nil],
+	["start",	    ``(tohexstring()), false], // tohex
+	["name",	    nil],
+	["xkbmodel",    nil],
+	["server",	    nil],
+	["size",	    nil],
+	["unit",	    nil],
+	["width",	    ``(resolution()), true],
+	["cylinders",   ``(sformat("cylinders/heads/sectors")), false],
+	["dev_name",    nil],
+	["modules",	    ``(sformat("modules")), false],
+	["sub_class_id", ``(classtostring()), true],
+	["modules",	    ``(modules()), true]
+	];
+
+
+/**
+ * translate string - looks to the translation table and returns value
+ */
+global define string trans_str(any str) ``{
+	return lookup(trans_table, str, str);
+}
+
+/**
+ * translate boolean to Yes/No
+ */
+global define string trans_bool(any b) ``{
+    if (is(b, boolean))
+    {
+	// yes/no strings
+	return (b == true) ? _("Yes") : _("No");
+    }
+    return sformat("%1", b);
+}
+
+/**
+ * reads values from map and creates label for this entry
+ */
+
+global define string resolution(any a, map m) ``{
+    if (haskey(m, "height"))
+    {
+	return sformat("%1x%2", lookup(m, "width", ""), lookup(m, "height", ""));
+    }
+    return lookup(m, width, "");
+}
+
+/**
+ * evals to true if given value is scalar (not map or term or list)
+ */
+
+global define boolean scalar(any node) ``{
+    if (
+	is(node, string) ||
+	is(node, boolean) ||
+	is(node, integer) ||
+	is(node, float) ||
+	is(node, locale) ||
+	is(node, path))
+    {
+	return true;
+    }
+    return false;
+}
+
+
+global define string modules(list val) ``{
+    y2warning("calling modules with param: %1", val);
+    list outlist = maplist(`e, val,
+    ``{
+	return "modprobe " + mergestring(e, " ");
+    });
+    return outlist;
+}
+
+/**
+ * tries to determine hardware name by class_id and sub_class_id
+ * and substitues them in given map. returns modified map
+ */
+
+global define map translate_hw_entry(map hw) ``{
+    if (haskey(hw, "class_id"))
+    {
+	integer iclassid = lookup(hw, "class_id", 0xff);
+	string classid = lookup(lookup(ClassNames, iclassid, $[]), "name", "");
+
+	hw = add(hw, "class_id", classid);
+
+	if (haskey(hw, "sub_class_id"))
+	{
+	    integer isubclassid = lookup(hw, "sub_class_id", 0);
+	    string subclassid = lookup(lookup(ClassNames, iclassid, $[]), isubclassid, "");
+	    hw = add(hw, "sub_class_id", subclassid);
+	}
+
+    }
+    return hw;
+}
+
+
+/**
+ * if expandTree function tries to explore list, it should use some
+ * label for each item. it tree items are maps, this function decides
+ * which value from map will be used as label
+ */
+
+global define string getRepresentant(map m) ``{
+    string out = "";
+    integer i = 0;
+    // search the 'order' table
+    while(i < size(order))
+    {
+	if (haskey(m, select(select(order, i, []), 0, "")))
+	{
+	    if (select(select(order, i, []), 1, nil) != nil)
+	    {
+		term t = select(select(order, i, []), 1, nil);
+		t = add(t, lookup(m, select(select(order, i, []), 0, nil), nil));
+		if(size(select(order, i, 0)) > 2 && select(select(order, i, nil), 2, true))
+		{
+		    t = add(t, m);
+		}
+		out = sformat("%1", eval(t));
+	    }
+	    else
+	    {
+		out = sformat("%1", lookup(m, select(select(order, i, []), 0, $[]), nil));
+	    }
+	    break;
+	}
+	i = i + 1;
+    }
+    return out;
+}
+
+/**
+ *converts (scalar/nested) lists and maps to tree datastructure
+ */
+
+global define list expandTree(any node) ``{
+    if (node == nil)
+    {
+	return [];
+    }
+
+    if (is(node, list) && size(node) == 1)
+    {
+	if (is(node[0]:$[], map))
+	{
+	    map tmp = eval(node[0]:$[]);
+
+	    if (size(tmp) == 1)
+	    {
+		node = tmp;
+	    }
+	}
+    }
+
+    // if node is scalar, we just return the new item.
+    if (scalar(node))
+    {
+	return [`item(sformat("%1", node))];
+    }
+
+
+    if (is(node, list))
+    {
+	// if node is list ...
+	list    lout = [];
+	integer q = size(node);
+	integer pos = 0;
+	foreach(`e, node,
+	``{
+	    if (scalar(e))
+	    {
+		if (e != nil)
+		{
+		    lout = add(lout, `item(sformat("%1", e)));
+		}
+	    }
+	    else
+	    {
+		string lab = UI::Glyph(`ArrowRight);
+		if (is(e, map))
+		{
+		    // ... create label for each item ...
+		    string s = getRepresentant(e);
+		    if(s != "")
+		    {
+			lab = s;
+		    }
+		}
+		lout = add(lout, `item(lab, expandTree(e)));
+	    }
+	    // ... and add it to item list
+	    pos = pos + 1;
+	}
+	);
+	return lout;
+    }
+    if (is(node, map))
+    {
+	// if node is map ...
+	node = translate_hw_entry(node);
+	list ltmp = [];
+	foreach(`key, `v, node,
+	``{
+	    // haha, hack! we need to translate the 'modules' entry into some more readable form...
+	    // unfortunatelly 'modules' is used in several places and in different meaings...
+	    if(key == "modules" && is(v, list))
+	    {
+		v = modules(v);
+	    }
+
+	    // ... explore all pairs
+	    if(scalar(v) || v == $[] || v == [])
+	    {
+		ltmp = add(ltmp, `item(sformat("%1 : %2", trans_str(key), trans_bool(v))));
+	    }
+	    else if (v == [""])
+	    {
+		ltmp = add(ltmp, `item(sformat("%1", trans_str(key))));
+	    }
+	    else
+	    {
+		ltmp = add(ltmp, `item(trans_str(sformat("%1", key)), expandTree(v)));
+	    }
+	}
+	);
+	// ... and finally sort the items alphabetically
+	return sort(ltmp);
+    }
+
+    return [];
+}
+
+}

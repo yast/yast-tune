@@ -1,0 +1,155 @@
+/**
+ *
+ * $Id$
+ */
+
+{
+    textdomain "tune";
+
+    import "InitHWinfo";
+    import "Wizard";
+
+    include "hwinfo/routines.ycp";
+    include "hwinfo/classnames.ycp";
+    include "wizard/sequencer.ycp";
+
+    global string selected_model = "";
+    global map selected_info = $[];
+
+    global define symbol details_dialog(string model, map info) ``{
+	// convert information in the map to tree widget content
+	list l = [`item(model, true, expandTree(info))];
+
+	term content = `VBox(
+	    `Tree("Details", l)
+	);
+
+	Wizard::ReplaceNextButton(`PushButton(`id(`next), `opt(`default, `key_F10), Label::OKButton()));
+
+	// heading text
+	Wizard::SetContents(_("Details"), content,
+			    "help_text",
+			    true, true);
+
+	y2milestone("tree content: %1", l);
+
+	symbol ret = nil;
+	while (ret != `next && ret != `back && ret != `close && ret != `abort)
+	{
+	    ret = UI::UserInput();
+	}
+
+	Wizard::RestoreNextButton();
+
+	return ret;
+    }
+
+    global define symbol detected_dialog() ``{
+
+	list hw = InitHWinfo::DetectedHardware();
+
+	// create table content
+	list table_cont = [];
+
+	if (size(hw) > 0)
+	{
+	    foreach(map info, hw, ``{
+		    string model = info["model"]:_("Unknown device");
+
+		    string uniq = info["info", "unique_key"]:"unknown";
+		    integer class = info["info", "class_id"]:0xff;
+		    integer subclass = info["info", "sub_class_id"]:0;
+		    string cls = ClassNames[class, subclass]:_("Unknown device class");
+
+		    table_cont = add(table_cont, `item(`id(uniq), model, cls));
+		}
+	    );
+	}
+
+	y2milestone("table content: %1", table_cont);
+
+	term content = `VBox(
+	    `Table(`id(`hwtable), `header(_("Model"), _("Class")), table_cont),
+	    `VSpacing(0.4),
+	    `PushButton(`id(`details), _("Details...")),
+	    `VSpacing(1)
+	);
+
+	string help_text = _("help");
+
+	Wizard::ReplaceNextButton(`PushButton(`id(`next), `opt(`default, `key_F10), Label::AcceptButton()));
+
+	// heading text
+	Wizard::SetContents(_("Detected hardware"), content,
+			    help_text,
+			    true, true);
+
+	symbol ret = nil;
+
+	while (ret != `next && ret != `back && ret != `close && ret != `abort && ret != `details)
+	{
+	    ret = UI::UserInput();
+
+	    if (ret == `details || ret == `hwtable)
+	    {
+		string selected_device = UI::QueryWidget(`id(`hwtable), `CurrentItem);
+
+		if (selected_device != nil)
+		{
+		    map device_info = find(map i, hw, ``(i["info", "unique_key"]:nil == selected_device));
+
+		    if (device_info != nil)
+		    {
+			selected_info =  device_info["info"]:$[];
+			selected_model = device_info["model"]:_("Unknown device");
+		    }
+		    else
+		    {
+			ret = nil;
+		    }
+		}
+		else
+		{
+		    ret = nil;
+		}
+	    }
+	}
+
+	Wizard::RestoreNextButton();
+
+	return ret;
+    }
+
+    map aliases =
+	$[
+	    "detected"	:   ``(detected_dialog()),
+	    "details"	:   [``(details_dialog(selected_model, selected_info)), true]
+	];
+
+    map sequence = $[
+	"ws_start" : "detected",
+	"detected" :
+	$[
+	    `abort	: `abort,
+	    `next	: `next,
+	    `details	: "details"
+	],
+	"details" :
+	$[
+	    `abort	: `abort,
+	    `next	: "detected"
+	]
+    ];
+
+    Wizard::CreateDialog();
+    Wizard::ReplaceAbortButton(`Empty());
+
+    any ret = WizardSequencer (aliases, sequence);
+
+    Wizard::CloseDialog();
+
+    return ret;
+}
+
+
+

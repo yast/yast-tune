@@ -1,0 +1,137 @@
+{
+
+module "InitHWinfo";
+
+import "String";
+
+boolean initialized = false;
+
+string cpu_string = "";
+string memory_string = "";
+
+// list of detected devices
+list detectedHW = nil;
+
+global define list MakeProposal(boolean reset) ``{
+    Initialize(reset);
+    return [ _("Processor: ") + cpu_string, _("Main memory: ") + memory_string ];
+}
+
+
+global define boolean Initialize(boolean force) ``{
+    if (initialized == true && force == false)
+    {
+	return true;
+    }
+
+    // initialize procesor string
+    list cpu_result = SCR::Read(.probe.cpu);
+    map cpus = $[];
+
+    foreach(map info, cpu_result, ``{
+	    string str = info["name"]:_("Unknown Processor");
+	    integer counter = cpus[str]:0;
+	    cpus[str] = counter + 1;
+	}
+    );
+
+    boolean first = true;
+    cpu_string = "";
+
+    foreach(string cpu, integer count, cpus, ``{
+
+	    if (!first)
+	    {
+		cpu_string = cpu_string + ", ";
+	    }
+	    else
+	    {
+		first = false;
+	    }
+
+	    if (count > 1)
+	    {
+		// create processor count string
+		// %1 is integer number
+		// %2 is processor model name
+		cpu_string = cpu_string + sformat(_("%1x %2"), count, cpu);
+	    }
+	    else
+	    {
+		cpu_string = cpu_string + cpu;
+	    }
+	}
+    );
+
+    // initialize memory string
+    memory_string = "";
+
+    list memory = SCR::Read(.probe.memory);
+
+    y2milestone("memory: %1", memory);
+    integer memory_size = 0;
+
+    foreach(map info, memory, ``{
+	    // internal class, main memory
+	    if (info["class_id"]:0 == 257 && info["sub_class_id"]:0 == 2)
+	    {
+		list minf = info["resource", "phys_mem"]:[];
+		foreach(map i, minf, ``{
+			memory_size = memory_size + i["range"]:0;
+		    }
+		);
+	    }
+	}
+    );
+
+    memory_string = String::FormatSize(memory_size);
+
+    initialized = true;
+
+    return true;
+}
+
+global define list DetectedHardware() ``{
+
+    if (detectedHW != nil)
+    {
+	return detectedHW;
+    }
+
+    detectedHW = [];
+
+    // probe devices, store model, class, uniq. ID for each device
+    list(string) paths = [ "cpu", "memory", "ide", "pci", "scsi", "isapnp", "floppy", "usb", "monitor" ];
+
+    foreach(string subpath, paths, ``{
+	    path p = add(.probe, subpath);
+
+	    y2milestone("Probing: %1", p);
+
+	    list result = SCR::Read(p);
+
+	    if (size(result) > 0)
+	    {
+		foreach(map info, result, ``{
+			// device name
+			string model = (subpath == "cpu") ? info["name"]:_("Unknown device") : info["model"]:_("Unknown device");
+			integer class = info["class_id"]:nil;
+			integer subclass = info["sub_class_id"]:nil;
+			string uniq = info["unique_key"]:"";
+
+			y2debug("Model: %1", model);
+
+			detectedHW = add(detectedHW, $[ "model" : model, "info" : info ]);
+		    }
+		);
+
+	    }
+	}
+    );
+
+    y2milestone("Detected HW: %1", detectedHW);
+
+    return detectedHW;
+}
+
+}
