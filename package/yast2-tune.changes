@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Wed Oct 13 14:42:44 CEST 2004 - lslezak@suse.cz
+
+- UML mode enhancements (#40835)
+- version 2.11.0
+
+-------------------------------------------------------------------
 Mon Oct 11 16:46:39 CEST 2004 - jsrain@suse.cz
 
 - adapted to new Arch:: interface

@@ -20,6 +20,7 @@ import "Report";
 import "Popup";
 import "Sequencer";
 import "Mode";
+import "Arch";
 
 include "hwinfo/routines.ycp";
 include "hwinfo/classnames.ycp";
@@ -212,6 +213,7 @@ define symbol detected_dialog() ``{
 	`HBox(
 	    // push button label
 	    `PushButton(`id(`details), _("&Details...")),
+	    (!Arch::is_uml()) ?
 	    // menu button label
 	    `MenuButton(`id(`savemenu), _("&Save to File"),
 		[
@@ -221,6 +223,7 @@ define symbol detected_dialog() ``{
 		    `item(`id(`floppy), _("Save to F&loppy..."))
 		]
 	    )
+	    : `Empty()
 	),
 	`VSpacing(1)
     );
@@ -230,7 +233,7 @@ define symbol detected_dialog() ``{
     // help text - part 2/3
     + _("<P><B>Details</B><BR>Select some component and press <B>Details...</B> to see a more detailed description of the component.</P>")
     // help text - part 3/3
-    + _("<P><B>Save to File</B><BR>You can save hardware information (<I>hwinfo</I> output) to file or to floppy disk. Select the target type in the <B>Save to File</B> menu.</P>");
+    + ((Arch::is_uml()) ? "" : _("<P><B>Save to File</B><BR>You can save hardware information (<I>hwinfo</I> output) to file or to floppy disk. Select the target type in the <B>Save to File</B> menu.</P>"));
 
     Wizard::HideBackButton();
     Wizard::HideAbortButton();

@@ -239,7 +239,12 @@ global define list<map> DetectedHardware(boolean force, block<boolean> abort) ``
     // list(string) paths = [ "cpu", "memory", "ide", "pci", "scsi", "isapnp", "floppy", "usb", "monitor" ];
 
     // probe by device class
-    list<string> paths = [ "cpu", "memory", "cdrom", "floppy", "disk", "display", "mouse", "keyboard", "sound", "isdn", "modem", "storage", "netcard", "monitor", "printer", "tv", "dvb", "scanner", "camera", "chipcard", "usbctrl", "ieee1394ctrl", "hub", "braille", "joystick", "bios", "pppoe" ];
+    list<string> paths = [ "cpu", "memory", "disk", "display", "mouse", "keyboard", "storage", "netcard", "monitor", "braille", "bios" ];
+
+    if (!Arch::is_uml())
+    {
+	paths = (list<string>)union(paths, [ "cdrom", "floppy", "sound", "isdn", "modem", "printer", "tv", "dvb", "scanner", "camera", "chipcard", "usbctrl", "ieee1394ctrl", "hub", "joystick", "pppoe" ]);
+    }
 
     Progress::New(_("Detecting hardware..."), "", size(paths), [_("Hardware Detection")], [_("Detecting hardware...")], _("Hardware detection is in progress. Please wait."));
 

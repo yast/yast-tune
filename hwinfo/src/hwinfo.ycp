@@ -14,6 +14,7 @@
 textdomain "tune";
 import "Wizard";
 import "Label";
+import "Arch";
 
 //include "hwinfo/classnames.ycp";
 include "hwinfo/routines.ycp";
@@ -50,6 +51,14 @@ UI::OpenDialog(
  * other paths are not user-interesting
  */
 list exclude_list = [.probe.byclass, .probe.bybus, .probe.ihw_data, .probe.system, .probe.status, .probe.cdb_isdn, .probe.boot_disk];
+
+if (Arch::is_uml())
+{
+    // exclude more path in UML system, UML supports/emulates only few devices
+    exclude_list = union(exclude_list, [ .probe.scsi, .probe.camera, .probe.pppoe, .probe.isapnp, .probe.tape, .probe.joystick,
+	.probe.usb, .probe.ieee1394ctrl, .probe.usbctrl, .probe.cdrom, .probe.floppy, .probe.chipcard, .probe.mouse
+    ]);
+}
 
 /*
  * if xserver is running, don't probe for mouse and chipcard
