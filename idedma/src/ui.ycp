@@ -31,17 +31,68 @@ include "wizard/sequencer.ycp";
 include "idedma/helps.ycp";
 
 /**
+ * String with DMA on status text
+ * (For translators: translation can be long - text is used in the table
+ * in column "Required DMA mode" and "Current DMA mode")
+ */
+global string dma_on_string = _("On");
+
+/**
+ * String with DMA off status text
+ * (For translators: translation can be long - text is used in the table
+ * in column "Required DMA mode" and "Current DMA mode")
+ */
+global string dma_off_string = _("Off");
+
+/**
+ * String with no change of DMA status text
+ * (For translators: translation can be long - text is used in the table
+ * in column "Required DMA mode" and "Current DMA mode")
+ */
+global string dma_default_string = _("No change");
+
+
+global map mode_names = $[
+    // DMA status is unknown
+    ""      : _("Unknown"),
+    // do not change DMA setting
+    "nochange"	: dma_default_string,
+    // DMA is enabled, but mode is unknown
+    "on"    : dma_on_string,
+    // DMA is disabled
+    "off"   : dma_off_string,
+
+    "sdma0" : "SW DMA/2.1",
+    "sdma1" : "SW DMA/4.2",
+    "sdma2" : "SW DMA/8.3",
+
+    "mdma0" : "DMA/4.2",
+    "mdma1" : "DMA/13.3",
+    "mdma2" : "DMA/16",
+
+    "udmaS" : "UltraDMA/13",
+    "udma0" : "UltraDMA/16",
+    "udma1" : "UltraDMA/22",
+    "udma2" : "UltraDMA/33",
+    "udma3" : "UltraDMA/44",
+    "udma4" : "UltraDMA/66",
+    "udma5" : "UltraDMA/100",
+    "udma6" : "UltraDMA/133"
+];
+
+
+/**
  * Return list of items for table widget
  * @return list List of items
  */
 global define list get_table_items() ``{
-    list ide = Idedma::get_ide_devices();
+    list<map> ide = Idedma::get_ide_devices();
 
     // prepare table items
     list table_items = [];
     integer id = 0;
 
-    foreach(`d, ide, ``{
+    foreach(map d, ide, ``{
 	    string mode = d["dma_setting"]:"";
 	    string dma = Idedma::mode_names[mode]:(Idedma::dma_default_string);
 
@@ -78,7 +129,7 @@ global define list get_table_items() ``{
  */
 global define void refresh_combo() ``{
     // set DMA status for selected IDE device
-    integer curr = UI::QueryWidget(`id(`device_table), `CurrentItem);
+    integer curr = (integer) UI::QueryWidget(`id(`device_table), `CurrentItem);
 
     if (curr != nil)
     {
@@ -181,7 +232,7 @@ global define any DmaConfigDialog () ``{
 	    y2milestone("Value changed");
 
 	    // set DMA status for selected IDE device
-	    integer curr = UI::QueryWidget(`id(`device_table), `CurrentItem);
+	    integer curr = (integer) UI::QueryWidget(`id(`device_table), `CurrentItem);
 
 	    y2milestone("curr: %1", curr);
 

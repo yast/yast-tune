@@ -212,9 +212,9 @@ $[
 global define string resolution(any a, map m) ``{
     if (haskey(m, "height"))
     {
-	return sformat("%1x%2", lookup(m, "width", ""), lookup(m, "height", ""));
+	return sformat("%1x%2", m["width"]:"", m["height"]:"");
     }
-    return lookup(m, "width", "");
+    return m["width"]:"";
 }
 
 global define list<string> modules(list<list> val) ``{
@@ -234,15 +234,15 @@ global define list<string> modules(list<list> val) ``{
 global define map translate_hw_entry(map hw) ``{
     if (haskey(hw, "class_id"))
     {
-	integer iclassid = lookup(hw, "class_id", 0xff);
-	string classid = lookup(lookup(ClassNames, iclassid, $[]), "name", "");
+	integer iclassid = hw["class_id"]:0xff;
+	string classid = ClassNames[iclassid, "name"]:"";
 
 	hw = add(hw, "class_id", classid);
 
 	if (haskey(hw, "sub_class_id"))
 	{
-	    integer isubclassid = lookup(hw, "sub_class_id", 0);
-	    string subclassid = lookup(lookup(ClassNames, iclassid, $[]), isubclassid, "");
+	    integer isubclassid = hw["sub_class_id"]:0;
+	    string subclassid = ClassNames[iclassid, isubclassid]:"";
 	    hw = add(hw, "sub_class_id", subclassid);
 	}
 

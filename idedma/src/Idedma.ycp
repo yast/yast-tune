@@ -191,9 +191,9 @@
     /**
      * Parse DMA info string from hdparm output - return list of supported DMA modes
      * @param dma_info DMA support string (e.g. "mdma2 udma0 udma1 *udma2")
-     * @return list(string) list of supported DMA modes
+     * @return list<string> list of supported DMA modes
      */
-    define list(string) get_supported_dma_modes(string dma_info) ``{
+    define list<string> get_supported_dma_modes(string dma_info) ``{
 	list result = [];
 
 	if (dma_info != nil && dma_info != "")
@@ -309,7 +309,7 @@
 			current_dma = current_dma_string;
 		    }
 
-		    list(string) dma_modes = get_supported_dma_modes(dma_info);
+		    list<string> dma_modes = get_supported_dma_modes(dma_info);
 
 		    map dev_map = $["device" : device, "dev_name" : dev_name, "dma_setting" : dma_setting, "device_type" : subclass_id_string, "current_dma" : current_dma, "dma_modes" : dma_modes];
 
@@ -394,7 +394,7 @@
 	}
 
 	// store required DMA status
-	ide_devices = maplist(`d, ide_devices, ``{
+	ide_devices = maplist(map d, ide_devices, ``{
 		if (d["dev_name"]:nil == device)
 		{
 		    d = add(d, "dma_setting", dma_setting);
@@ -490,7 +490,7 @@
 	if (sync_needed == true)
 	{
 	    y2milestone("Flushing disc cache before enabling DMA...");
-	    integer exit = SCR::Execute(.target.bash, "/bin/sync");
+	    integer exit = (integer) SCR::Execute(.target.bash, "/bin/sync");
 
 	    if (exit != 0)
 	    {
@@ -503,7 +503,7 @@
 	{
 	    y2milestone("Executing /etc/init.d/boot.idedma start");
 
-	    integer result = SCR::Execute(.target.bash, "/etc/init.d/boot.idedma start");
+	    integer result = (integer) SCR::Execute(.target.bash, "/etc/init.d/boot.idedma start");
 
 	    y2milestone("boot.idedma result: %1", result);
 
@@ -531,6 +531,17 @@
     }
 
     /**
+     * Set module data
+     * @param settings set data from YCP
+     * @return void
+     */
+    global define void Set (list settings) ``{
+
+	ide_devices = settings;
+	return;
+    }
+
+    /**
      * Get all IDE DMA  settings from the first parameter
      * (For use by autoinstallation.)
      * @param settings The YCP structure to be imported.
@@ -544,17 +555,6 @@
 
 	Set(settings);
 	return true;
-    }
-
-    /**
-     * Set module data
-     * @param settings set data from YCP
-     * @return void
-     */
-    global define void Set (list settings) ``{
-
-	ide_devices = settings;
-	return;
     }
 
     /**

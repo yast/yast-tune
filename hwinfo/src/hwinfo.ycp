@@ -69,13 +69,13 @@ if (SCR::Execute(.target.bash, "/bin/ps -C X") == 0)
  * reads .proc.cpuinfo and creates hardware map
  */
 
-define list add_cpu_info(list(map) cpuinfo) ``{
+define list add_cpu_info(list<map> cpuinfo) ``{
     // add information from /proc/cpuinfo for each CPU
     integer cpu_index = 0;
 
     list ret = maplist(map probe_cpuinfo, cpuinfo, ``{
 	    // get all keys for selected processor
-	    list(string) keys = SCR::Dir(add(.proc.cpuinfo.value, sformat("%1", cpu_index)));
+	    list<string> keys = (list<string>) SCR::Dir(add(.proc.cpuinfo.value, sformat("%1", cpu_index)));
 
 	    if (keys != nil)
 	    {
@@ -104,7 +104,7 @@ define list add_cpu_info(list(map) cpuinfo) ``{
 
 define string afterLast(string str) ``{
     list strs = splitstring(str, ".");
-    return select(strs, size(strs) - 1, "");
+    return strs[size(strs) - 1]:"";
 }
 
 /**
@@ -149,7 +149,7 @@ define term buildHwTree(string p, integer progMin, integer progMax) ``{
 	{
 	    if (afterLast(p) == "cpu")
 	    {
-		val = add_cpu_info(val);
+		val = add_cpu_info((list) val);
 	    }
 	    return `item(trans_str(afterLast(p)), expandTree(val));
 	}
@@ -182,7 +182,7 @@ define term buildHwTree(string p, integer progMin, integer progMax) ``{
 	term    itm = nil;
 	while(pos >= 0)
 	{
-	    itm = buildHwTree(p + "."+select(dir, pos, nil), prog, prog + step);
+	    itm = buildHwTree(p + "." + dir[pos]:nil, prog, prog + step);
 	    if (abortPressed)
 	    {
 		return nil;
@@ -204,7 +204,7 @@ define term buildHwTree(string p, integer progMin, integer progMax) ``{
 // Main
 
 // tree item list
-any items = nil;
+term items = nil;
 // default initial path
 path pat = .probe;
 if (size(WFM::Args()) > 0)
@@ -220,7 +220,7 @@ items = buildHwTree(sformat("%1", pat), 0, 1000);
 if (abortPressed)
 {
     UI::CloseDialog();
-    return;
+    return `abort;
 }
 
 // title label
@@ -234,7 +234,7 @@ UI::CloseDialog();
 
 term con = `Tree(  `id(`idTree), `opt(`vstretch, `hstretch),
 				title,
-				select(items, 1, nil));
+				items[1]:nil);
 
 Wizard::CreateDialog();
 

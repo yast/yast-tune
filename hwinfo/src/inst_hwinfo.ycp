@@ -19,7 +19,7 @@ import "Label";
 import "Report";
 
 include "hwinfo/routines.ycp";
-include "hwinfo/classnames.ycp";
+//include "hwinfo/classnames.ycp";
 include "wizard/sequencer.ycp";
 
 global string selected_model = "";
