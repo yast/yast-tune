@@ -248,15 +248,25 @@ term con = `Tree(  `id(`idTree), `opt(`vstretch, `hstretch),
 Wizard::CreateDialog();
 Wizard::SetDesktopIcon("hwinfo");
 
-Wizard::ReplaceBackButton(`Empty());
-Wizard::ReplaceNextButton(`Empty());
-Wizard::ReplaceAbortButton(`HBox(
-	// Push button label
-	`PushButton(`id(`save), _("&Save to File...")),
-	`HSpacing(3),
-	`PushButton(`id(`next), `opt(`default, `key_F10), Label::CloseButton())
-    )
-);
+
+Wizard::SetBackButton(`save, _("&Save to File...") );
+Wizard::SetNextButton(`next, Label::CloseButton() );
+
+Wizard::HideAbortButton();	// FIXME - Bad UI style - no safe exit?!
+
+
+// This was the original - hopefully my changes lead to the desired result
+// 2004-03-09 sh
+//
+//	Wizard::ReplaceBackButton(`Empty());
+//	Wizard::ReplaceNextButton(`Empty());
+//	Wizard::ReplaceAbortButton(`HBox(
+//		// Push button label
+//		`PushButton(`id(`save), _("&Save to File...")),
+//		`HSpacing(3),
+//		`PushButton(`id(`next), `opt(`default, `key_F10), Label::CloseButton())
+//	    )
+//	);
 
 // dialog header
 Wizard::SetContents (_("Hardware info"), con,

@@ -117,9 +117,9 @@ define symbol details_dialog(string model, map info) ``{
 	`Tree(_("&Details"), l)
     );
 
-    Wizard::ReplaceNextButton(`Empty());
-    Wizard::ReplaceBackButton(`Empty());
-    Wizard::ReplaceAbortButton(`PushButton(`id(`ok), `opt(`key_F10), Label::OKButton()));
+    Wizard::HideBackButton();
+    Wizard::HideAbortButton();
+    Wizard::SetNextButton( `ok, Label::OKButton() );
 
     // help text
     string help_text = _("<P><B>Details</B></P><P>The details of the selected hardware component are displayed here.</P>");
@@ -229,9 +229,9 @@ define symbol detected_dialog() ``{
     // help text - part 3/3
     + _("<P><B>Save to File</B><BR>You can save hardware information (<I>hwinfo</I> output) to file or to floppy disk. Select the target type in the <B>Save to File</B> menu.</P>");
 
-    Wizard::ReplaceNextButton(`Empty());
-    Wizard::ReplaceBackButton(`Empty());
-    Wizard::ReplaceAbortButton(`PushButton(`id(`ok), `opt(`key_F10), Label::OKButton()));
+    Wizard::HideBackButton();
+    Wizard::HideAbortButton();
+    Wizard::SetNextButton( `ok, Label::OKButton() );
 
     // heading text
     Wizard::SetContents(_("Detected Hardware"), content,
