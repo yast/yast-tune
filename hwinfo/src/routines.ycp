@@ -7,9 +7,11 @@
  */
 
 {
+textdomain "Tune";
 
 import "Report";
 
+include "hwinfo/classnames.ycp";
 include "ui/file_popups.ycp";
 
 /*
@@ -203,54 +205,6 @@ $[
 ]);
 
 /**
- * order table: list of lists.
- * first item of nested list is key name
- * second is term that should be used for formating the key- takes key name as first argument
- * if third item is true, the whole map will be passed to term as second argument
- */
-
-global list order=[
-	["sub_device",  nil],
-	["device",	    nil],
-	["model name",	    nil],
-	["model",	    nil],
-	["vendor",	    nil],
-	["irq",	    nil],
-	["start",	    ``(tohexstring()), false], // tohex
-	["name",	    nil],
-	["xkbmodel",    nil],
-	["server",	    nil],
-	["size",	    nil],
-	["unit",	    nil],
-	["width",	    ``(resolution()), true],
-	["cylinders",   ``(sformat("cylinders/heads/sectors")), false],
-	["dev_name",    nil],
-	["modules",	    ``(sformat("modules")), false],
-	["sub_class_id", ``(classtostring()), true],
-	["modules",	    ``(modules()), true]
-	];
-
-
-/**
- * translate string - looks to the translation table and returns value
- */
-global define string trans_str(any str) ``{
-	return lookup(trans_table, str, str);
-}
-
-/**
- * translate boolean to Yes/No
- */
-global define string trans_bool(any b) ``{
-    if (is(b, boolean))
-    {
-	// yes/no strings
-	return (b == true) ? _("Yes") : _("No");
-    }
-    return sformat("%1", b);
-}
-
-/**
  * reads values from map and creates label for this entry
  */
 
@@ -259,31 +213,12 @@ global define string resolution(any a, map m) ``{
     {
 	return sformat("%1x%2", lookup(m, "width", ""), lookup(m, "height", ""));
     }
-    return lookup(m, width, "");
+    return lookup(m, "width", "");
 }
 
-/**
- * evals to true if given value is scalar (not map or term or list)
- */
-
-global define boolean scalar(any node) ``{
-    if (
-	is(node, string) ||
-	is(node, boolean) ||
-	is(node, integer) ||
-	is(node, float) ||
-	is(node, locale) ||
-	is(node, path))
-    {
-	return true;
-    }
-    return false;
-}
-
-
-global define string modules(list val) ``{
+global define list<string> modules(list<list> val) ``{
     y2warning("calling modules with param: %1", val);
-    list outlist = maplist(`e, val,
+    list outlist = maplist(list<string> e, val,
     ``{
 	return "modprobe " + mergestring(e, " ");
     });
@@ -315,6 +250,78 @@ global define map translate_hw_entry(map hw) ``{
 }
 
 
+define string classtostring(any a, map m) ``{
+    return lookup(translate_hw_entry(m), "sub_class_id", "");
+}
+
+
+/**
+ * order table: list of lists.
+ * first item of nested list is key name
+ * second is term that should be used for formating the key- takes key name as first argument
+ * if third item is true, the whole map will be passed to term as second argument
+ */
+
+global list order=[
+	["sub_device",  nil],
+	["device",	    nil],
+	["model name",	    nil],
+	["model",	    nil],
+	["vendor",	    nil],
+	["irq",	    nil],
+	["start",	    ``(tohexstring()), false], // tohex
+	["name",	    nil],
+	["xkbmodel",    nil],
+	["server",	    nil],
+	["size",	    nil],
+	["unit",	    nil],
+	["width",	    ``(resolution()), true],
+	["cylinders",   ``(sformat("cylinders/heads/sectors")), false],
+	["dev_name",    nil],
+	["modules",	    ``(sformat("modules")), false],
+	["sub_class_id", ``(classtostring()), true],
+	["modules",	    ``(modules()), true]
+	];
+
+
+/**
+ * translate string - looks to the translation table and returns value
+ */
+global define string trans_str(string str) ``{
+	return (string) (trans_table[str]:str);
+}
+
+/**
+ * translate boolean to Yes/No
+ */
+global define string trans_bool(any b) ``{
+    if (is(b, boolean))
+    {
+	// yes/no strings
+	return (b == true) ? _("Yes") : _("No");
+    }
+    return sformat("%1", b);
+}
+
+/**
+ * evals to true if given value is scalar (not map or term or list)
+ */
+
+global define boolean scalar(any node) ``{
+    if (
+	is(node, string) ||
+	is(node, boolean) ||
+	is(node, integer) ||
+	is(node, float) ||
+	is(node, locale) ||
+	is(node, path))
+    {
+	return true;
+    }
+    return false;
+}
+
+
 /**
  * if expandTree function tries to explore list, it should use some
  * label for each item. it tree items are maps, this function decides
@@ -327,13 +334,13 @@ global define string getRepresentant(map m) ``{
     // search the 'order' table
     while(i < size(order))
     {
-	if (haskey(m, select(select(order, i, []), 0, "")))
+	if (haskey(m, order[i, 0]:""))
 	{
-	    if (select(select(order, i, []), 1, nil) != nil)
+	    if (order[i, 1]:nil != nil)
 	    {
-		term t = select(select(order, i, []), 1, nil);
-		t = add(t, lookup(m, select(select(order, i, []), 0, nil), nil));
-		if(size(select(order, i, 0)) > 2 && select(select(order, i, nil), 2, true))
+		term t = order[i, 1]:nil;
+		t = add(t, m[order[i, 0]:nil]:nil);
+		if(size((list) (order[i]:[])) > 2 && order[i, 2]:true)
 		{
 		    t = add(t, m);
 		}
@@ -341,7 +348,7 @@ global define string getRepresentant(map m) ``{
 	    }
 	    else
 	    {
-		out = sformat("%1", lookup(m, select(select(order, i, []), 0, $[]), nil));
+		out = sformat("%1", m[order[i, 0]:$[]]:nil);
 	    }
 	    break;
 	}
@@ -362,11 +369,13 @@ global define list expandTree(any node) ``{
 
     // workaround for bug #31144 - don't visualize list
     // with only one map item
-    if (is(node, list) && size(node) == 1)
+    if (is(node, list) && size((list) node) == 1)
     {
-	if (is(node[0]:$[], map))
+        list node_list = (list) node;
+
+        if (is(node_list[0]:$[], map))
 	{
-	    map tmp = eval(node[0]:$[]);
+	    map tmp = eval(node_list[0]:$[]);
 
 	    // if map has "model" key then don't flatten list,
 	    // device model name would be removed from the tree
@@ -389,9 +398,9 @@ global define list expandTree(any node) ``{
     {
 	// if node is list ...
 	list    lout = [];
-	integer q = size(node);
+	integer q = size((list) node);
 	integer pos = 0;
-	foreach(`e, node,
+	foreach(any e, (list) node,
 	``{
 	    if (scalar(e))
 	    {
@@ -406,7 +415,7 @@ global define list expandTree(any node) ``{
 		if (is(e, map))
 		{
 		    // ... create label for each item ...
-		    string s = getRepresentant(e);
+		    string s = getRepresentant((map) e);
 		    if(s != "")
 		    {
 			lab = s;
@@ -423,15 +432,15 @@ global define list expandTree(any node) ``{
     if (is(node, map))
     {
 	// if node is map ...
-	node = translate_hw_entry(node);
+	map node_map = translate_hw_entry((map) node);
 	list ltmp = [];
-	foreach(`key, `v, node,
+	foreach(string key, any v, node_map,
 	``{
 	    // haha, hack! we need to translate the 'modules' entry into some more readable form...
 	    // unfortunatelly 'modules' is used in several places and in different meaings...
 	    if(key == "modules" && is(v, list))
 	    {
-		v = modules(v);
+		v = modules((list) v);
 	    }
 
 	    // ... explore all pairs
@@ -507,14 +516,14 @@ global define boolean save_hwinfo_to_file(string target_file_name) ``{
  *         or nil when mount failed
  */
 global define string mount_device(string device) ``{
-    string tmpdir = SCR::Read(.target.tmpdir);
+    string tmpdir = (string) SCR::Read(.target.tmpdir);
     string mpoint = tmpdir + "/mount";
 
     // create mount point directory
     SCR::Execute(.target.mkdir, mpoint);
 
     // mount device
-    boolean result = SCR::Execute(.target.mount, [device, mpoint], "");
+    boolean result = (boolean) SCR::Execute(.target.mount, [device, mpoint], "");
 
     return (result == true) ? mpoint : nil;
 }
@@ -525,7 +534,7 @@ global define string mount_device(string device) ``{
  * @return boolean true on success
  */
 global define boolean umount_device(string mount_point) ``{
-    return SCR::Execute(.target.umount, mount_point);
+    return (boolean) SCR::Execute(.target.umount, mount_point);
 }
 
 }

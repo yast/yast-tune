@@ -15,7 +15,7 @@ textdomain "tune";
 import "Wizard";
 import "Label";
 
-include "hwinfo/classnames.ycp";
+//include "hwinfo/classnames.ycp";
 include "hwinfo/routines.ycp";
 
 /**
@@ -97,11 +97,6 @@ define list add_cpu_info(list(map) cpuinfo) ``{
 
     return ret;
 }
-
-define string classtostring(any a, map m) ``{
-    return lookup(translate_hw_entry(m), "sub_class_id", "");
-}
-
 
 /**
  * returns string that is behind the last dot of given string (extract last part of path)
