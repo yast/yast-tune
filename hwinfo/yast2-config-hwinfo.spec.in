@@ -4,7 +4,7 @@
 
 @HEADER@
 
-Requires:	yast2-trans-hwinfo yast2 yast2-agent-any yast2-agent-probe
+Requires:	yast2 yast2-agent-any yast2-agent-probe
 BuildArchitectures:     noarch
 Summary:	Hardware configuration viewer
 
