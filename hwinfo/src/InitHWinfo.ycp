@@ -26,8 +26,8 @@ boolean initialized = false;
 
 // CPU summary string
 string cpu_string = "";
-// memory summary string
-string memory_string = "";
+// memory size
+integer memory_size = 0;
 // system summary string
 string system_string= "";
 
@@ -87,13 +87,10 @@ global define boolean Initialize(boolean force) ``{
 	}
     );
 
-    // initialize memory string
-    memory_string = "";
-
     list<map> memory = (list<map>) SCR::Read(.probe.memory);
 
     y2milestone("memory: %1", memory);
-    integer memory_size = 0;
+    memory_size = 0;
 
     foreach(map info, memory, ``{
 	    // internal class, main memory
@@ -107,8 +104,6 @@ global define boolean Initialize(boolean force) ``{
 	    }
 	}
     );
-
-    memory_string = String::FormatSizeWithPrecision(memory_size, 2, true);
 
     // initialize system string
     list bios = (list) SCR::Read(.probe.bios);
@@ -202,7 +197,7 @@ global define list<string> MakeProposal(boolean reset) ``{
     list<string> ret = [ sformat(_("Processor: %1"), cpu_string),
 	// the installation proposal item
 	// %1 is memory size string
-	sformat(_("Main Memory: %1"), memory_string)
+	sformat(_("Main Memory: %1"), String::FormatSizeWithPrecision(memory_size, 2, true))
     ];
 
     // add system string
