@@ -10,10 +10,10 @@ ynclude_DATA = classnames.ycp routines.ycp
 
 module_DATA = InitHWinfo.ycp
 
-symlinks:
-	test -L hwinfo || ln -sf . hwinfo
+hwinfo:
+	ln -sf . hwinfo
 
-ycpchook = symlinks
+ycpchook = hwinfo
 
 YCPCFLAGS=-I.
 

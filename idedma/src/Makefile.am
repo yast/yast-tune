@@ -25,10 +25,10 @@ endif
 module_DATA =			\
 	Idedma.ycp
 
-symlinks:
-	test -L hwinfo || ln -sf ../../hwinfo/src hwinfo
+hwinfo:
+	ln -sf ../../hwinfo/src hwinfo
 
-ycpchook = symlinks
+ycpchook = hwinfo
 
 YCPCFLAGS=-I.
 

@@ -397,7 +397,7 @@
      * @return boolean true on success
      */
     global define boolean set_dma(string device, string dma_setting) ``{
-	if (size(device) == 0 || size(dma_setting) == 0)
+	if (device == nil || device == "" || dma_setting == nil || dma_setting == "")
 	{
 	    return false;
 	}

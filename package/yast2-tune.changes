@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Fri Jan 30 11:21:09 CET 2004 - lslezak@suse.cz
+
+- fixes for new interpreter (data types)
+- build fix (ycp hook, testsuite update)
+- version 2.9.6
+
+-------------------------------------------------------------------
 Tue Jan 13 12:40:04 CET 2004 - lslezak@suse.cz
 
 - init_hwinfo - read system name (SMBIOS entry), NI fixes
