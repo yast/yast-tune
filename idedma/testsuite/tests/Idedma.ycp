@@ -24,7 +24,7 @@ TEST(``(Idedma::Read()), [ READ, $[], EXEC ], nil );
 DUMP(Idedma::get_ide_devices());
 
 
-READ = add(READ, "sysconfig", $["hardware" : $[ "DEVICES_FORCE_IDE_DMA" : ""] ]);
+READ = add(READ, "sysconfig", $["ide" : $[ "DEVICES_FORCE_IDE_DMA" : ""] ]);
 EXEC = $["target" : $["bash_output" : $["stdout" : "Error", "exit" : -1 ] ] ];
 
 DUMP("Read test2");
@@ -32,7 +32,7 @@ TEST(``(Idedma::Read()), [ READ, $[], EXEC ], nil );
 DUMP(Idedma::get_ide_devices());
 
 
-READ = add(READ, "sysconfig", $["hardware" : $[ "DEVICES_FORCE_IDE_DMA" : "/dev/hda:on"] ]);
+READ = add(READ, "sysconfig", $["ide" : $[ "DEVICES_FORCE_IDE_DMA" : "/dev/hda:on"] ]);
 EXEC = $[ "target" : $["bash_output" : $["stdout" : " using_dma    =  1 (on)", "exit" : 0 ] ] ];
 
 DUMP("Read test3");
@@ -40,7 +40,7 @@ TEST(``(Idedma::Read()), [ READ, $[], EXEC ], nil );
 DUMP(Idedma::get_ide_devices());
 
 
-READ = add(READ, "sysconfig", $["hardware" : $[ "DEVICES_FORCE_IDE_DMA" : "/dev/hda:off"] ]);
+READ = add(READ, "sysconfig", $["ide" : $[ "DEVICES_FORCE_IDE_DMA" : "/dev/hda:off"] ]);
 
 DUMP("Read test4");
 TEST(``(Idedma::Read()), [ READ, $[], EXEC ], nil );

@@ -250,7 +250,7 @@
 	y2milestone("Detected ide-scsi devices: %1", scsi_devices);
 
 	// read setting from sysconfig
-	string devices_setting_str = (string) SCR::Read(.sysconfig.hardware.DEVICES_FORCE_IDE_DMA);
+	string devices_setting_str = (string) SCR::Read(.sysconfig.ide.DEVICES_FORCE_IDE_DMA);
 
 	y2debug("Read configuration: %1", devices_setting_str);
 
@@ -493,15 +493,15 @@
 	y2milestone("new_dma_setting: %1", new_dma_setting);
 
 	// write device strings to sysconfig
-	if (SCR::Write(.sysconfig.hardware.DEVICES_FORCE_IDE_DMA, new_dma_setting) == false)
+	if (SCR::Write(.sysconfig.ide.DEVICES_FORCE_IDE_DMA, new_dma_setting) == false)
 	{
-	    // error message
-	    Report::Error(_("Unable to write settings to '/etc/sysconfig/hardware'."));
+	    // error message - %1 is file name
+	    Report::Error(sformat(_("Unable to write settings to '%1'."), "/etc/sysconfig/ide"));
 	    return false;
 	}
 
 	// flush changes
-	SCR::Write(.sysconfig.hardware, nil);
+	SCR::Write(.sysconfig.ide, nil);
 
 	// flush disc cache before enabling DMA
 	if (sync_needed == true)

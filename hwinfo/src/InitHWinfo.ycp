@@ -107,7 +107,7 @@ global define boolean Initialize(boolean force) ``{
 	}
     );
 
-    memory_string = String::FormatSize(memory_size);
+    memory_string = String::FormatSizeWithPrecision(memory_size, 2, true);
 
     // initialize system string
     list bios = (list) SCR::Read(.probe.bios);
@@ -180,7 +180,7 @@ global define list<string> MakeProposal(boolean reset) ``{
 	ret = prepend(ret, sformat(_("System: %1"), system_string));
     }
 
-    y2internal("proposal: %1", ret);
+    y2milestone("proposal: %1", ret);
 
     return ret;
 }

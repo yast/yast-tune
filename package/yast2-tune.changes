@@ -1,4 +1,13 @@
 -------------------------------------------------------------------
+Thu Feb 12 18:16:16 CET 2004 - lslezak@suse.cz
+
+- use new config file (/etc/sysconfig/ide)
+- cfg_hardware.scr renamed to cfg_ide.scr (.sysconfig.ide path)
+- testsuite update
+- InitHWinfo: use String::FormatSizeWithPrecision function
+- version 2.9.9
+
+-------------------------------------------------------------------
 Thu Feb 12 11:25:55 CET 2004 - arvin@suse.de
 
 - added type names for new udev and sysfs infos (bug #34355)
