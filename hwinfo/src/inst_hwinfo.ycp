@@ -116,7 +116,7 @@ define symbol details_dialog(string model, map info) ``{
 	`Tree(_("&Details"), l)
     );
 
-    Wizard::ReplaceNextButton(`PushButton(`id(`next), `opt(`default, `key_F10), Label::OKButton()));
+    Wizard::ReplaceNextButton(`PushButton(`id(`next), `opt(`key_F10), Label::OKButton()));
 
     // help text
     string help_text = _("<P><B>Details</B></P><P>Here are displayed details of the selected hardware component.</P>");
@@ -210,7 +210,9 @@ define symbol detected_dialog() ``{
     // help text - part 3/3
     + _("<P><B>Save to File</B><BR>You can save hardware information (<I>hwinfo</I> output) to file or to floppy disk. Select target type in the <B>Save to File</B> menu.</P>");
 
-    Wizard::ReplaceNextButton(`PushButton(`id(`next), `opt(`default, `key_F10), Label::CloseButton()));
+    Wizard::ReplaceNextButton(`Empty());
+    Wizard::ReplaceBackButton(`Empty());
+    Wizard::ReplaceAbortButton(`PushButton(`id(`ok), `opt(`key_F10), Label::OKButton()));
 
     // heading text
     Wizard::SetContents(_("Detected hardware"), content,
@@ -225,7 +227,7 @@ define symbol detected_dialog() ``{
 
     symbol ret = `dummy;
 
-    while (ret != `next && ret != `back && ret != `close && ret != `abort && ret != `details)
+    while (ret != `ok && ret != `details)
     {
 	ret = (symbol)UI::UserInput();
 
@@ -290,6 +292,8 @@ define symbol detected_dialog() ``{
     }
 
     Wizard::RestoreNextButton();
+    Wizard::RestoreAbortButton();
+    Wizard::RestoreBackButton();
 
     y2debug("detected_dialog result: %1", ret);
 
@@ -318,7 +322,7 @@ map sequence = $[
 	// return `abort even when module was correctly finished
 	// (avoids restarting installation proposal of all other modules
 	//  which doesn't make sense - InitHWinfo is read only module)
-	`next	: `abort,
+	`ok	: `abort,
 	`details	: "details"
     ],
     "details" :

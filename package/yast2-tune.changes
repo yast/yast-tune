@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Tue Feb 24 11:05:49 CET 2004 - lslezak@suse.cz
+
+- InitHWinfo - only [OK] button in HW summary dialog (#34915)
+- version 2.9.11
+
+-------------------------------------------------------------------
 Tue Feb 17 17:37:50 CET 2004 - lslezak@suse.cz
 
 - NI fixes (removed globals)
