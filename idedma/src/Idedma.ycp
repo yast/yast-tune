@@ -51,9 +51,8 @@
 	list devices = SCR::Read(.probe.bybus.ide);
 
 	// read setting from sysconfig
-	// FIXME: sysconfig variables
-	string devices_on_str = nil;	//SCR::Read(.sysconfig.hardware.FORCE_IDE_DMA_ON);
-	string devices_off_str = nil;	//SCR::Read(.sysconfig.hardware.FORCE_IDE_DMA_OFF);
+	string devices_on_str = SCR::Read(.sysconfig.hardware.DEVICES_FORCE_IDE_DMA_ON);
+	string devices_off_str = SCR::Read(.sysconfig.hardware.DEVICES_FORCE_IDE_DMA_OFF);
 
 	y2debug("Read configuration: DMA_ON='%1', DMA_OFF='%2'", devices_on_str, devices_off_str);
 
@@ -216,6 +215,9 @@
 		string d_name = lookup(d, "dev_name", nil);
 		string dev_name_base = substring(d_name, findlastof(d_name, "/") + 1);
 
+		boolean first_on = true;
+		boolean first_off = true;
+
 		if (d_name != nil)
 		{
 		    boolean dma_on = lookup(d, "dma_on", nil);
@@ -223,12 +225,30 @@
 
 		    if (dma_on == true)
 		    {
-			dma_on_string = dma_on_string + " " + dev_name_base;
+			if (first_on)
+			{
+			    dma_on_string = dev_name_base;
+			    first_on = true;
+			}
+			else
+			{
+			    dma_on_string = dma_on_string + " " + dev_name_base;
+			}
+
 			dma_str = "1";
 		    }
 		    else if (dma_on == false)
 		    {
-			dma_off_string = dma_off_string + " " + dev_name_base;
+			if (first_off)
+			{
+			    dma_off_string = dev_name_base;
+			    first_off = false;
+			}
+			else
+			{
+			    dma_off_string = dma_off_string + " " + dev_name_base;
+			}
+
 			dma_str = "0";
 		    }
 
@@ -247,24 +267,21 @@
 	y2debug("DMA on: %1", dma_on_string);
 	y2debug("DMA off: %1", dma_off_string);
 
-	// write device string to sysconfig
-	// FIXME: sysconfig variables
-/*	if (SCR::Write(.sysconfig.hardware.FORCE_IDE_DMA_ON, dma_on_string)
-	    && SCR::Write(.sysconfig.hardware.FORCE_IDE_DMA_OFF, dma_off_string))
+	// write device strings to sysconfig
+	if ((SCR::Write(.sysconfig.hardware.DEVICES_FORCE_IDE_DMA_ON, dma_on_string)
+	    && SCR::Write(.sysconfig.hardware.DEVICES_FORCE_IDE_DMA_OFF, dma_off_string)) == false)
 	{
-	    Report::Error(_("Unable to write settings to /etc/sysconfig/."));
+	    Report::Error(_("Unable to write settings to '/etc/sysconfig/hardware'."));
 	    ret = false;
 	}
-*/
+
 
 	// enable service
-	// FIXME: service name
-/*	if (Runlevel::ServiceAdjust("boot.idedma", "default") != true)
+	if (Runlevel::ServiceAdjust("boot.idedma", "default") != true)
 	{
-	    Report::Error(_("Can not enable service."));
+	    Report::Error(_("Can not enable service 'boot.idedma'."));
 	    ret = false;
 	}
-*/
 
 	return ret;
     }

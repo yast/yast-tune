@@ -27,7 +27,7 @@
     global define string ReadDialogHelp () ``{
 	return
 	    // For translators: IDE DMA read dialog help
-_("<P><B><BIG>Initializing IDE DMA module</BIG></B><BR>
+_("<P><B><BIG>Initializing IDE DMA mode configuration module</BIG></B><BR>
 Please wait for a while...
 </P>");
     }
@@ -39,7 +39,7 @@ Please wait for a while...
     global define string WriteDialogHelp () ``{
 	return
 	    // For translators: idedma write dialog help, part 1 of 2
-_("<P><B><BIG>Saving IDE DMA configuration</BIG></B><BR>
+_("<P><B><BIG>Saving IDE DMA mode configuration</BIG></B><BR>
 Please wait for a while...
 </P>");
     }
@@ -51,18 +51,18 @@ Please wait for a while...
     global define string DetectedDialogHelp () ``{
 	return
 	    // For translators: IDE DMA setup dialog help, part 1 of 4
-_("<P><B><BIG>IDE DMA setup</BIG></B><BR>
+_("<P><B><BIG>IDE DMA mode setup</BIG></B><BR>
 Here you can configure DMA mode of IDE devices.
-<BR></P>") +
+</P>") +
 	    // For translators: IDE DMA setup dialog help, part 2 of 3
 _("<P><B><BIG>Change IDE DMA mode</BIG></B><BR>
 Select device in the table and click button below the table with required DMA mode. 
-<BR></P>") +
+</P>") +
 	    // For translators: IDE DMA setup dialog help, part 3 of 3
 _("<P><B><BIG>Note:</BIG></B><BR>
 Disabling DMA mode slows down access to the device, but some devices may
 not work properly if they have DMA turned on.
-<BR></P>");
+</P>");
     }
 
 

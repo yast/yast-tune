@@ -1,4 +1,12 @@
 -------------------------------------------------------------------
+Thu Jan 24 10:03:31 CET 2002 - lslezak@suse.cz
+
+- read/write configuration to /etc/sysconfig/hardware
+- agent for /etc/sysconfig/hardware
+- small UI and help texts changes
+- version 2.5.1
+
+-------------------------------------------------------------------
 Mon Jan 14 14:43:24 2002 - lslezak@suse.cz
 
 - initial version

@@ -1,0 +1,23 @@
+/**
+ * File:	cfg_hardware.scr
+ * Summary:	Agent for reading/writing /etc/sysconfig/hardware
+ * Author:	Ladislav Slezak <lslezak@suse.cz>
+ * Access:	Read / Write
+ *
+ * Example:
+ *   Read(.sysconfig.hardware.DEVICES_FORCE_IDE_DMA_OFF)
+ *   ("hdc")
+ **
+ *   Write(.sysconfig.hardware.DEVICES_FORCE_IDE_DMA_ON, "hdd")
+ *   (true)
+ *
+ * $Id$
+ *
+ * Read/Writes the values defined in <tt>/etc/sysconfig/hardware</tt>
+ * in an easy manner.
+ */
+.sysconfig.hardware
+
+`ag_ini(
+    SysConfigFile("/etc/sysconfig/hardware")
+)

@@ -225,10 +225,12 @@ global define any DmaConfigDialog () ``{
     list items = get_table_items();
 
     term contents = `VBox(
-			`Table(`id(`device_table), `header(_("DMA setup"), _("Device name"), _("Type"), _("Device"), _("Current DMA setup")), items),
+			`Table(`id(`device_table), `header(_("DMA mode"), _("Device name"), _("Type"), _("Device"), _("Current DMA mode")), items),
 			`HBox(
 			    `PushButton(`id(`dma_enable), _("&DMA on")),
+			    `HSpacing(2),
 			    `PushButton(`id(`dma_disable), _("D&MA off")),
+			    `HSpacing(2),
 			    `PushButton(`id(`dma_default), _("&No change"))
 			),
 			`VSpacing(0.5)
@@ -265,10 +267,19 @@ global define any DmaConfigDialog () ``{
 		if (curr != nil)
 		{
 		    term table_item = UI::QueryWidget(`id(`device_table), `Item(curr));
+		    // get device name from the table
 		    string dn = select(table_item, 4, nil);
+		    // get current DMA
+		    string curr_dma = select(table_item, 5, nil);
 
 		    if (dn != nil)
 		    {
+			// enabling DMA on device with currnet DMA off
+			if (ret == `dma_enable && curr_dma == dma_off_string)
+			{
+			    UI::WarningPopup(_("Enabling DMA on some devices can cause\ndata loss or system lock."));
+			}
+
 			// convert button identification to DMA boolean value
 			boolean value_bool = nil;
 			string new_value = dma_default_string;
@@ -290,8 +301,11 @@ global define any DmaConfigDialog () ``{
                         // refresh value in the table
 			UI::ChangeWidget(`id(`device_table), `Item(curr, 0), new_value);
 
-			// set changed flag (without testing whether new value is same as old value)
-			changed = true;
+			// set changed flag
+			if (new_value != select(table_item, 1, nil))
+			{
+			    changed = true;
+			}
 		    }
 		}
 	    }

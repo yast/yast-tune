@@ -27,4 +27,5 @@ configure DMA of IDE devices.
 @YAST2DIR@/clients/idedma_*.ycp
 @YAST2DIR@/modules/Idedma.ycp
 @YAST2DIR@/menuentries/menuentry_idedma.y2cc
+@YAST2DIR@/scrconf/cfg_hardware.scr
 %doc @DOCDIR@
