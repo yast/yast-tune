@@ -1,0 +1,195 @@
+$[
+0x000:	
+$[
+	"name":_("Unclassified device"),
+	0x00:	_("Unclassified device"),
+	0x01:	_("VGA compatible unclassified device")
+],
+0x001:
+$[
+	"name":_("Mass storage controller"),
+	0x00:	_("SCSI storage controller"),
+	0x01:	_("IDE interface"),
+	0x02:	_("Floppy disk controller"),
+	0x03:	_("IPI bus controller"),
+	0x04:	_("RAID bus controller"),
+	0x80:	_("Unknown mass storage controller")
+],
+0x002:
+$[
+	"name":_("Network controller"),
+	0x00:	_("Ethernet controller"),
+	0x01:	_("Token ring network controller"),
+	0x02:	_("FDDI network controller"),
+	0x03:	_("ATM network controller"),
+	0x80:	_("Network controller")
+],
+0x003:
+$[
+	"name":_("Display controller"),
+	0x00:	_("VGA compatible controller"),
+	0x01:	_("XGA compatible controller"),
+	0x80:	_("Display controller")
+],
+0x004:
+$[
+	"name":_("Multimedia controller"),
+	0x00:	_("Multimedia video controller"),
+	0x01:	_("Multimedia audio controller"),
+	0x80:	_("Multimedia controller")
+],
+0x005:
+$[
+	"name":_("Memory controller"),
+	0x00:	_("RAM memory"),
+	0x01:	_("FLASH memory"),
+	0x80:	_("Memory controller")
+],
+0x006:
+$[
+	"name":_("Bridge"),
+	0x00:	_("Host bridge"),
+	0x01:	_("ISA bridge"),
+	0x02:	_("EISA bridge"),
+	0x03:	_("MicroChannel bridge"),
+	0x04:	_("PCI bridge"),
+	0x05:	_("PCMCIA bridge"),
+	0x06:	_("NuBus bridge"),
+	0x07:	_("CardBus bridge"),
+	0x80:	_("Bridge")
+],
+0x007: 
+$[
+	"name":_("Communication controller"),
+	0x00:	_("Serial controller"),
+	0x01:	_("Parallel controller"),
+	0x80:	_("Communication controller")
+],
+0x008:
+$[
+	"name":_("Generic system peripheral"),
+	0x00:	_("PIC"),
+	0x01:	_("DMA controller"),
+	0x02:	_("Timer"),
+	0x03:	_("RTC"),
+	0x80:	_("System peripheral")
+],
+0x009:
+$[
+	"name":_("Input device controller"),
+	0x00:	_("Keyboard controller"),
+	0x01:	_("Digitizer Pen"),
+	0x02:	_("Mouse controller"),
+	0x80:	_("Input device controller")
+],
+0x00a:
+$[
+	"name":_("Docking station"),
+	0x00:	_("Generic Docking Station"),
+	0x80:	_("Docking Station")
+],
+0x00b:
+$[
+	"name":_("Processor"),
+	0x00:	_("386"),
+	0x01:	_("486"),
+	0x02:	_("Pentium"),
+	0x10:	_("Alpha"),
+	0x20:	_("Power PC"),
+	0x40:	_("Co-processor")
+],
+0x00c:
+$[
+	"name":_("Serial bus controller"),
+	0x00:	_("FireWire (IEEE 1394)"),
+	0x01:	_("ACCESS Bus"),
+	0x02:	_("SSA"),
+	0x03:	_("USB Controller"),
+	0x04:	_("Fiber Channel")
+],
+0x00e:
+$[
+	"name":_("Intelligent controller"),
+	0x00:	_("I2O")
+],
+0x0ff:
+$[
+	"name": _("Unclassified device")
+],
+
+
+0x100:
+$[
+	"name":_("Monitor"),
+	0x01:	_("CRT Monitor"),
+	0x02:	_("LCD Monitor")
+],
+0x101:	
+$[
+	"name":_("Internally Used Class"),
+	0x01:	_("ISA PnP Interface"),
+	0x02:	_("Main Memory"),
+	0x03:	_("CPU"),
+	0x04:	_("FPU"),
+	0x05:	_("BIOS"),
+	0x06:	_("PROM"),
+	0x07:	_("System")
+],
+0x102:
+$[
+	"name":_("Modem"),
+	0x00:	_("Modem"),
+	0x01:	_("Win-Modem")
+],
+0x103:
+$[
+	"name":_("ISDN Adapter")
+],
+0x104:
+$[
+	"name":_("PS/2 Controller")
+],
+0x105:
+$[
+	"name":_("Mouse"),
+	0x00:	_("PS/2 Mouse"),
+	0x01:	_("Serial Mouse"),
+	0x02:	_("Bus Mouse"),
+	0x03:	_("USB Mouse")
+],
+0x106:
+$[
+	"name":_("Mass Storage Device"),
+	0x00:	_("Disk"),
+	0x01:	_("Tape"),
+	0x02:	_("CD-ROM"),
+	0x03:	_("Floppy Disk"),
+	0x80:	_("Storage Device")
+],
+0x107:
+$[
+	"name":_("Network Interface"),
+	0x00:	_("Loopback"),
+	0x01:	_("Ethernet"),
+	0x02:	_("Tokenring"),
+	0x03:	_("FDDI"),
+	0x80:	_("Network Interface")
+],
+0x108:
+$[	"name":_("Keyboard"),
+	0x00:	_("Keyboard"),
+	0x01:	_("Console")
+],
+0x109:
+$[
+	"name":_("Printer")
+],
+0x10a:	
+$["name":_("Hub"),
+	0x01:	_("USB Hub")
+],
+0x10b:
+$[
+	"name":_("Braille Display")
+]
+]
