@@ -8,7 +8,7 @@ dbdir = $(YAST2DIR)
 
 modules_DATA = hwinfo.ycp
 
-menu_DATA = menuentry_hwinfo.ycp
+menu_DATA = menuentry_hwinfo.y2cc
 
 db_DATA = classnames.ycp
 
