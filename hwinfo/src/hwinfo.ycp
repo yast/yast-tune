@@ -16,6 +16,7 @@ import "Wizard";
 import "Label";
 
 include "hwinfo/classnames.ycp";
+include "ui/file_popups.ycp";
 
 /**
  * this global variable is needed for skipping out from recursed function
@@ -696,7 +697,8 @@ while(event != `abort && event !=`next && event != `cancel)
     if (event == `save)
     {
 	// window title
-	string filename = UI::AskForSaveFileName("", "", _("Save Hardware Information"));
+	string filename = SaveFileAs("/");
+
 	if (filename != nil)
 	{
 	    // progress window content
@@ -713,6 +715,7 @@ while(event != `abort && event !=`next && event != `cancel)
     }
 }
 Wizard::CloseDialog();
+return `next;
 
 /* EOF */
 }
