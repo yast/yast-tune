@@ -19,9 +19,6 @@ import "Label";
 import "Report";
 import "Popup";
 
-//FIXME remove this!!
-import "Mode";Mode::manual = true;
-
 include "hwinfo/routines.ycp";
 include "hwinfo/classnames.ycp";
 include "wizard/sequencer.ycp";
