@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Fri Feb 27 16:46:42 CET 2004 - lslezak@suse.cz
+
+- InitHWinfo - only [OK] button in details dialog (#34915)
+- allow aborting during detection
+- version 2.9.13
+
+-------------------------------------------------------------------
 Thu Feb 26 20:32:53 CET 2004 - nashif@suse.de
 
 - Changed proposal file name proposal_* to *_proposal

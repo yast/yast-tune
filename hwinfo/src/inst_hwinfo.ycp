@@ -17,6 +17,10 @@ import "InitHWinfo";
 import "Wizard";
 import "Label";
 import "Report";
+import "Popup";
+
+//FIXME remove this!!
+import "Mode";Mode::manual = true;
 
 include "hwinfo/routines.ycp";
 include "hwinfo/classnames.ycp";
@@ -116,7 +120,9 @@ define symbol details_dialog(string model, map info) ``{
 	`Tree(_("&Details"), l)
     );
 
-    Wizard::ReplaceNextButton(`PushButton(`id(`next), `opt(`key_F10), Label::OKButton()));
+    Wizard::ReplaceNextButton(`Empty());
+    Wizard::ReplaceBackButton(`Empty());
+    Wizard::ReplaceAbortButton(`PushButton(`id(`ok), `opt(`key_F10), Label::OKButton()));
 
     // help text
     string help_text = _("<P><B>Details</B></P><P>Here are displayed details of the selected hardware component.</P>");
@@ -129,12 +135,19 @@ define symbol details_dialog(string model, map info) ``{
     y2debug("tree content: %1", l);
 
     symbol ret = `dummy;
-    while (ret != `next && ret != `back && ret != `close && ret != `abort)
+    while (ret != `ok && ret != `close)
     {
 	ret = (symbol)UI::UserInput();
     }
 
+    if (ret == `close)
+    {
+	ret = `bort;
+    }
+
     Wizard::RestoreNextButton();
+    Wizard::RestoreAbortButton();
+    Wizard::RestoreBackButton();
 
     return ret;
 }
@@ -145,7 +158,16 @@ define symbol details_dialog(string model, map info) ``{
  */
 define symbol detected_dialog() ``{
 
-    list<map> hw = InitHWinfo::DetectedHardware(false);
+    // this block is evaluated before each hardware class detection
+    block<boolean> abortblock = ``{return (UI::PollInput() == `abort && Popup::ReallyAbort(false));};
+
+    list<map> hw = InitHWinfo::DetectedHardware(false, abortblock);
+
+    if (hw == nil)
+    {
+	// detection was aborted
+	return `abort;
+    }
 
     // create table content
     list table_cont = [];
@@ -328,15 +350,11 @@ map sequence = $[
     "details" :
     $[
 	`abort	: `abort,
-	`next	: "detected"
+	`ok	: "detected"
     ]
 ];
 
 Wizard::CreateDialog();
-
-// remove abort button - this is installation module
-// user should only use 'Installation abort' button in the proposal dialog
-Wizard::ReplaceAbortButton(`Empty());
 
 // start workflow
 any ret = WizardSequencer (aliases, sequence);

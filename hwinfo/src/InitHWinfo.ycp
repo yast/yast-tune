@@ -223,7 +223,7 @@ global define list<string> MakeProposal(boolean reset) ``{
  * @param force If force is true then detection is always started (cached value is discarded)
  * @return list list of maps - detected hardware items ()
  */
-global define list<map> DetectedHardware(boolean force) ``{
+global define list<map> DetectedHardware(boolean force, block<boolean> abort) ``{
 
     // return cached values if possible
     if (detectedHW != nil && force != true)
@@ -245,70 +245,89 @@ global define list<map> DetectedHardware(boolean force) ``{
 
     Progress::NextStage();
 
+    boolean aborted = false;
+
     foreach(string subpath, paths, ``{
-	    path p = add(.probe, subpath);
 
-	    // translate path name
-	    string pathname = trans_str(subpath);
-
-	    // use untranslated string if translation failed
-	    if (pathname == nil)
+	    if (abort != nil && aborted != true)
 	    {
-		pathname = subpath;
+		aborted = eval(abort);
 	    }
 
-	    // set progress bar label
-	    Progress::Title(sformat(_("%1 ..."), pathname));
+	    y2debug("aborted: %1", aborted);
 
-	    // don't ask for probing CPU and memory, they were already probed and detection should be harmless
-	    boolean detect = (subpath == "cpu" || subpath == "memory") ? true : Confirm::Detection(pathname);
-
-	    // confirm hardware detection in the manual mode
-	    if (detect == true)
+	    if (!aborted)
 	    {
-		y2milestone("Probing: %1", p);
-		list result = (list) SCR::Read(p);
+		path p = add(.probe, subpath);
 
-		// store floppy devices, used in hwinfo output saving
-		if (subpath == "floppy")
+		// translate path name
+		string pathname = trans_str(subpath);
+
+		// use untranslated string if translation failed
+		if (pathname == nil)
 		{
-		    // reset list of floppies
-		    floppy = $[];
+		    pathname = subpath;
+		}
+
+		// set progress bar label
+		Progress::Title(sformat(_("%1 ..."), pathname));
+
+		// don't ask for probing CPU and memory, they were already probed and detection should be harmless
+		boolean detect = (subpath == "cpu" || subpath == "memory") ? true : Confirm::Detection(pathname);
+
+		// confirm hardware detection in the manual mode
+		if (detect == true)
+		{
+		    y2milestone("Probing: %1", p);
+		    list result = (list) SCR::Read(p);
+
+		    // store floppy devices, used in hwinfo output saving
+		    if (subpath == "floppy")
+		    {
+			// reset list of floppies
+			floppy = $[];
+
+			if (size(result) > 0)
+			{
+			    foreach(map<string,any> f, result, ``{
+				    string device = (string)(f["dev_name"]:nil);
+				    string model = (string)(f["model"]:nil);
+
+				    if (device != nil && model != nil)
+				    {
+					floppy[device] = model;
+				    }
+				}
+			    );
+			}
+
+			y2milestone("Detected floppy devices: %1", floppy);
+		    }
 
 		    if (size(result) > 0)
 		    {
-			foreach(map<string,any> f, result, ``{
-				string device = (string)(f["dev_name"]:nil);
-				string model = (string)(f["model"]:nil);
+			foreach(map info, result, ``{
+				// device name (CPU model name string has key "name" instead of "model")
+				string model = (subpath == "cpu") ? info["name"]:_("Unknown device") : info["model"]:_("Unknown device");
+				y2debug("Model: %1", model);
 
-				if (device != nil && model != nil)
-				{
-				    floppy[device] = model;
-				}
+				detectedHW = add(detectedHW, $[ "model" : model, "info" : info ]);
 			    }
 			);
 		    }
-
-		    y2milestone("Detected floppy devices: %1", floppy);
 		}
 
-		if (size(result) > 0)
-		{
-		    foreach(map info, result, ``{
-			    // device name (CPU model name string has key "name" instead of "model")
-			    string model = (subpath == "cpu") ? info["name"]:_("Unknown device") : info["model"]:_("Unknown device");
-			    y2debug("Model: %1", model);
-
-			    detectedHW = add(detectedHW, $[ "model" : model, "info" : info ]);
-			}
-		    );
-		}
+		// update progress bar
+		Progress::NextStep();
 	    }
-
-	    // update progress bar
-	    Progress::NextStep();
 	}
     );
+
+    if (aborted == true)
+    {
+	// set to non-initialized state when detection is aborted
+	detectedHW = nil;
+    }
 
     y2milestone("Detected HW: %1", detectedHW);
 
