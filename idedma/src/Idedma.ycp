@@ -295,7 +295,7 @@
 		    string dma_setting = device_setting_map[dev_name]:"nochange";
 
 		    // get textual information about device type (disk, CD-ROM, tape, ...) from identification number - device type was not found
-		    string subclass_id_string = eval(ClassNames[class_id, subclass_id]: _("Unknown device type"));
+		    string subclass_id_string = (string) eval(ClassNames[class_id, subclass_id]: _("Unknown device type"));
 
 		    // get current DMA setting
 		    string current_dma = get_device_dma_status(dev_name);

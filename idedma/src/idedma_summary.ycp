@@ -23,5 +23,5 @@
 
     Idedma::Read();
 
-    return Idedma::Summary();
+    return Idedma::Summary(false, true);
 }

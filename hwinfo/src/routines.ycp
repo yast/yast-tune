@@ -19,7 +19,7 @@ include "hwinfo/classnames.ycp";
  * translation table- key is replaced by value on it's way to ui
  * must be done this way, because keys are machine-generated
  */
-global map trans_table = eval(
+global map trans_table = (map) eval(
 $[
     // tree node string
     "architecture"	:   _("Architecture"),
@@ -262,7 +262,7 @@ global define map translate_hw_entry(map hw) ``{
  * @return string translated subclass name
  */
 define string classtostring(any a, map m) ``{
-    return lookup(translate_hw_entry(m), "sub_class_id", "");
+    return (string)(lookup(translate_hw_entry(m), "sub_class_id", ""));
 }
 
 
@@ -272,28 +272,26 @@ define string classtostring(any a, map m) ``{
  * second is term that should be used for formating the key- takes key name as first argument
  * if third item is true, the whole map will be passed to term as second argument
  */
-
-global list order=[
-	["sub_device",  nil],
-	["device",	    nil],
-	["model name",	    nil],
-	["model",	    nil],
-	["vendor",	    nil],
-	["irq",	    nil],
-	["start",	    ``(tohexstring()), false], // tohex
-	["name",	    nil],
-	["xkbmodel",    nil],
-	["server",	    nil],
-	["size",	    nil],
-	["unit",	    nil],
-	["width",	    ``(resolution()), true],
-	["cylinders",   ``(sformat("cylinders/heads/sectors")), false],
-	["dev_name",    nil],
-	["modules",	    ``(sformat("modules")), false],
-	["sub_class_id", ``(classtostring()), true],
-	["modules",	    ``(modules()), true]
-	];
-
+global list<string> representant_order = [
+    "sub_device",
+    "device",
+    "model name",
+    "model",
+    "vendor",
+    "irq",
+    "start",
+    "name",
+    "xkbmodel",
+    "server",
+    "size",
+    "unit",
+    "width",
+    "cylinders",
+    "dev_name",
+    "modules",
+    "sub_class_id",
+    "modules"
+];
 
 /**
  * translate string - looks to the translation table and returns value
@@ -346,33 +344,46 @@ global define boolean scalar(any node) ``{
  * @param m device info
  * @return string name of the selected representant for whole map
  */
-
-global define string getRepresentant(map m) ``{
+global define string get_representant(map m) ``{
     string out = "";
     integer i = 0;
     // search the 'order' table
-    while(i < size(order))
+    while(i < size(representant_order))
     {
-	if (haskey(m, order[i, 0]:""))
+	string key_name = (string)(representant_order[i]:"");
+	if (haskey(m, key_name))
 	{
-	    if (order[i, 1]:nil != nil)
+	    if (key_name == "start")
 	    {
-		term t = order[i, 1]:nil;
-		t = add(t, m[order[i, 0]:nil]:nil);
-		if(size((list) (order[i]:[])) > 2 && order[i, 2]:true)
-		{
-		    t = add(t, m);
-		}
-		out = sformat("%1", eval(t));
+		out = tohexstring((integer)(m[key_name]:0));
+	    }
+	    else if (key_name == "modules")
+	    {
+		// Linux kernel modules (drivers)
+		out = _("modules");
+	    }
+	    else if (key_name == "width")
+	    {
+		out = resolution("dummy", m);
+	    }
+	    else if (key_name == "cylinders")
+	    {
+		// hard disk parameters
+		out = _("cylinders/heads/sectors");
+	    }
+	    else if (key_name == "sub_class_id")
+	    {
+		out = classtostring("dummy", m);
 	    }
 	    else
 	    {
-		out = sformat("%1", m[order[i, 0]:$[]]:nil);
+		out = sformat("%1", m[key_name]:nil);
 	    }
 	    break;
 	}
 	i = i + 1;
     }
+
     return out;
 }
 
@@ -396,7 +407,7 @@ global define list expandTree(any node) ``{
 
         if (is(node_list[0]:$[], map))
 	{
-	    map tmp = eval(node_list[0]:$[]);
+	    map tmp = (map)eval(node_list[0]:$[]);
 
 	    // if map has "model" key then don't flatten list,
 	    // device model name would be removed from the tree
@@ -436,7 +447,7 @@ global define list expandTree(any node) ``{
 		if (is(e, map))
 		{
 		    // ... create label for each item ...
-		    string s = getRepresentant((map) e);
+		    string s = get_representant((map) e);
 		    if(s != "")
 		    {
 			lab = s;

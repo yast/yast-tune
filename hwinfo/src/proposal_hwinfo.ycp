@@ -14,7 +14,6 @@
     textdomain "tune";
 
     import "InitHWinfo";
-    import "Call";
 
     string func  = (string) WFM::Args(0);
     map    param = (map) WFM::Args(1);
@@ -32,7 +31,7 @@
 	boolean has_next = param["has_next"]:false;
 
 	// start inst_hwinfo module - start configuration workflow
-	symbol result = Call::Function("inst_hwinfo", []);
+	symbol result = (symbol)WFM::CallFunction("inst_hwinfo", []);
 
 	// TODO: change result to `back when no change was done?
 	//       this should prevent refreshing proposal

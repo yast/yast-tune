@@ -19,13 +19,53 @@ import "Label";
 import "Report";
 
 include "hwinfo/routines.ycp";
-//include "hwinfo/classnames.ycp";
+include "hwinfo/classnames.ycp";
 include "wizard/sequencer.ycp";
 
 global string selected_model = "";
 global map selected_info = $[];
 global string selected_device = nil;
 
+
+/**
+ * Show floppy selection dialog.
+ * @param devices map with pairs $["device name" : "model (description)"]
+ * @return string selected floppy device name or nil when canceled
+ */
+global define string floppy_selection(map devices) ``{
+    list devs = maplist(string d, string m, devices, ``{
+	    return `item(`id(d), sformat("%1 (%2)", m, d));
+	}
+    );
+
+    term dialog = `VBox(
+	// combo box label
+	`ComboBox(`id(`device), _("Select &Floppy Disk Device"), devs),
+	`VSpacing(1),
+	`HBox(
+	    `PushButton(`id(`ok), Label::OKButton()),
+	    `VSpacing(2),
+	    `PushButton(`id(`cancel), Label::CancelButton())
+	)
+    );
+
+    symbol ui = nil;
+
+    UI::OpenDialog(dialog);
+
+    while (ui != `ok && ui != `cancel && ui != `close)
+    {
+	ui = (symbol)UI::UserInput();
+    }
+
+    // get selected device
+    string selected = (string)UI::QueryWidget(`device, `Value);
+
+    UI::CloseDialog();
+
+    // return nil if [OK] wasn't pressed
+    return (ui == `ok) ? selected : nil;
+}
 
 /**
  * Select floppy device where hwifo will be stored.
@@ -61,46 +101,6 @@ global define string selected_floppy() ``{
 }
 
 /**
- * Show floppy selection dialog.
- * @param devices map with pairs $["device name" : "model (description)"]
- * @return string selected floppy device name or nil when canceled
- */
-global define string floppy_selection(map devices) ``{
-    list devs = maplist(string d, string m, devices, ``{
-	    return `item(`id(d), sformat("%1 (%2)", m, d));
-	}
-    );
-
-    term dialog = `VBox(
-	// combo box label
-	`ComboBox(`id(`device), _("Select &Floppy Disk Device"), devs),
-	`VSpacing(1),
-	`HBox(
-	    `PushButton(`id(`ok), Label::OKButton()),
-	    `VSpacing(2),
-	    `PushButton(`id(`cancel), Label::CancelButton())
-	)
-    );
-
-    symbol ui = nil;
-
-    UI::OpenDialog(dialog);
-
-    while (ui != `ok && ui != `cancel && ui != `close)
-    {
-	ui = UI::UserInput();
-    }
-
-    // get selected device
-    string selected = UI::QueryWidget(`device, `Value);
-
-    UI::CloseDialog();
-
-    // return nil if [OK] wasn't pressed
-    return (ui == `ok) ? selected : nil;
-}
-
-/**
  * Show detail dialog for selected device
  * @param model hardware description (used in the tree widget
  * as a root node)
@@ -131,7 +131,7 @@ global define symbol details_dialog(string model, map info) ``{
     symbol ret = nil;
     while (ret != `next && ret != `back && ret != `close && ret != `abort)
     {
-	ret = UI::UserInput();
+	ret = (symbol)UI::UserInput();
     }
 
     Wizard::RestoreNextButton();
@@ -145,7 +145,7 @@ global define symbol details_dialog(string model, map info) ``{
  */
 global define symbol detected_dialog() ``{
 
-    list hw = InitHWinfo::DetectedHardware(false);
+    list<map> hw = InitHWinfo::DetectedHardware(false);
 
     // create table content
     list table_cont = [];
@@ -154,19 +154,19 @@ global define symbol detected_dialog() ``{
     {
 	foreach(map info, hw, ``{
 		// device model name fallback
-		string model = info["model"]:_("Unknown device");
+		string model = (string)(info["model"]:_("Unknown device"));
 
-		string uniq = info["info", "unique_key"]:"unknown";
-		integer class = info["info", "class_id"]:0xff;
-		integer subclass = info["info", "sub_class_id"]:0;
+		string uniq = (string)(info["info", "unique_key"]:"unknown");
+		integer class = (integer)(info["info", "class_id"]:0xff);
+		integer subclass = (integer)(info["info", "sub_class_id"]:0);
 
 		// find subclass name
-		string cls = ClassNames[class, subclass]:nil;
+		string cls = (string)(ClassNames[class, subclass]:nil);
 
 		// try to use class name if subclass name wasn't found
 		if (cls == nil)
 		{
-		    cls = ClassNames[class, "name"]:nil;
+		    cls = (string)(ClassNames[class, "name"]:nil);
 		}
 
 		// set to "unknown" if class name wasn't found too
@@ -227,22 +227,22 @@ global define symbol detected_dialog() ``{
 
     while (ret != `next && ret != `back && ret != `close && ret != `abort && ret != `details)
     {
-	ret = UI::UserInput();
+	ret = (symbol)UI::UserInput();
 
 	if (ret == `details || ret == `hwtable)
 	{
-	    selected_device = UI::QueryWidget(`id(`hwtable), `CurrentItem);
+	    selected_device = (string)(UI::QueryWidget(`id(`hwtable), `CurrentItem));
 
 	    if (selected_device != nil)
 	    {
-		map device_info = find(map i, hw, ``(i["info", "unique_key"]:nil == selected_device));
+		map device_info = find(map i, hw, ``((string)(i["info", "unique_key"]:nil) == selected_device));
 
 		if (device_info != nil)
 		{
 		    // remember selected device
-		    selected_info =  device_info["info"]:$[];
+		    selected_info =  (map)(device_info["info"]:$[]);
 		    // device model is unknown
-		    selected_model = device_info["model"]:_("Unknown device");
+		    selected_model = (string)(device_info["model"]:_("Unknown device"));
 		}
 		else
 		{
