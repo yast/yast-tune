@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Thu Oct 30 10:55:58 CET 2003 - lslezak@suse.cz
+
+- fixes for the new interpreter
+- flush disc cache (sync) before DMA is enabled
+- version 2.9.1
+
+-------------------------------------------------------------------
 Fri Oct 17 16:59:41 CEST 2003 - lslezak@suse.de
 
 - added new 'initial hwnifo' module (new module in the

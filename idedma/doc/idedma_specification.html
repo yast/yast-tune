@@ -3,6 +3,8 @@
   <TITLE>Specification of IDE DMA YaST2 configuration module</TITLE>
 </HEAD>
 
+<!-- $Id$ -->
+
 <BODY BGCOLOR=#FFFFFF>
 
 <H2>IDE DMA module specification</H2>
@@ -18,6 +20,7 @@ Changes:
 
 <P>
 <UL>
+  <LI><B>2003-10-29:</B> Added Details section</LI>
   <LI><B>2003-02-14:</B> Update - set transfer DMA mode</LI>
   <LI><B>2002-01-21:</B> Initial version</LI>
 </UL>
@@ -34,14 +37,14 @@ maximux DMA transfer mode. DMA mode is enabled by kernel after boot for disk
 devices and disabled for CD-ROMs. Default DMA mode can be changed by
 boot.idedma init script after boot.</P>
 
-<P>This YaST2 module is frontend for hdparm utility.</P>
+<P>This YaST2 module uses boot.idedma initscript which is frontend for hdparm utility.</P>
 
 
 <H3>Module description</H3>
 
 <P>
 In this YaST2 module DMA mode of selected device
-can be enabled or disabled.</P>
+can be enabled, disabled or changed (e.g. from UltraDMA/100 to UltraDMA/66).</P>
 
 <P>Features of YaST2 module are available <A HREF="idedma_features.txt">here</A>.</P>
 
@@ -73,6 +76,18 @@ current DMA mode.</P>
 in combo box below the table. Press Finish to save values to sysconfig/hardware
 file and activate changes. </P>
 
+<H3>Details</H3>
+
+<P>Disc cache is flushed (/bin/sync) before DMA is enabled to minimize data loss
+if the machine hangs just after enabling DMA.</P>
+
+<P>IDE devices which use ide-scsi emulation (usually CD recorders) can be
+also configured by this tool. Their original IDE device name is used to set up
+DMA mode.</P>
+
+<P>Although not all DMA modes can be set in the Yast2 module (e.g. UltraDMA/44)
+they can be set up manually in the sysconfig file. These modes are read-only
+for Yast2 to not confuse users with too many (usually not used) DMA modes.</P>
 
 </BODY>
 </HTML>

@@ -195,9 +195,9 @@ global define symbol detected_dialog() ``{
 	`VSpacing(1)
     );
 
-    string help_text = _("<P><B>Detected hardware</B><BR>This table contains all detected hardware components in your system.</P><P><B>Details</B><BR>Select some component and press button <B>Details...</B> to see more detailed component description.</P><P><B>Save to File</B><BR>You can save hardware information (<I>hwinfo</I> output) to file or to floppy disk. Select target type in teh <B>Save to File</B> menu.</P>");
+    string help_text = _("<P><B>Detected hardware</B><BR>This table contains all detected hardware components in your system.</P><P><B>Details</B><BR>Select some component and press button <B>Details...</B> to see more detailed description of the component.</P><P><B>Save to File</B><BR>You can save hardware information (<I>hwinfo</I> output) to file or to floppy disk. Select target type in the <B>Save to File</B> menu.</P>");
 
-    Wizard::ReplaceNextButton(`PushButton(`id(`next), `opt(`default, `key_F10), Label::AcceptButton()));
+    Wizard::ReplaceNextButton(`PushButton(`id(`next), `opt(`default, `key_F10), Label::CloseButton()));
 
     // heading text
     Wizard::SetContents(_("Detected hardware"), content,

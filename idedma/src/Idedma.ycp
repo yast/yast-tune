@@ -366,7 +366,14 @@
 	// e.g. new_dma_setting = "/dev/hda:udma5 /dev/hdc:off";
 	string new_dma_setting = "";
 	boolean first = true;
+
+	// is boot.idedma init script needed?
+	// avoid calling hdparm if configuration wasn't changed
 	boolean initscript_needed = false;
+	// is sync call needed?
+	// call sync before DMA is turned on, usefull when machine
+	// hangs just after enabling DMA
+	boolean sync_needed = false;
 
 	y2milestone("ide_devices: %1", ide_devices);
 
@@ -405,6 +412,11 @@
 			)
 			{
 			    initscript_needed = true;
+
+			    if (dma_current_setting == "off" && dma_required_setting != "off" && dma_required_setting != "nochange")
+			    {
+				sync_needed = true;
+			    }
 			}
 		    }
 		}
@@ -423,6 +435,18 @@
 
 	// flush changes
 	SCR::Write(.sysconfig.hardware, nil);
+
+	// flush disc cache before enabling DMA
+	if (sync_needed == true)
+	{
+	    y2milestone("Flushing disc cache before enabling DMA...");
+	    integer exit = SCR::Execute(.target.bash, "/bin/sync");
+
+	    if (exit != 0)
+	    {
+		y2warning("Warning: sync failed! (status = %1)", exit);
+	    }
+	}
 
 	// activate settings
 	if (initscript_needed == true)
@@ -502,16 +526,6 @@
 	    $["current_dma":"off", "dev_name":"/dev/hdc", "device":"CD-532E-B",
 	    "device_type":"CD-ROM", "dma_on":"nochange"]
 	];
-    }
-
-    /**
-     * Build a textual summary that can be used e.g. in inst_hw_config () or
-     * something similar.
-     * @return string Summary of the configuration.
-     */
-    global define string Summary () ``{
-	// TODO FIXME: your code here...
-	return _("Summary of the configuration...");
     }
 
 }
