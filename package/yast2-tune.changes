@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Mon Aug 25 15:48:24 CEST 2003 - lslezak@suse.cz
+
+- removed "Initializing..." dialog in idedma module
+- version 2.8.4
+
+-------------------------------------------------------------------
 Tue Aug 12 13:08:12 CEST 2003 - lslezak@suse.cz
 
 - detect and configure ide-scsi devices correctly (#25640)

@@ -60,18 +60,7 @@ global define any IdedmaSequence() ``{
 	]
     ];
 
-    // dialog header
-    string caption = _("IDE DMA setup");
-
-    // progress label
-    term contents = `Label (_("Initializing ..."));
-
     Wizard::CreateDialog();
-    Wizard::SetContentsButtons( caption,
-				contents,
-				"",
-				Label::BackButton (),
-				Label::NextButton ());
 
     any ret = WizardSequencer(aliases, sequence);
 
