@@ -1,0 +1,308 @@
+/**
+ * File:
+ *   include/idedma/ui.ycp
+ *
+ * Package:
+ *   Configuration of IDE DMA mode
+ *
+ * Summary:
+ *   User interface functions.
+ *
+ * Authors:
+ *   Ladislav Slezak <lslezak@suse.cz>
+ *
+ * $Id$
+ *
+ * All user interface functions.
+ *
+ */
+
+{
+
+textdomain "idedma";
+
+import "Wizard";
+import "Idedma";
+
+include "ui/common_popups.ycp";
+include "ui/common_messages.ycp";
+include "wizard/sequencer.ycp";
+
+include "idedma/helps.ycp";
+
+/**
+ * Whole configuration of DMA
+ * @return any Result from WizardSequencer() function
+ */
+global define any IdedmaSequence() ``{
+    map aliases =
+	$[
+	    "read"	: [ ``( ReadDialog () ), true ],
+	    "main"	:   ``( MainSequence () ),
+	    "write"	: [ ``( WriteDialog () ), true ]
+	];
+
+    map sequence = $[
+	"ws_start" : "read",
+	"read" :
+	$[
+	    `abort	: `abort,
+	    `next	: "main"
+	],
+	"main" :
+	$[
+	    `abort	: `abort,
+	    `next	: "write"
+	],
+	"write" : $[
+	    `abort	: `abort,
+	    `next	: `next
+	]
+    ];
+
+    string caption = _("IDE DMA setup");
+    term contents = `Label (_("Initializing ..."));
+
+    Wizard::CreateDialog();
+    Wizard::SetContentsButtons( caption,
+				contents,
+				"",
+				BackButtonLabel (),
+				NextButtonLabel ());
+
+    any ret = WizardSequencer(aliases, sequence);
+
+    UI::CloseDialog();
+    return ret;
+}
+
+/**
+ * Whole configuration of DMA but without reading and writing.
+ * For use with autoinstallation.
+ * @return any Result from WizardSequencer() function
+ */
+global define any IdedmaAutoSequence () ``{
+    string caption = _("IDE DMA setup");
+    term contents = `Label (_("Initializing ..."));
+
+    Wizard::CreateDialog ();
+    Wizard::SetContentsButtons ( caption,
+				contents,
+				"",
+				BackButtonLabel (),
+				NextButtonLabel ());
+
+    // Run the main configuration workflow
+    any ret = MainSequence ();
+
+    UI::CloseDialog ();
+    return ret;
+}
+
+/**
+ * Main workflow of the idedma configuration
+ * @return any Result from WizardSequencer() function
+ */
+global define any MainSequence () ``{
+    map aliases =
+	$[
+	    "dmaconfig"	:   ``( DmaConfigDialog () ),
+	];
+
+    map sequence = $[
+	"ws_start" : "dmaconfig",
+	"dmaconfig" :
+	$[
+	    `abort	: `abort,
+	    `next	: `next,
+	],
+    ];
+
+    any ret = WizardSequencer (aliases, sequence);
+
+    return ret;
+}
+
+/**
+ * Read settings dialog
+ * @return symbol `abort if configuration read failed
+ */
+global define symbol ReadDialog () ``{
+    // Set help text
+    Wizard::RestoreHelp (ReadDialogHelp ());
+
+    // Read the configuration
+    boolean was_ok = Idedma::Read();
+
+    return ( was_ok? `next : `abort );
+}
+
+/**
+ * Write settings dialog
+ * @return symbol `abort if configuration write failed
+ */
+global define symbol WriteDialog () ``{
+    // Set help text
+    Wizard::RestoreHelp (WriteDialogHelp ());
+
+    // Read the configuration
+    boolean was_ok = Idedma::Write();
+
+    return ( was_ok? `next : `abort );
+}
+
+/**
+ * String with DMA on status text
+ */
+global string dma_on_string = _("On");
+
+/**
+ * String with DMA off status text
+ */
+global string dma_off_string = _("Off");
+
+/**
+ * String with no change of DMA status text
+ */
+global string dma_default_string = _("No change");
+
+/**
+ * Return list of items for table widget
+ * @return list List of items
+ */
+global define list get_table_items() ``{
+    list ide = Idedma::get_ide_devices();
+
+    // prepare table items
+    list table_items = [];
+    integer id = 1;
+
+    foreach(`d, ide, ``{
+	    string dma = dma_default_string;
+
+	    if (lookup(d, "dma_on", nil) == true)
+	    {
+		dma = dma_on_string;
+	    }
+
+	    if (lookup(d, "dma_on", nil) == false)
+	    {
+		dma = dma_off_string;
+	    }
+
+	    string current_dma = _("Unknown");
+
+	    if (lookup(d, "current_dma", nil) == true)
+	    {
+		current_dma = dma_on_string;
+	    }
+
+	    if (lookup(d, "current_dma", nil) == false)
+	    {
+		current_dma = dma_off_string;
+	    }
+
+	    string device_name = lookup(d, "device", _("Unknown device"));
+	    string device = lookup(d, "dev_name", _("Unknown"));
+	    string device_type = lookup(d, "device_type", _("Unknown type"));
+
+	    table_items = add(table_items, `item(`id(id), dma, device_name, device_type, device, current_dma));
+
+	    id = id + 1;
+	}
+    );
+
+    return table_items;
+}
+
+/**
+ * Main DMA configuration dialog
+ * @return any Result from UserInput()
+ */
+global define any DmaConfigDialog () ``{
+    string caption = _("IDE DMA setup");
+    boolean changed = false;
+    list items = get_table_items();
+
+    term contents = `VBox(
+			`Table(`id(`device_table), `header(_("DMA setup"), _("Device name"), _("Type"), _("Device"), _("Current DMA setup")), items),
+			`HBox(
+			    `PushButton(`id(`dma_enable), _("&DMA on")),
+			    `PushButton(`id(`dma_disable), _("D&MA off")),
+			    `PushButton(`id(`dma_default), _("&No change"))
+			),
+			`VSpacing(0.5)
+		    );
+
+    Wizard::SetContentsButtons( caption,
+				contents,
+				DetectedDialogHelp(),
+				BackButtonLabel(),
+				FinishButtonLabel() );
+
+    any ret = nil;
+    while (true)
+    {
+	ret = UI::UserInput();
+	if (ret == `abort)
+	{
+	    if (UI::ReallyAbortPopup(changed))
+	    {
+		break;
+	    }
+	    else
+	    {
+		continue;
+	    }
+	}
+	else
+	{
+	    if (ret == `dma_enable || ret == `dma_disable || ret == `dma_default)
+	    {
+		// set DMA status for selected IDE device
+		integer curr = UI::QueryWidget(`id(`device_table), `CurrentItem);
+
+		if (curr != nil)
+		{
+		    term table_item = UI::QueryWidget(`id(`device_table), `Item(curr));
+		    string dn = select(table_item, 4, nil);
+
+		    if (dn != nil)
+		    {
+			// convert button identification to DMA boolean value
+			boolean value_bool = nil;
+			string new_value = dma_default_string;
+
+			if (ret == `dma_enable)
+			{
+			    value_bool = true;
+			    new_value = dma_on_string;
+			}
+			else if (ret == `dma_disable)
+			{
+			    value_bool = false;
+			    new_value = dma_off_string;
+			}
+
+			// set DMA
+			Idedma::set_dma(dn, value_bool);
+
+                        // refresh value in the table
+			UI::ChangeWidget(`id(`device_table), `Item(curr, 0), new_value);
+
+			// set changed flag (without testing whether new value is same as old value)
+			changed = true;
+		    }
+		}
+	    }
+	    else if (ret == `next)
+	    {
+		break;
+	    }
+	}
+    };
+
+    return ret;
+}
+
+}

@@ -1,0 +1,40 @@
+/**
+ * File:
+ *   clients/idedma.ycp
+ *
+ * Package:
+ *   Configuration of IDE DMA mode
+ *
+ * Summary:
+ *   Main file
+ *
+ * Authors:
+ *   Ladislav Slezak <lslezak@suse.cz>
+ *
+ * $Id$
+ *
+ * Main file for IDE DMA mode configuration. Uses all other files.
+ *
+ */
+
+{
+    /***
+     * <h3>Configuration of the IDE DMA mode</h3>
+     */
+
+    textdomain "idedma";
+
+    include "idedma/ui.ycp";
+
+    /* The main () */
+    y2milestone ("Idedma module started");
+    y2milestone ("----------------------------------------");
+
+    /* main ui function */
+    any ret = IdedmaSequence ();
+    y2debug ("ret == %1", ret);
+
+    /* Finish */
+    y2milestone ("Idedma module finished");
+    return ret;
+}

@@ -1,0 +1,56 @@
+/**
+ * File:
+ *   idedma_auto.ycp
+ *
+ * Package:
+ *   Configuration of IDE DMA mode
+ *
+ * Summary:
+ *   Client for autoinstallation
+ *
+ * Authors:
+ *   Ladislav Slezak <lslezak@suse.cz>
+ *
+ * $Id$
+ *
+ * This is a client for autoinstallation. It takes its arguments,
+ * goes through the configuration and return the setting.
+ * Does not do any changes to the configuration.
+ */
+
+/**
+ * @param first a map of idedma settings
+ * @return boolean success of operation
+ * @example map mm = $[ "dma_on" : false, ...];
+ * @example map ret = CallModule ("idedma_auto", [ mm ]);
+ */
+
+{
+    textdomain "idedma";
+
+    import "Idedma";
+
+    include "idedma/ui.ycp";
+
+    list args = Args ();
+    if ( size (args) <= 0 )
+    {
+	y2error ("Did not get the settings, probably some mistake...");
+	return false;
+    }
+    if ( !is ( Args (0), map ) )
+    {
+	y2error ("Bad argument for idedma_auto: %1", Args (0));
+	return false;
+    }
+
+    // The settings are in the first argument
+    map settings = select (args, 0);
+    y2milestone("Imported: (%1)", settings);
+
+    Idedma::Import ( settings );
+
+    IdedmaAutoSequence ();
+
+    return Idedma::Export ();
+}

@@ -1,0 +1,75 @@
+<HTML>
+<HEAD>
+  <TITLE>Specification of IDE DMA YaST2 configuration module</TITLE>
+</HEAD>
+
+<BODY BGCOLOR=#FFFFFF>
+
+<H2>IDE DMA module specification</H2>
+
+<P>
+<I>Author: Ladislav Slezak &lt;<A HREF="mailto:lslezak@suse.cz">
+lslezak@suse.cz</A>&gt;</I>
+</P>
+
+<P>
+Changes:
+</P>
+
+<P>
+<UL>
+  <LI><B>2002-01-21:</B> Initial version</LI>
+</UL>
+</P>
+
+<HR>
+
+
+<H3>IDE DMA mode</H3>
+
+<P>Some IDE devices are broken and they do not work properly if they have DMA
+mode enabled (especially CD-ROM drives). DMA mode is enabled by kernel after
+boot, but it can be changed by init script. This YaST2 module is frontend for
+hdparm utility. There is init script which sets DMA mode after boot.
+</P>
+
+
+<H3>Module description</H3>
+
+<P>
+In this YaST2 module DMA mode of selected device
+can be enabled or disabled.</P>
+
+<P>Features of YaST2 module are available <A HREF="idedma_features.txt">here</A>.</P>
+
+<P>Settings are stored in file /etc/sysconfig/????. There are variables (??)
+and (??) with list of devices (e.g. "hdc hdd") on which DMA will be
+enabled/disabled. Other devices have their DMA mode unchanged.</P>
+
+
+<H3>Workflow</H3>
+
+<P>IDE DMA configuration module has only one dialog.</P>
+
+<P>
+<IMG SRC="idedma.png">
+</P>
+
+<P>There are displayed all attached IDE devices in the table. Column DMA setup
+contains DMA value which will be set after 'Finish' button is pressed and
+after boot by init script (on, off, no change). Next columns contain device
+information, in the last column is current DMA setup.</P>
+
+<P>To change DMA mode status select device in the table and push a button
+below the table with required DMA status.</P>
+
+
+</BODY>
+</HTML>
+
+
+
+
+
+
+
