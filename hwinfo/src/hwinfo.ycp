@@ -137,7 +137,11 @@
     define get_item_label(integer n)
     ``{
 	if(n<0) return "";
-	return sformat("%1.", n+1);
+	list lab=
+	    UI([_("First"), _("Second"), _("Third"), _("Fourth"), _("Fifth"), _("Sixth"),
+	        _("Seventh"), _("Eighth"), _("Nineth"), _("%1th")]);
+	if(n<9) return select(lab, n);
+	return sformat(select(lab, 9), n+1);
     }
 
     define scalar(any node)
