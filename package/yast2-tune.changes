@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Thu Aug 08 11:41:40 CEST 2002 - arvin@suse.de
+
+- added string "Requires" to translate texts
+
+-------------------------------------------------------------------
 Wed Aug  7 15:59:40 CEST 2002 - lslezak@suse.de
 
 - hwinfo: better check if X server is running
