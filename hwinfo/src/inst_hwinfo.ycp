@@ -72,7 +72,8 @@ global define string floppy_selection(map devices) ``{
     );
 
     term dialog = `VBox(
-	`ComboBox(`id(`device), _("Select Floppy Disk Device"), devs),
+	// combo box label
+	`ComboBox(`id(`device), _("Select &Floppy Disk Device"), devs),
 	`VSpacing(1),
 	`HBox(
 	    `PushButton(`id(`ok), Label::OKButton()),
@@ -117,7 +118,8 @@ global define symbol details_dialog(string model, map info) ``{
 
     Wizard::ReplaceNextButton(`PushButton(`id(`next), `opt(`default, `key_F10), Label::OKButton()));
 
-    string help_text = _("<P><B>Details</B></P><P>Here are displayed details of the selected hardare component.</P>");
+    // help text
+    string help_text = _("<P><B>Details</B></P><P>Here are displayed details of the selected hardware component.</P>");
 
     // heading text, %1 is component name (e.g. "USB UHCI Root Hub")
     Wizard::SetContents(sformat(_("Component '%1'"), model), content,
@@ -151,6 +153,7 @@ global define symbol detected_dialog() ``{
     if (size(hw) > 0)
     {
 	foreach(map info, hw, ``{
+		// device model name fallback
 		string model = info["model"]:_("Unknown device");
 
 		string uniq = info["info", "unique_key"]:"unknown";
@@ -181,13 +184,18 @@ global define symbol detected_dialog() ``{
     y2debug("table content: %1", table_cont);
 
     term content = `VBox(
+	// table header
 	`Table(`id(`hwtable), `header(_("Model"), _("Class")), table_cont),
 	`VSpacing(0.4),
 	`HBox(
+	    // push button label
 	    `PushButton(`id(`details), _("&Details...")),
+	    // menu button label
 	    `MenuButton(`id(`savemenu), _("&Save to file"),
 		[
+		    // menu item
 		    `item(`id(`file), _("Save to &file...")),
+		    // menu item
 		    `item(`id(`floppy), _("&Save to f&loppy..."))
 		]
 	    )
@@ -195,7 +203,12 @@ global define symbol detected_dialog() ``{
 	`VSpacing(1)
     );
 
-    string help_text = _("<P><B>Detected hardware</B><BR>This table contains all detected hardware components in your system.</P><P><B>Details</B><BR>Select some component and press button <B>Details...</B> to see more detailed description of the component.</P><P><B>Save to File</B><BR>You can save hardware information (<I>hwinfo</I> output) to file or to floppy disk. Select target type in the <B>Save to File</B> menu.</P>");
+    // help text - part 1/3
+    string help_text = _("<P><B>Detected hardware</B><BR>This table contains all detected hardware components in your system.</P>")
+    // help text - part 2/3
+    + _("<P><B>Details</B><BR>Select some component and press button <B>Details...</B> to see more detailed description of the component.</P>")
+    // help text - part 3/3
+    + _("<P><B>Save to File</B><BR>You can save hardware information (<I>hwinfo</I> output) to file or to floppy disk. Select target type in the <B>Save to File</B> menu.</P>");
 
     Wizard::ReplaceNextButton(`PushButton(`id(`next), `opt(`default, `key_F10), Label::CloseButton()));
 
@@ -228,6 +241,7 @@ global define symbol detected_dialog() ``{
 		{
 		    // remember selected device
 		    selected_info =  device_info["info"]:$[];
+		    // device model is unknown
 		    selected_model = device_info["model"]:_("Unknown device");
 		}
 		else

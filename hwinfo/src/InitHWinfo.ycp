@@ -19,6 +19,8 @@ import "Progress";
 
 include "hwinfo/routines.ycp";
 
+textdomain "tune";
+
 boolean initialized = false;
 
 // CPU summary string
