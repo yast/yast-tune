@@ -26,12 +26,17 @@ Summary:	System configuration viewer and tuner
 
 %files
 %defattr(-,root,root)
+
+%ifnarch s390 s390x
+@configdir@/idedma.y2cc
+%endif
+
 %dir @yncludedir@/hwinfo
 %dir @yncludedir@/idedma
 @yncludedir@/hwinfo/*
 @yncludedir@/idedma/*
 @clientdir@/*.ycp
-@configdir@/*.y2cc
+@configdir@/hwinfo.y2cc
 @moduledir@/*.ycp
 @scrconfdir@/*.scr
 %doc @docdir@

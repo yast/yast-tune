@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Mon Sep  9 14:51:47 CEST 2002 - lslezak@suse.cz
+
+- exclude IDE DMA configuration from y2cc on S390
+- version 2.6.13
+
+-------------------------------------------------------------------
 Fri Sep  6 17:46:02 CEST 2002 - lslezak@suse.cz
 
 - provide/obsolete old packages
