@@ -261,14 +261,22 @@
 
 
 	// split string to list of devices
-	list device_settings = splitstring(devices_setting_str, " ");
+	list<string> device_settings = splitstring(devices_setting_str, " ");
 
 	// create map of settings <device>:<DMA_setting>
-	map device_setting_map = listmap(string setting, device_settings,
-	    ``(
-		[regexpsub(setting, "^(.*):(.*)", "\\1"), regexpsub(setting, "^(.*):(.*)", "\\2")]
-              )
+	map device_setting_map = $[];
+
+	foreach(string setting, device_settings, ``{
+		string dev =  regexpsub(setting, "^(.*):(.*)", "\\1");
+		string mode =  regexpsub(setting, "^(.*):(.*)", "\\2");
+
+		if (size(dev) > 0 && size(mode) > 0)
+		{
+		    device_setting_map = add(device_setting_map, dev, mode);
+		}
+	    }
 	);
+
 
 	y2milestone("Read config: %1", device_setting_map);
 
