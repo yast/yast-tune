@@ -4,10 +4,10 @@
 
 dbdir = $(YAST2DIR)
 
-module_DATA = hwinfo.ycp
+client_DATA = hwinfo.ycp
 
 config_DATA = hwinfo.y2cc
 
 db_DATA = classnames.ycp
 
-EXTRA_DIST = $(module_DATA) $(config_DATA) $(db_DATA)
+EXTRA_DIST = $(client_DATA) $(config_DATA) $(db_DATA)

@@ -23,6 +23,6 @@ This package is a part of YaST2. It shows the hardware configuration.
 %files
 %defattr(-,root,root)
 @YAST2DIR@/clients/hwinfo.ycp
-@YAST2DIR@/menuentries/menu*.y2cc
+@YAST2DIR@/config/hwinfo.y2cc
 @YAST2DIR@/classnames.ycp
 %doc @DOCDIR@

@@ -481,6 +481,20 @@
 	}
 	else
 	{
+
+	    // remove duplicates from the list
+	    list uniq = [];
+
+	    foreach(string d, dir, ``{
+		    if (!contains(uniq, d))
+		    {
+			uniq = add(uniq, d);
+		    }
+		}
+	    );
+
+	    dir = uniq;
+
 	    integer step=1000;
 	    if (size(dir)!=0)
 	    {
