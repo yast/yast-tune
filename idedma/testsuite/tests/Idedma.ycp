@@ -8,6 +8,7 @@
 {
 include "testsuite.ycp";
 import "Idedma";
+import "Report";
 
 
 // disable displaying errors in Report module
