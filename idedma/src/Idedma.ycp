@@ -41,6 +41,56 @@
     string hdparm_bin = "/sbin/hdparm";
 
     /**
+     * String with DMA on status text
+     * (For translators: translation can be long - text is used in the table
+     * in column "Required DMA mode" and "Current DMA mode")
+     */
+    global string dma_on_string = _("On");
+
+    /**
+     * String with DMA off status text
+     * (For translators: translation can be long - text is used in the table
+     * in column "Required DMA mode" and "Current DMA mode")
+     */
+    global string dma_off_string = _("Off");
+
+    /**
+     * String with no change of DMA status text
+     * (For translators: translation can be long - text is used in the table
+     * in column "Required DMA mode" and "Current DMA mode")
+     */
+    global string dma_default_string = _("No change");
+
+
+    global map mode_names = $[
+	// DMA status is unknown
+	""      : _("Unknown"),
+	// do not change DMA setting
+	"nochange"	: dma_default_string,
+	// DMA is enabled, but mode is unknown
+	"on"    : dma_on_string,
+	// DMA is disabled
+	"off"   : dma_off_string,
+
+	"sdma0" : "SW DMA/2.1",
+	"sdma1" : "SW DMA/4.2",
+	"sdma2" : "SW DMA/8.3",
+
+	"mdma0" : "DMA/4.2",
+	"mdma1" : "DMA/13.3",
+	"mdma2" : "DMA/16",
+
+	"udmaS" : "UltraDMA/13",
+	"udma0" : "UltraDMA/16",
+	"udma1" : "UltraDMA/22",
+	"udma2" : "UltraDMA/33",
+	"udma3" : "UltraDMA/44",
+	"udma4" : "UltraDMA/66",
+	"udma5" : "UltraDMA/100",
+	"udma6" : "UltraDMA/133"
+    ];
+
+    /**
      * Return actual DMA status of IDE device
      * @param device Identification of ide device, e.g. "/dev/hdc"
      * @return string true if DMA is on, false if DMA is off or nil on error
@@ -527,5 +577,42 @@
 	    "device_type":"CD-ROM", "dma_on":"nochange"]
 	];
     }
+
+    /**
+     * Create rich text description of the current configuration
+     * @return string summary text
+     */
+    global define string Summary() ``{
+	// summary text - header
+	string summary = _("<P><B>Configured Devices:</B></P>");
+	string devices = "";
+	boolean found = false;
+
+	if (size(ide_devices) > 0)
+	{
+	    foreach(map dev, ide_devices, ``{
+		    string dmasetting = dev["dma_setting"]:nil;
+		    string devname = dev["dev_name"]:nil;
+
+		    if (devname != nil && dmasetting != nil && dmasetting != "nochange")
+		    {
+			// summary text - unknown DMA mode is selected
+			devices = devices + "<LI><B>" + devname + ":</B> " + mode_names[dmasetting]:_("Unknown mode") + "</LI>";
+			found = true;
+		    }
+		}
+	    );
+	}
+
+	// is any device configured?
+	if (found == false)
+	{
+	    // summary text - none device is configured
+	    devices = "<LI>" + _("None device") + "</LI>";
+	}
+
+	return summary + "<UL>" + devices + "</UL>";
+    }
+
 
 }

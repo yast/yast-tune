@@ -26,6 +26,9 @@ Arguments =
 ; whether root privileges are required to run this module
 RequiresRoot = true
 
+; autoinstallation is supported
+Autoinst = all
+
 ; default size for window, Y2CC will set $Y2_GEOMETRY to this value
 Geometry = 
 

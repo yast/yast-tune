@@ -26,92 +26,99 @@
  */
 
 {
-    textdomain "tune";
+textdomain "tune";
+import "Idedma";
+include "idedma/ui.ycp";
 
-    import "Idedma";
-    import "Wizard";
+/* The main () */
+y2milestone("---------------------------------");
+y2milestone("Idedma autoinst client started");
+any ret = nil;
+string func = "";
+list param = [];
 
-    include "idedma/ui.ycp";
 
-    list args = WFM::Args ();
-    if ( size (args) <= 0 )
+/* Check arguments */
+if(size(Args()) > 0 && is(Args(0), string))
+{
+    func = WFM::Args(0);
+
+    if (size(Args()) > 1 && is(Args(1), list))
     {
-	y2error ("Did not get the settings, probably some mistake...");
-	return false;
+	param = WFM::Args(1);
     }
-    if ( !is ( WFM::Args (0), list ) )
+}
+
+y2debug("func=%1", func);
+y2debug("param=%1", param);
+
+// predefined devices - we don't know which devices will be present in the target system
+// allow setting any possible IDE device to any DMA mode
+list empty_settings = [
+	$[ "current_dma" : nil, "dev_name" : "/dev/hda", "device" : _("Unknown"), "device_type" : _("Unknown"), "dma_modes":["mdma0", "mdma1", "mdma2", "udma0", "udma1", "udma2", "udma3", "udma4", "udma5", "udma6"], "dma_setting":"nochange"],
+	$[ "current_dma" : nil, "dev_name" : "/dev/hdb", "device" : _("Unknown"), "device_type" : _("Unknown"), "dma_modes":["mdma0", "mdma1", "mdma2", "udma0", "udma1", "udma2", "udma3", "udma4", "udma5", "udma6"], "dma_setting":"nochange"],
+	$[ "current_dma" : nil, "dev_name" : "/dev/hdc", "device" : _("Unknown"), "device_type" : _("Unknown"), "dma_modes":["mdma0", "mdma1", "mdma2", "udma0", "udma1", "udma2", "udma3", "udma4", "udma5", "udma6"], "dma_setting":"nochange"],
+	$[ "current_dma" : nil, "dev_name" : "/dev/hdd", "device" : _("Unknown"), "device_type" : _("Unknown"), "dma_modes":["mdma0", "mdma1", "mdma2", "udma0", "udma1", "udma2", "udma3", "udma4", "udma5", "udma6"], "dma_setting":"nochange"],
+	$[ "current_dma" : nil, "dev_name" : "/dev/hde", "device" : _("Unknown"), "device_type" : _("Unknown"), "dma_modes":["mdma0", "mdma1", "mdma2", "udma0", "udma1", "udma2", "udma3", "udma4", "udma5", "udma6"], "dma_setting":"nochange"],
+	$[ "current_dma" : nil, "dev_name" : "/dev/hdf", "device" : _("Unknown"), "device_type" : _("Unknown"), "dma_modes":["mdma0", "mdma1", "mdma2", "udma0", "udma1", "udma2", "udma3", "udma4", "udma5", "udma6"], "dma_setting":"nochange"],
+	$[ "current_dma" : nil, "dev_name" : "/dev/hdg", "device" : _("Unknown"), "device_type" : _("Unknown"), "dma_modes":["mdma0", "mdma1", "mdma2", "udma0", "udma1", "udma2", "udma3", "udma4", "udma5", "udma6"], "dma_setting":"nochange"],
+	$[ "current_dma" : nil, "dev_name" : "/dev/hdh", "device" : _("Unknown"), "device_type" : _("Unknown"), "dma_modes":["mdma0", "mdma1", "mdma2", "udma0", "udma1", "udma2", "udma3", "udma4", "udma5", "udma6"], "dma_setting":"nochange"],
+	$[ "current_dma" : nil, "dev_name" : "/dev/hdi", "device" : _("Unknown"), "device_type" : _("Unknown"), "dma_modes":["mdma0", "mdma1", "mdma2", "udma0", "udma1", "udma2", "udma3", "udma4", "udma5", "udma6"], "dma_setting":"nochange"],
+	$[ "current_dma" : nil, "dev_name" : "/dev/hdj", "device" : _("Unknown"), "device_type" : _("Unknown"), "dma_modes":["mdma0", "mdma1", "mdma2", "udma0", "udma1", "udma2", "udma3", "udma4", "udma5", "udma6"], "dma_setting":"nochange"],
+	$[ "current_dma" : nil, "dev_name" : "/dev/hdk", "device" : _("Unknown"), "device_type" : _("Unknown"), "dma_modes":["mdma0", "mdma1", "mdma2", "udma0", "udma1", "udma2", "udma3", "udma4", "udma5", "udma6"], "dma_setting":"nochange"],
+	$[ "current_dma" : nil, "dev_name" : "/dev/hdl", "device" : _("Unknown"), "device_type" : _("Unknown"), "dma_modes":["mdma0", "mdma1", "mdma2", "udma0", "udma1", "udma2", "udma3", "udma4", "udma5", "udma6"], "dma_setting":"nochange"]
+];
+
+/* Import data*/
+if(func == "Import")
+{
+    if (size(param) == 0)
     {
-	y2error ("Bad argument for idedma_auto: %1", WFM::Args (0));
-	return false;
+	param = empty_settings;
     }
+    ret = Idedma::Import(param);
+}
+/* create a summary */
+else if(func == "Summary")
+{
+    ret =  Idedma::Summary();
+}
+else if (func == "Packages")
+{
+	ret = $[];
+}
+else if (func == "Reset")
+{
+    ret = Idedma::Import(empty_settings);
+}
+else if (func == "Change")
+{
+    ret = IdedmaAutoSequence();
+}
+else if (func == "Export")
+{
+    ret = Idedma::Export();
+}
+else if (func == "Write")
+{
+    import "Progress";
+    Progress::off();
+    ret = Idedma::Write();
+    Progress::on();
+}
+/* unknown function */
+else
+{
+    y2error("unknown function: %1", func);
+    ret =  false;
+}
 
-    // The settings are in the first argument
-    list settings = args[0]:[];
-    y2milestone("Imported: (%1)", settings);
-/*
-    if (size(settings) == 0)
-    {
-	settings = [
-		$[ "current_dma" : nil, "dev_name" : "/dev/hda", "device" : _("Unknown"), "device_type" : _("Unknown"), "dma_on" : nil],
-		$[ "current_dma" : nil, "dev_name" : "/dev/hdb", "device" : _("Unknown"), "device_type" : _("Unknown"), "dma_on" : nil],
-		$[ "current_dma" : nil, "dev_name" : "/dev/hdc", "device" : _("Unknown"), "device_type" : _("Unknown"), "dma_on" : nil],
-		$[ "current_dma" : nil, "dev_name" : "/dev/hdd", "device" : _("Unknown"), "device_type" : _("Unknown"), "dma_on" : nil],
-		$[ "current_dma" : nil, "dev_name" : "/dev/hde", "device" : _("Unknown"), "device_type" : _("Unknown"), "dma_on" : nil],
-		$[ "current_dma" : nil, "dev_name" : "/dev/hdf", "device" : _("Unknown"), "device_type" : _("Unknown"), "dma_on" : nil],
-		$[ "current_dma" : nil, "dev_name" : "/dev/hdg", "device" : _("Unknown"), "device_type" : _("Unknown"), "dma_on" : nil],
-		$[ "current_dma" : nil, "dev_name" : "/dev/hdh", "device" : _("Unknown"), "device_type" : _("Unknown"), "dma_on" : nil],
-		$[ "current_dma" : nil, "dev_name" : "/dev/hdi", "device" : _("Unknown"), "device_type" : _("Unknown"), "dma_on" : nil],
-		$[ "current_dma" : nil, "dev_name" : "/dev/hdj", "device" : _("Unknown"), "device_type" : _("Unknown"), "dma_on" : nil],
-		$[ "current_dma" : nil, "dev_name" : "/dev/hdk", "device" : _("Unknown"), "device_type" : _("Unknown"), "dma_on" : nil],
-		$[ "current_dma" : nil, "dev_name" : "/dev/hdl", "device" : _("Unknown"), "device_type" : _("Unknown"), "dma_on" : nil]
-	];
-    }
-*/
-    Idedma::Import ( settings );
-    define set_contents()
-	``{
-	term contents =
-	    `VBox(
-		  `VSpacing(1),
-		  `RichText( `id(`summary), Idedma::Summary()),
-		  `VSpacing(0.5),
-		  `HBox(
-			// push button label
-			`PushButton(`id(`configure), _("&Configure IDE DMA mode")),
-			`HStretch(),
-			// push button label
-			`PushButton(`id(`reset), _("&Reset Configuration"))
-			),
-		  `VSpacing(1)
-		  );
-	// dialog header
-	Wizard::SetContents(_("IDE DMA Configuration"),
-			    contents, "", true, true);
-    }
+y2debug("ret=%1", ret);
+y2milestone("Idedma autoinst client finished");
+y2milestone("----------------------------------");
 
-    set_contents();
-    any result = nil;
-    any ret = nil;
-    repeat {
-	ret = UI::UserInput();
-	if (ret == `configure)
-	{
-	    result = IdedmaAutoSequence();
-	    if (result == `next || result == `finish)
-	    {
-		settings = Idedma::Export ();
-	    }
-	    Idedma::Set(settings);
-	    set_contents();
-	}
-	else if ( ret == `reset)
-	{
-	    settings= $[];
-	    Idedma::Set(settings);
-	    set_contents();
-	}
-    } until (ret == `back || ret == `next || ret ==`key);
-
-    return [ret, settings];
+return ret;
 
 }
+
+

@@ -43,11 +43,11 @@ global define list get_table_items() ``{
 
     foreach(`d, ide, ``{
 	    string mode = d["dma_setting"]:"";
-	    string dma = mode_names[mode]:dma_default_string;
+	    string dma = Idedma::mode_names[mode]:(Idedma::dma_default_string);
 
 	    // current DMA mode is unknown
 	    string current_dma = d["current_dma"]:"";
-	    current_dma = mode_names[current_dma]:_("Unknown");
+	    current_dma = Idedma::mode_names[current_dma]:_("Unknown");
 
 	    // device model name is unknown
 	    string device_name = d["device"]:_("Unknown device");
@@ -154,14 +154,15 @@ global define any DmaConfigDialog () ``{
 			`VSpacing(0.5)
 		    );
 
-    Wizard::SetContentsButtons( caption,
-				contents,
-				DetectedDialogHelp(),
-				Label::BackButton(),
-				Label::FinishButton() );
+    Wizard::SetContents(caption,
+	contents,
+	DetectedDialogHelp(),
+	false, true
+    );
 
-    // remove Abort button - workflow has only one dialog
-    Wizard::ReplaceAbortButton(`Empty());
+    // remove Back button - workflow has only one dialog
+    Wizard::ReplaceBackButton(`Empty());
+    Wizard::ReplaceNextButton(`PushButton(`id(`next), `opt(`default, `key_F10), Label::FinishButton()));
 
     // set combo widget content
     refresh_combo();
@@ -217,11 +218,11 @@ global define any DmaConfigDialog () ``{
 		    Idedma::set_dma(dn, new_setting);
 
 		    // refresh value in the table
-		    UI::ChangeWidget(`id(`device_table), `Item(curr, 4), mode_names[new_setting]:_("No change"));
+		    UI::ChangeWidget(`id(`device_table), `Item(curr, 4), Idedma::mode_names[new_setting]:_("No change"));
 		}
 	    }
 	}
-	else if (ret == `next || ret == `back)
+	else if (ret == `next || ret == `abort)
 	{
 	    break;
 	}
@@ -361,58 +362,5 @@ global define any IdedmaAutoSequence () ``{
     UI::CloseDialog ();
     return ret;
 }
-
-
-
-/**
- * String with DMA on status text
- * (For translators: translation can be long - text is used in the table
- * in column "Required DMA mode" and "Current DMA mode")
- */
-global string dma_on_string = _("On");
-
-/**
- * String with DMA off status text
- * (For translators: translation can be long - text is used in the table
- * in column "Required DMA mode" and "Current DMA mode")
- */
-global string dma_off_string = _("Off");
-
-/**
- * String with no change of DMA status text
- * (For translators: translation can be long - text is used in the table
- * in column "Required DMA mode" and "Current DMA mode")
- */
-global string dma_default_string = _("No change");
-
-
-global map mode_names = $[
-    // DMA status is unknown
-    ""      : _("Unknown"),
-    // do not change DMA setting
-    "nochange"	: dma_default_string,
-    // DMA is enabled, but mode is unknown
-    "on"    : dma_on_string,
-    // DMA is disabled
-    "off"   : dma_off_string,
-
-    "sdma0" : "SW DMA/2.1",
-    "sdma1" : "SW DMA/4.2",
-    "sdma2" : "SW DMA/8.3",
-
-    "mdma0" : "DMA/4.2",
-    "mdma1" : "DMA/13.3",
-    "mdma2" : "DMA/16",
-
-    "udmaS" : "UltraDMA/13",
-    "udma0" : "UltraDMA/16",
-    "udma1" : "UltraDMA/22",
-    "udma2" : "UltraDMA/33",
-    "udma3" : "UltraDMA/44",
-    "udma4" : "UltraDMA/66",
-    "udma5" : "UltraDMA/100",
-    "udma6" : "UltraDMA/133"
-];
-
 
 }
