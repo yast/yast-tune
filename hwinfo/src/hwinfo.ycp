@@ -1,4 +1,4 @@
-/*
+/**
  *
  *
  * File:
@@ -86,7 +86,25 @@
 	"system": _("System"),
 	"tv": _("TV Card"),
 	"usb_type": _("USB type"),
-	"version": _("Version")
+	"version": _("Version"),
+
+	// cpu stuff
+	"bogomips": _("Bogus Millions of Instructions Per Second"),
+	"cache":    _("Cache"),
+	"coma_bug": "Coma bug",
+	"f00f_bug": "f00f bug",
+	"cpuid_level": _("CPU id level"),
+	"mhz":	    _("Frequency"),
+	"fdiv_bug": "Floating point division bug",
+	"flags":    _("Flags"),
+	"fpu":	    _("Floating point unit"),
+	"fpu_exception": "Floating point unit exception",
+	"hlt_bug":  "Halt bug",
+	"processor": _("Processor"),
+	"stepping": _("Stepping"),
+	"vendor_id":_("Vendor identifier"),
+	"wp":	    _("WP")
+	
     ]);
 
     // if xserver is running, don't probe for mouse
@@ -138,21 +156,43 @@
 
     define add_cpu_info(map hw) ``{
 	map inf=SCR(`Read(.proc.cpuinfo));
-	hw=add(hw, "model", lookup(inf, "model_name", ""));
-	hw=add(hw, "cache", sformat("%1 KB", lookup(inf, "cache", 0)));
-		// processor frequency
-	hw=add(hw, _("Frequency"), sformat("%1 MHz", tointeger(lookup(inf, "mhz", 0))));
-	return hw;
-    }
 
-    define get_item_label(integer n)
-    ``{
-	if(n<0) return "";
-	list lab=
-	    UI([_("First"), _("Second"), _("Third"), _("Fourth"), _("Fifth"), _("Sixth"),
-	        _("Seventh"), _("Eighth"), _("Nineth"), _("%1th")]);
-	if(n<9) return select(lab, n);
-	return sformat(select(lab, 9), n+1);
+	
+
+	foreach(`key, `val, inf,
+	``{
+	    if(key=="model_name")
+	    {
+		return;
+	    }
+	    if(key=="flags")
+	    {	
+		string s="";
+		foreach(`e, val, 
+		``{
+		    if(size(s)>0)
+    		    {
+			s=s+", ";
+		    }	
+		    s=s+e;
+		});
+		hw=add(hw, key, s);
+		return;
+	    }
+	    if(is(val, float))
+	    {
+		hw=add(hw, key, tointeger(val));
+	    }
+	    else
+	    {
+		hw=add(hw, key, val);
+	    }
+	});
+	
+	hw=add(hw, "mhz", sformat("%1 MHz", tointeger(lookup(inf, "mhz", 0))));
+	hw=add(hw, "cache", sformat("%1 KB", lookup(inf, "cache", 0)));
+	hw=add(hw, "device", lookup(inf, "model_name", ""));
+	return hw;
     }
 
     define scalar(any node)
@@ -194,11 +234,15 @@
 		{
 		    if(haskey(e, "device"))
 		    {
-			lab=lookup(e, "device", UI(`Glyph(`CheckMark)));
+			lab=lookup(e, "device", UI(`Glyph(`ArrowRight)));
 		    }
 		    else if(haskey(e, "model"))
 		    {
-			lab=lookup(e, "model", UI(`Glyph(`CheckMark)));
+			lab=lookup(e, "model", UI(`Glyph(`ArrowRight)));
+		    }
+		    else if(haskey(e, "dev_name"))
+		    {
+			lab=lookup(e, "dev_name", UI(`Glyph(`ArrowRight)));
 		    }
 		}
     
