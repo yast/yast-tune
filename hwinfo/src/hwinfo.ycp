@@ -631,9 +631,8 @@ UI::ReplaceWidget(`id(`rep_abort), `PushButton(`id(`next), `opt(`key_F10), UI::C
 Wizard::SetContents (_("Hardware info"), con,
 
 // help text
- _("<P>The <B>Hardware information</B> module displays the hardware
-details of your computer. Click any node for more information.</p>
-"), false, true);
+ _("<P>The <B>Hardware Information</B> module displays the hardware
+details of your computer. Click any node for more information.</p>\n"), false, true);
 
 any event = nil;
 
