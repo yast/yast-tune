@@ -1,4 +1,13 @@
 -------------------------------------------------------------------
+Wed Mar 17 17:41:16 CET 2004 - lslezak@suse.cz
+
+- fixed monitor resolution
+- type fixes
+- don't loose data from probe agent
+- enable save button (#36230)
+- version 2.9.17
+
+-------------------------------------------------------------------
 Wed Mar 10 02:16:57 CET 2004 - nashif@suse.de
 
 - Adapted to new wizard

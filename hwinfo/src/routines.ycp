@@ -229,7 +229,7 @@ $[
 define string resolution(any a, map m) ``{
     if (haskey(m, "height"))
     {
-	return sformat("%1x%2", m["width"]:"", m["height"]:"");
+	return sformat("%1x%2", m["width"]:nil, m["height"]:nil);
     }
     return m["width"]:"";
 }
@@ -250,9 +250,9 @@ define list<string> modules(list<list<string> > val) ``{
  * @return map device info with translated class information
  */
 
-define map<string,string> translate_hw_entry(map hw) ``{
+define map<string,any> translate_hw_entry(map<string,any> hw) ``{
 
-    map<string,string> ret = $[];
+    map<string,any> ret = hw;
 
     if (haskey(hw, "class_id"))
     {
@@ -278,7 +278,7 @@ define map<string,string> translate_hw_entry(map hw) ``{
  * @param m device information
  * @return string translated subclass name
  */
-define string classtostring(any a, map m) ``{
+define string classtostring(any a, map<string,any> m) ``{
     return (string)(lookup(translate_hw_entry(m), "sub_class_id", ""));
 }
 
@@ -362,7 +362,7 @@ define boolean scalar(any node) ``{
  * @param m device info
  * @return string name of the selected representant for whole map
  */
-define string get_representant(map m) ``{
+define string get_representant(map<string,any> m) ``{
     string out = "";
     integer i = 0;
     // search the 'order' table
@@ -462,10 +462,10 @@ define list expandTree(any node) ``{
 	    else
 	    {
 		string lab = UI::Glyph(`ArrowRight);
-		if (is(e, map))
+		if (is(e, map<string,any>))
 		{
 		    // ... create label for each item ...
-		    string s = get_representant((map) e);
+		    string s = get_representant((map<string,any>) e);
 		    if(s != "")
 		    {
 			lab = s;
@@ -482,7 +482,7 @@ define list expandTree(any node) ``{
     if (is(node, map))
     {
 	// if node is map ...
-	map<string,string> node_map = translate_hw_entry((map) node);
+	map<string,any> node_map = translate_hw_entry((map<string, any>) node);
 	list ltmp = [];
 	foreach(string key, any v, node_map,
 	``{
@@ -542,7 +542,7 @@ define boolean save_hwinfo_to_file(string target_file_name) ``{
     string filename = UI::AskForSaveFileName(target_file_name, "*", _("Save hwinfo Output to File"));
     boolean saved = false;
 
-    if (size(filename) > 0)
+    if (filename != nil && size(filename) > 0)
     {
 	// progress window content
 	UI::OpenDialog(`Label(_("Saving hardware information...")));
