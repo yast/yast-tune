@@ -231,7 +231,7 @@
 		    else
 		    {
 			// Error message
-			Report::Error(sformat(_("File '%1' doesn't exist, cannot set new PCI ID"), targetfile));
+			Report::Error(sformat(_("File '%1' does not exist. Cannot set new PCI ID."), targetfile));
 			ret = false;
 		    }
 

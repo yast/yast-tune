@@ -75,7 +75,7 @@ define map NewIDPopup(map<string,any> newid) {
     term new_id_dialog = `VBox(
 	`VSpacing(0.4),
 	// text in dialog header
-	`Heading(_("PCI ID setup")),
+	`Heading(_("PCI ID Setup")),
 	`VSpacing(0.5),
 	`HBox(
 	    `HSpacing(1),
@@ -201,7 +201,7 @@ define void RefreshTableContent() {
  */
 define any NewIDConfigDialog() ``{
     // dialog header
-    string caption = _("PCI ID setup");
+    string caption = _("PCI ID Setup");
     boolean changed = false;
     list items = get_table_items();
 
@@ -224,17 +224,17 @@ define any NewIDConfigDialog() ``{
     Wizard::SetContents(caption,
 	contents,
 	// help text header
-	_("<P><B>PCI ID setup</B><BR></P>")
+	_("<P><B>PCI ID Setup</B><BR></P>")
 	// PCI ID help text
-	+ _("<P>It's possible to add a PCI ID to a device driver to extend it's internal database of known supported devices.</P>")
+	+ _("<P>It is possible to add a PCI ID to a device driver to extend its internal database of known supported devices.</P>")
 	// PCI ID help text
-	+ _("<P>PCI ID numbers are entered and displayed as hexadecimal numbers. SysFS dir. is directory name in /sys/bus/pci/drivers directory, if it's empty the driver name is used as directory name.</P>")
+	+ _("<P>PCI ID numbers are entered and displayed as hexadecimal numbers. SysFS dir. is the directory name in the /sys/bus/pci/drivers directory. If it is empty, the driver name is used as the directory name.</P>")
 	// PCI ID help text
-	+ _("<P>If the driver is compiled into the kernel then leave driver name empty and fill SysFS directory name instead.</P>")
+	+ _("<P>If the driver is compiled into the kernel, leave the driver name empty and enter the SysFS directory name instead.</P>")
 	// PCI ID help text
-	+ _("<P>Use the buttons below the table to change list of PCI IDs, press OK to activate the settings.</P>")
+	+ _("<P>Use the buttons below the table to change the list of PCI IDs. Press OK to activate the settings.</P>")
 	// PCI ID help text
-	+ _("<P><B>Warning:</B> This is expert configuration, you should know what you are doing!</P>")
+	+ _("<P><B>Warning:</B> This is an expert configuration. Only continue if you know what you are doing.</P>")
 	,
 	true, true
     );

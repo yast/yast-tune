@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Mon Feb  7 17:09:57 CET 2005 - lslezak@suse.cz
+
+- merged proofread texts
+- version 2.11.3
+
+-------------------------------------------------------------------
 Mon Nov 29 16:44:53 CET 2004 - lslezak@suse.cz
 
 - PCI ID - write hwcfg file to load kernel module by
