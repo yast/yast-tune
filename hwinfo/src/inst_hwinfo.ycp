@@ -1,155 +1,324 @@
 /**
  *
+ * Module:	Initial hwinfo
+ *
+ * Author:	Ladislav Slezak <lslezak@suse.cz>
+ *
  * $Id$
+ *
+ * Initial hwinfo module - configuration workflow
  */
 
 {
-    textdomain "tune";
 
-    import "InitHWinfo";
-    import "Wizard";
+textdomain "tune";
 
-    include "hwinfo/routines.ycp";
-    include "hwinfo/classnames.ycp";
-    include "wizard/sequencer.ycp";
+import "InitHWinfo";
+import "Wizard";
+import "Label";
+import "Report";
 
-    global string selected_model = "";
-    global map selected_info = $[];
+include "hwinfo/routines.ycp";
+include "hwinfo/classnames.ycp";
+include "wizard/sequencer.ycp";
 
-    global define symbol details_dialog(string model, map info) ``{
-	// convert information in the map to tree widget content
-	list l = [`item(model, true, expandTree(info))];
+global string selected_model = "";
+global map selected_info = $[];
+global string selected_device = nil;
 
-	term content = `VBox(
-	    `Tree("Details", l)
+
+/**
+ * Select floppy device where hwifo will be stored.
+ * If more than one floppy device was found display
+ * selection dialog
+ * @return string floppy device name (e.g. /dev/fd0) or nil when no floppy was found
+ */
+global define string selected_floppy() ``{
+
+    integer floppy_size = size(InitHWinfo::floppy);
+
+    if (floppy_size == 0)
+    {
+	return nil;
+    }
+    else if (floppy_size == 1)
+    {
+	string device = "";
+
+	// get device name
+	foreach(string dev, string m, InitHWinfo::floppy, ``{
+		device = dev;
+	    }
 	);
+	return device;
+    }
+    else
+    {
+	// there is more than 2 floppies in the system
+	// ask user which should be used
+	return floppy_selection(InitHWinfo::floppy);
+    }
+}
 
-	Wizard::ReplaceNextButton(`PushButton(`id(`next), `opt(`default, `key_F10), Label::OKButton()));
-
-	// heading text
-	Wizard::SetContents(_("Details"), content,
-			    "help_text",
-			    true, true);
-
-	y2milestone("tree content: %1", l);
-
-	symbol ret = nil;
-	while (ret != `next && ret != `back && ret != `close && ret != `abort)
-	{
-	    ret = UI::UserInput();
+/**
+ * Show floppy selection dialog.
+ * @param devices map with pairs $["device name" : "model (description)"]
+ * @return string selected floppy device name or nil when canceled
+ */
+global define string floppy_selection(map devices) ``{
+    list devs = maplist(string d, string m, devices, ``{
+	    return `item(`id(d), sformat("%1 (%2)", m, d));
 	}
+    );
 
-	Wizard::RestoreNextButton();
+    term dialog = `VBox(
+	`ComboBox(`id(`device), _("Select Floppy Disk Device"), devs),
+	`VSpacing(1),
+	`HBox(
+	    `PushButton(`id(`ok), Label::OKButton()),
+	    `VSpacing(2),
+	    `PushButton(`id(`cancel), Label::CancelButton())
+	)
+    );
 
-	return ret;
+    symbol ui = nil;
+
+    UI::OpenDialog(dialog);
+
+    while (ui != `ok && ui != `cancel && ui != `close)
+    {
+	ui = UI::UserInput();
     }
 
-    global define symbol detected_dialog() ``{
+    // get selected device
+    string selected = UI::QueryWidget(`device, `Value);
 
-	list hw = InitHWinfo::DetectedHardware();
+    UI::CloseDialog();
 
-	// create table content
-	list table_cont = [];
+    // return nil if [OK] wasn't pressed
+    return (ui == `ok) ? selected : nil;
+}
 
-	if (size(hw) > 0)
-	{
-	    foreach(map info, hw, ``{
-		    string model = info["model"]:_("Unknown device");
+/**
+ * Show detail dialog for selected device
+ * @param model hardware description (used in the tree widget
+ * as a root node)
+ * @param info hardware description returned by .probe agent
+ * @return symbol UserInput() value
+ */
+global define symbol details_dialog(string model, map info) ``{
+    // convert information in the map to tree widget content
+    list l = [`item(model, true, expandTree(info))];
 
-		    string uniq = info["info", "unique_key"]:"unknown";
-		    integer class = info["info", "class_id"]:0xff;
-		    integer subclass = info["info", "sub_class_id"]:0;
-		    string cls = ClassNames[class, subclass]:_("Unknown device class");
+    term content = `VBox(
+	// tree widget label
+	`Tree(_("&Details"), l)
+    );
 
-		    table_cont = add(table_cont, `item(`id(uniq), model, cls));
-		}
-	    );
-	}
+    Wizard::ReplaceNextButton(`PushButton(`id(`next), `opt(`default, `key_F10), Label::OKButton()));
 
-	y2milestone("table content: %1", table_cont);
+    string help_text = _("<P><B>Details</B></P><P>Here are displayed details of the selected hardare component.</P>");
 
-	term content = `VBox(
-	    `Table(`id(`hwtable), `header(_("Model"), _("Class")), table_cont),
-	    `VSpacing(0.4),
-	    `PushButton(`id(`details), _("Details...")),
-	    `VSpacing(1)
-	);
+    // heading text, %1 is component name (e.g. "USB UHCI Root Hub")
+    Wizard::SetContents(sformat(_("Component '%1'"), model), content,
+			help_text,
+			true, true);
 
-	string help_text = _("help");
+    y2debug("tree content: %1", l);
 
-	Wizard::ReplaceNextButton(`PushButton(`id(`next), `opt(`default, `key_F10), Label::AcceptButton()));
+    symbol ret = nil;
+    while (ret != `next && ret != `back && ret != `close && ret != `abort)
+    {
+	ret = UI::UserInput();
+    }
 
-	// heading text
-	Wizard::SetContents(_("Detected hardware"), content,
-			    help_text,
-			    true, true);
+    Wizard::RestoreNextButton();
 
-	symbol ret = nil;
+    return ret;
+}
 
-	while (ret != `next && ret != `back && ret != `close && ret != `abort && ret != `details)
-	{
-	    ret = UI::UserInput();
+/**
+ * Show summary dialog with all detected hardware
+ * @return symbol UserInput() value
+ */
+global define symbol detected_dialog() ``{
 
-	    if (ret == `details || ret == `hwtable)
-	    {
-		string selected_device = UI::QueryWidget(`id(`hwtable), `CurrentItem);
+    list hw = InitHWinfo::DetectedHardware(false);
 
-		if (selected_device != nil)
+    // create table content
+    list table_cont = [];
+
+    if (size(hw) > 0)
+    {
+	foreach(map info, hw, ``{
+		string model = info["model"]:_("Unknown device");
+
+		string uniq = info["info", "unique_key"]:"unknown";
+		integer class = info["info", "class_id"]:0xff;
+		integer subclass = info["info", "sub_class_id"]:0;
+
+		// find subclass name
+		string cls = ClassNames[class, subclass]:nil;
+
+		// try to use class name if subclass name wasn't found
+		if (cls == nil)
 		{
-		    map device_info = find(map i, hw, ``(i["info", "unique_key"]:nil == selected_device));
+		    cls = ClassNames[class, "name"]:nil;
+		}
 
-		    if (device_info != nil)
-		    {
-			selected_info =  device_info["info"]:$[];
-			selected_model = device_info["model"]:_("Unknown device");
-		    }
-		    else
-		    {
-			ret = nil;
-		    }
+		// set to "unknown" if class name wasn't found too
+		if (cls == nil)
+		{
+		    // device class is unknown
+		    cls = _("Unknown device class");
+		}
+
+		table_cont = add(table_cont, `item(`id(uniq), model, cls));
+	    }
+	);
+    }
+
+    y2debug("table content: %1", table_cont);
+
+    term content = `VBox(
+	`Table(`id(`hwtable), `header(_("Model"), _("Class")), table_cont),
+	`VSpacing(0.4),
+	`HBox(
+	    `PushButton(`id(`details), _("&Details...")),
+	    `MenuButton(`id(`savemenu), _("&Save to file"),
+		[
+		    `item(`id(`file), _("Save to &file...")),
+		    `item(`id(`floppy), _("&Save to f&loppy..."))
+		]
+	    )
+	),
+	`VSpacing(1)
+    );
+
+    string help_text = _("<P><B>Detected hardware</B><BR>This table contains all detected hardware components in your system.</P><P><B>Details</B><BR>Select some component and press button <B>Details...</B> to see more detailed component description.</P><P><B>Save to File</B><BR>You can save hardware information (<I>hwinfo</I> output) to file or to floppy disk. Select target type in teh <B>Save to File</B> menu.</P>");
+
+    Wizard::ReplaceNextButton(`PushButton(`id(`next), `opt(`default, `key_F10), Label::AcceptButton()));
+
+    // heading text
+    Wizard::SetContents(_("Detected hardware"), content,
+			help_text,
+			true, true);
+
+    // preselect last selected device
+    if (selected_device != nil)
+    {
+	UI::ChangeWidget(`id(`hwtable), `CurrentItem, selected_device);
+    }
+
+    symbol ret = nil;
+
+    while (ret != `next && ret != `back && ret != `close && ret != `abort && ret != `details)
+    {
+	ret = UI::UserInput();
+
+	if (ret == `details || ret == `hwtable)
+	{
+	    selected_device = UI::QueryWidget(`id(`hwtable), `CurrentItem);
+
+	    if (selected_device != nil)
+	    {
+		map device_info = find(map i, hw, ``(i["info", "unique_key"]:nil == selected_device));
+
+		if (device_info != nil)
+		{
+		    // remember selected device
+		    selected_info =  device_info["info"]:$[];
+		    selected_model = device_info["model"]:_("Unknown device");
 		}
 		else
 		{
 		    ret = nil;
 		}
 	    }
+	    else
+	    {
+		ret = nil;
+	    }
 	}
+	else if (ret == `floppy)
+	{
+	    string save_device = selected_floppy();
 
-	Wizard::RestoreNextButton();
+	    if (save_device != nil)
+	    {
+		y2debug("Selected floppy: %1", save_device);
 
-	return ret;
+		// mount floppy
+		string mpoint = mount_device(save_device);
+
+		if (mpoint != nil)
+		{
+		    save_hwinfo_to_file(mpoint + "/hwinfo.out");
+
+		    // unmount floppy
+		    umount_device(mpoint);
+		}
+		else
+		{
+		    // error popup - mount failed, %1 is device file name (e.g. /dev/fd0)
+		    Report::Error(sformat(_("Floppy device '%1' can not be mounted."), save_device));
+		}
+
+	    }
+	}
+	else if (ret == `file)
+	{
+	    // save to file
+	    save_hwinfo_to_file("/hwinfo.out");
+	}
     }
 
-    map aliases =
-	$[
-	    "detected"	:   ``(detected_dialog()),
-	    "details"	:   [``(details_dialog(selected_model, selected_info)), true]
-	];
-
-    map sequence = $[
-	"ws_start" : "detected",
-	"detected" :
-	$[
-	    `abort	: `abort,
-	    `next	: `next,
-	    `details	: "details"
-	],
-	"details" :
-	$[
-	    `abort	: `abort,
-	    `next	: "detected"
-	]
-    ];
-
-    Wizard::CreateDialog();
-    Wizard::ReplaceAbortButton(`Empty());
-
-    any ret = WizardSequencer (aliases, sequence);
-
-    Wizard::CloseDialog();
+    Wizard::RestoreNextButton();
 
     return ret;
 }
 
+/**************************************
+ *
+ *            Main part
+ *
+ **************************************/
 
+// aliases for wizard sequncer
+map aliases =
+    $[
+	"detected"	:   ``(detected_dialog()),
+	"details"	:   [``(details_dialog(selected_model, selected_info)), true]
+    ];
+
+// workflow sequence
+map sequence = $[
+    "ws_start" : "detected",
+    "detected" :
+    $[
+	`abort	: `abort,
+	`next	: `next,
+	`details	: "details"
+    ],
+    "details" :
+    $[
+	`abort	: `abort,
+	`next	: "detected"
+    ]
+];
+
+Wizard::CreateDialog();
+
+// remove abort button - this is installation module
+// user should only use 'Installation abort' button in the proposal dialog
+Wizard::ReplaceAbortButton(`Empty());
+
+// start workflow
+any ret = WizardSequencer (aliases, sequence);
+
+Wizard::CloseDialog();
+
+return ret;
+
+}
 

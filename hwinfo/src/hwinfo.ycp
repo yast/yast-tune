@@ -17,7 +17,6 @@ import "Label";
 
 include "hwinfo/classnames.ycp";
 include "hwinfo/routines.ycp";
-include "ui/file_popups.ycp";
 
 /**
  * this global variable is needed for skipping out from recursed function
@@ -145,7 +144,7 @@ define term buildHwTree(string p, integer progMin, integer progMax) ``{
 
 	if (scalar(val))
 	{
-	    return `item(sformat("%1 : %2", trans_str(afterLast(p)), trans_bool(val)));
+	    return `item(sformat("%1: %2", trans_str(afterLast(p)), trans_bool(val)));
 	}
 	else if (val == nil ||  val == [] || val == $[])
 	{
@@ -206,20 +205,6 @@ define term buildHwTree(string p, integer progMin, integer progMax) ``{
     return nil;
 }
 
-/**
- * Save hwinfo output to the specified file
- * @param file Target file
- * @return boolean True if saving was successful
- */
-global define boolean save_hwinfo(string file) ``{
-    if (file == "" || file == nil)
-    {
-	return false;
-    }
-
-    string command = "/usr/sbin/hwinfo > " + file;
-    return SCR::Execute(.target.bash, command) == 0;
-}
 
 // Main
 
@@ -288,22 +273,8 @@ while(event != `abort && event !=`next && event != `cancel)
 
     if (event == `save)
     {
-	// window title
-	string filename = SaveFileAs("/");
-
-	if (filename != nil)
-	{
-	    // progress window content
-	    UI::OpenDialog(`Label(_("Saving hardware information...")));
-	    boolean saved = save_hwinfo(filename);
-	    UI::CloseDialog();
-
-	    if (saved == false)
-	    {
-		// error popup message
-		UI::ErrorPopup(_("Saving data failed"));
-	    }
-	}
+	// store hwinfo output to the file
+	save_hwinfo_to_file("/");
     }
 }
 Wizard::CloseDialog();

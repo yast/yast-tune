@@ -335,26 +335,6 @@
 	return result;
     }
 
-
-    /**
-     * Refresh current DMA status stored in internal structure
-     * @return void
-     */
-    global define void refresh_status() ``{
-	// for each stored device get current DMA status
-	ide_devices = maplist(`d, ide_devices, ``{
-		string dev = d["dev_name"]:nil;
-
-		boolean status = get_device_dma_status(dev);
-
-		// refresh value in map
-		d = add(d, "current_dma", status);
-
-		return d;
-	    }
-	);
-    }
-
     /**
      * Set DMA of device
      * @param device Identification of IDE device, e.g. "/dev/hda"

@@ -12,4 +12,4 @@ ynclude_DATA = classnames.ycp routines.ycp
 
 module_DATA = InitHWinfo.ycp
 
-EXTRA_DIST = $(client_DATA) $(config_DATA) $(ynclude_DATA) $(desktop_DATA)
+EXTRA_DIST = $(client_DATA) $(config_DATA) $(ynclude_DATA) $(desktop_DATA) $(module_DATA)

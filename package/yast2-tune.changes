@@ -1,4 +1,15 @@
 -------------------------------------------------------------------
+Fri Oct 17 16:59:41 CEST 2003 - lslezak@suse.de
+
+- added new 'initial hwnifo' module (new module in the
+  installation proposal - show hardware information, allow saving
+  hwinfo output to the file/floppy)
+- hwinfo: fixed visualization of list with just one map
+  item (#31144)
+- more items returned by .probe agent are translated
+- version 2.9.0
+
+-------------------------------------------------------------------
 Sun Sep 14 20:32:35 CEST 2003 - adrian@suse.de
 
 - make it working in kcontrol

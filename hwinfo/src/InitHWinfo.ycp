@@ -1,23 +1,52 @@
+/**
+ *
+ * Module:	Initial HW info module
+ *
+ * Author:	Ladislav Slezak <lslezak@suse.cz>
+ *
+ * $Id$
+ *
+ * Collect and store hardware information.
+ */
+
 {
 
 module "InitHWinfo";
 
 import "String";
+import "Confirm";
+import "Progress";
+
+include "hwinfo/routines.ycp";
 
 boolean initialized = false;
 
+// CPU summary string
 string cpu_string = "";
+// memory summary string
 string memory_string = "";
 
 // list of detected devices
 list detectedHW = nil;
 
-global define list MakeProposal(boolean reset) ``{
+// default is "/dev/fd0" floppy device (used when floppy detection is skipped as a fallback)
+global map floppy = $["/dev/fd0" : _("Floppy disk")];
+
+/**
+ * Return short system description
+ * @param reset If reset is true then always do hardware detection
+ * @return list(string) list of hardware desciptions
+ */
+global define list(string) MakeProposal(boolean reset) ``{
     Initialize(reset);
     return [ _("Processor: ") + cpu_string, _("Main memory: ") + memory_string ];
 }
 
-
+/**
+ * Start hardware detection (only CPU and main memory)
+ * @param force If true then start detection again (discard cached values)
+ * @return boolean True on success
+ */
 global define boolean Initialize(boolean force) ``{
     if (initialized == true && force == false)
     {
@@ -52,7 +81,7 @@ global define boolean Initialize(boolean force) ``{
 	    if (count > 1)
 	    {
 		// create processor count string
-		// %1 is integer number
+		// %1 is integer number (greater than 1)
 		// %2 is processor model name
 		cpu_string = cpu_string + sformat(_("%1x %2"), count, cpu);
 	    }
@@ -91,9 +120,15 @@ global define boolean Initialize(boolean force) ``{
     return true;
 }
 
-global define list DetectedHardware() ``{
+/**
+ * Detect all hardware present in the system
+ * @param force If force is true then detection is always started (cached value is discarded)
+ * @return list list of maps - detected hardware items ()
+ */
+global define list DetectedHardware(boolean force) ``{
 
-    if (detectedHW != nil)
+    // return cached values if possible
+    if (detectedHW != nil && force != true)
     {
 	return detectedHW;
     }
@@ -101,31 +136,79 @@ global define list DetectedHardware() ``{
     detectedHW = [];
 
     // probe devices, store model, class, uniq. ID for each device
-    list(string) paths = [ "cpu", "memory", "ide", "pci", "scsi", "isapnp", "floppy", "usb", "monitor" ];
+
+    // probe by bus
+    // list(string) paths = [ "cpu", "memory", "ide", "pci", "scsi", "isapnp", "floppy", "usb", "monitor" ];
+
+    // probe by device class
+    list(string) paths = [ "cpu", "memory", "cdrom", "floppy", "disk", "display", "mouse", "keyboard", "sound", "isdn", "modem", "storage", "netcard", "monitor", "printer", "tv", "dvb", "scanner", "camera", "chipcard", "usbctrl", "ieee1394ctrl", "hub", "braille", "joystick", "bios", "pppoe" ];
+
+    Progress::New(_("Detecting hardware"), "", size(paths), [_("Hardware detection")], [_("Detecting hardware")], "Hardware detection is in progress, please wait. ");
+
+    Progress::NextStage();
 
     foreach(string subpath, paths, ``{
 	    path p = add(.probe, subpath);
 
-	    y2milestone("Probing: %1", p);
+	    // translate path name
+	    string pathname = trans_table[subpath]:nil;
 
-	    list result = SCR::Read(p);
-
-	    if (size(result) > 0)
+	    // use untranslated string if translation failed
+	    if (pathname == nil)
 	    {
-		foreach(map info, result, ``{
-			// device name
-			string model = (subpath == "cpu") ? info["name"]:_("Unknown device") : info["model"]:_("Unknown device");
-			integer class = info["class_id"]:nil;
-			integer subclass = info["sub_class_id"]:nil;
-			string uniq = info["unique_key"]:"";
-
-			y2debug("Model: %1", model);
-
-			detectedHW = add(detectedHW, $[ "model" : model, "info" : info ]);
-		    }
-		);
-
+		pathname = subpath;
 	    }
+
+	    // set progress bar label
+	    Progress::Title(sformat(_("%1 ..."), pathname));
+
+	    // don't ask for probing CPU and memory, they were already probed and detection should be harmless
+	    boolean detect = (subpath == "cpu" || subpath == "memory") ? true : Confirm::Detection(pathname);
+
+	    // confirm hardware detection in the manual mode
+	    if (detect == true)
+	    {
+		y2milestone("Probing: %1", p);
+		list result = SCR::Read(p);
+
+		// store floppy devices, used in hwinfo output saving
+		if (subpath == "floppy")
+		{
+		    // reset list of floppies
+		    floppy = $[];
+
+		    if (size(result) > 0)
+		    {
+			foreach(map f, result, ``{
+				string device = f["dev_name"]:nil;
+				string model = f["model"]:nil;
+
+				if (device != nil && model != nil)
+				{
+				    floppy[device] = model;
+				}
+			    }
+			);
+		    }
+
+		    y2milestone("Detected floppy devices: %1", floppy);
+		}
+
+		if (size(result) > 0)
+		{
+		    foreach(map info, result, ``{
+			    // device name (CPU model name string has key "name" instead of "model")
+			    string model = (subpath == "cpu") ? info["name"]:_("Unknown device") : info["model"]:_("Unknown device");
+			    y2debug("Model: %1", model);
+
+			    detectedHW = add(detectedHW, $[ "model" : model, "info" : info ]);
+			}
+		    );
+		}
+	    }
+
+	    // update progress bar
+	    Progress::NextStep();
 	}
     );
 
