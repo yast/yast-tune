@@ -16,7 +16,7 @@ X-SuSE-YaST-Geometry=
 X-SuSE-YaST-SortKey=
 X-SuSE-YaST-AutoInstResource=
 
-Icon=idetune
+Icon=yast-idedma
 Exec=/sbin/yast2 idedma 
 
 Name=IDE DMA Mode
