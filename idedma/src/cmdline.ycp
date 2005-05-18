@@ -51,9 +51,9 @@
 
 	    boolean result = Idedma::set_dma((string) (options["device"]:nil), (string) (options["mode"]:nil));
 	    // status message - %1 is device name (/dev/hdc), %2 is mode name (udma2), %3 is result (Success/Failed)
-	    CommandLine::Print(sformat(_("\nSetting device '%1' to mode '%2': %3"), device, mode,
+	    CommandLine::Print(sformat(_("\nSetting Device '%1' to Mode '%2': %3"), device, mode,
 		// result string
-		(result == true) ? _("Success") : _("Failed")));
+		(result == true) ? _("Succeeded") : _("Failed")));
 
 	    return result;
 	}
@@ -81,7 +81,7 @@
 			// %4 is current DMA mode (udma2, mdma2,...), %5 is requested mode,
 			// %6 is list of supported DMA modes by device,
 			// %7 and %8 is full DMA mode name (UltraDMA/100)
-			string info = sformat(_("Device: %1\nModel: %2\nType: %3\nCurrent DMA mode: %4 (%8)\nConfigured DMA mode: %5 (%7)\nSupported DMA modes: %6\n"),
+			string info = sformat(_("Device: %1\nModel: %2\nType: %3\nCurrent DMA Mode: %4 (%8)\nConfigured DMA Mode: %5 (%7)\nSupported DMA Modes: %6\n"),
 			    dev["dev_name"]:"", dev["device"]:"", dev["device_type"]:"",
 			    dev["current_dma"]:"", dev["dma_setting"]:"",
 			    mergestring(dev["dma_modes"]:[], ", "),

@@ -30,15 +30,15 @@ $[
     // tree node string
     "cache"		:   _("Cache"),
     // tree node string
-    "card_type"	:   _("Card type"),
+    "card_type"	:   _("Card Type"),
     // tree node string
-    "cardtype"	:   _("Card type"),
+    "cardtype"	:   _("Card Type"),
     // tree node string - means "class of hardware"
     "class_id"	:   _("Class"),
     // tree node string
-    "cdtype"	:   _("CD type"),
+    "cdtype"	:   _("CD Type"),
     // tree node string
-    "dev_name"	:   _("Device name"),
+    "dev_name"	:   _("Device Name"),
     // tree node string
     "dev_num"	:   _("Device Numbers"),
     // tree node string
@@ -46,7 +46,7 @@ $[
     // tree node string
     "device"	:   _("Device"),
     // tree node string
-    "device_id"	:   _("Device identifier"),
+    "device_id"	:   _("Device Identifier"),
     // tree node string - means "hardware drivers"
     "drivers"	:   _("Drivers"),
     // tree node string - means "hardware driver"
@@ -62,7 +62,7 @@ $[
     // tree node string (System Management BIOS)
     "smbios"	: _("SMBIOS"),
     // tree node string
-    "prog_if"	:   _("Prog. interface"),
+    "prog_if"	:   _("Interface"),
     // tree node string
     "resource"	:   _("Resources"),
     // tree node string
@@ -78,29 +78,29 @@ $[
     // tree node string
     "sub_device"	:   _("Device (spec)"),
     // tree node string
-    "sub_device_id" :   _("Device identifier (spec)"),
+    "sub_device_id" :   _("Device Identifier (spec)"),
     // tree node string
-    "sub_vendor"	:   _("Sub Vendor"),
+    "sub_vendor"	:   _("Subvendor"),
     // tree node string
-    "sub_vendor_id" :   _("Sub vendor identifier"),
+    "sub_vendor_id" :   _("Subvendor Identifier"),
     // tree node string
-    "unique_key"	:   _("Unique key"),
+    "unique_key"	:   _("Unique Key"),
     // tree node string
     "vendor"	:   _("Vendor"),
     // tree node string
-    "vendor_id"        :   _("Vendor identifier"),
+    "vendor_id"        :   _("Vendor Identifier"),
     // tree node string
-    "bios_video"       :   _("Bios video"),
+    "bios_video"       :   _("BIOS Video"),
     // tree node string
-    "boot_arch"        :   _("Boot architecture"),
+    "boot_arch"        :   _("Boot Architecture"),
     // tree node string
-    "boot_disk"        :   _("Boot disk"),
+    "boot_disk"        :   _("Boot Disk"),
     // tree node string
     "block"		: _("Block Devices"),
     // tree node string
     "redasd"		: _("DASD Disks"),
     // tree node string
-    "cdrom"            :   _("CDROM"),
+    "cdrom"            :   _("CD-ROM"),
     // tree node string
     "cpu"              :   _("CPU"),
     // tree node string
@@ -108,7 +108,7 @@ $[
     // tree node string
     "display"  :   _("Display"),
     // tree node string
-    "floppy"   :   _("Floppy disk"),
+    "floppy"   :   _("Floppy Disk"),
     // tree node string
     "framebuffer"      :   _("Framebuffer"),
     // tree node string (powermanagement)
@@ -120,7 +120,7 @@ $[
     // tree node string - UML = User Mode Linux
     "is_uml"	:	_("UML System"),
     // tree node string
-    "ihw_data" :   _("Hardware data"),
+    "ihw_data" :   _("Hardware Data"),
     // tree node string
     "isdn"             :   _("ISDN"),
     // tree node string
@@ -128,9 +128,9 @@ $[
     // tree node string
     "monitor"  :   _("Monitor"),
     // tree node string
-    "netdev"   :   _("Network devices"),
+    "netdev"   :   _("Network Devices"),
     // tree node string
-    "netif"            :   _("Network interface"),
+    "netif"            :   _("Network Interface"),
     // tree node string
     "printer"  :   _("Printer"),
     // tree node string
@@ -138,7 +138,7 @@ $[
     // tree node string
     "sound"            :   _("Sound"),
     // tree node string
-    "storage"  :   _("Storage media"),
+    "storage"  :   _("Storage Media"),
     // tree node string
     "system"   :   _("System"),
     // tree node string
@@ -146,17 +146,17 @@ $[
     // tree node string
     "dvb"              :   _("DVB Card"),
     // tree node string
-    "usb_type" :   _("USB type"),
+    "usb_type" :   _("USB Type"),
     // tree node string
     "version"  :   _("Version"),
     // tree node string - memory (RAM) information
     "memory"   :   _("Memory"),
     // tree node string
-    "netcard"  :   _("Network card"),
+    "netcard"  :   _("Network Card"),
     // tree node string
     "bios"     :   _("BIOS"),
     // tree node string
-    "fbdev"    :   _("Framebuffer device"),
+    "fbdev"    :   _("Framebuffer Device"),
     // tree node string - bus type
     "ide"      :   _("IDE"),
     // tree node string - bus type
@@ -197,7 +197,7 @@ $[
     // tree node string - CPU information
     "f00f_bug" :   _("f00f Bug"),
     // tree node string - CPU information
-    "cpuid_level"      :   _("CPU id level"),
+    "cpuid_level"      :   _("CPU ID Level"),
     // tree node string - CPU information
     "mhz"              :   _("Frequency"),
     // tree node string - CPU information
@@ -205,7 +205,7 @@ $[
     // tree node string - CPU information
     "flags"            :   _("Flags"),
     // tree node string - CPU information
-    "fpu"              :   _("Floating point unit"),
+    "fpu"              :   _("Floating Point Unit"),
     // tree node string - CPU information
     "fpu_exception"    :   _("Floating Point Unit Exception"),
     // tree node string - CPU information
@@ -215,7 +215,7 @@ $[
     // tree node string - CPU information
     "stepping" :   _("Stepping"),
     // tree node string - CPU information
-    "vendor_id"        :   _("Vendor identifier"),
+    "vendor_id"        :   _("Vendor Identifier"),
     // tree node string - CPU information
     "family"   :   _("Family"),
     // tree node string - CPU information
@@ -396,11 +396,6 @@ define string get_representant(map<string,any> m) ``{
 	    else if (key_name == "width")
 	    {
 		out = resolution("dummy", m);
-	    }
-	    else if (key_name == "cylinders")
-	    {
-		// hard disk parameters
-		out = _("cylinders/heads/sectors");
 	    }
 	    else if (key_name == "sub_class_id")
 	    {

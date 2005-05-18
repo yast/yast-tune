@@ -16,6 +16,7 @@ textdomain "tune";
 import "Wizard";
 import "Sequencer";
 import "NewID";
+import "CommandLine";
 
 include "hwinfo/newid.ycp";
 
@@ -63,13 +64,25 @@ map sequence = $[
     ]
 ];
 
-Wizard::CreateDialog();
-Wizard::SetDesktopIcon("powertweak");
+define any GUIhandler()
+{
+    Wizard::CreateDialog();
+    Wizard::SetDesktopIcon("powertweak");
 
-// start workflow
-any ret = Sequencer::Run(aliases, sequence);
+    // start workflow
+    any ret = Sequencer::Run(aliases, sequence);
 
-Wizard::CloseDialog();
+    Wizard::CloseDialog();
+
+    return ret;
+}
+
+
+map cmdline_description = $[
+    "guihandler" : GUIhandler
+];
+
+any ret = CommandLine::Run(cmdline_description);
 
 return ret;
 

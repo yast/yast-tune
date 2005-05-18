@@ -33,12 +33,12 @@ UI::OpenDialog(
 	`VBox(
 	    `HSpacing(40),
 	    // popup dialog header
-	    `Label(_("Probing:")),
+	    `Label(_("Probing")),
 	    `HBox(
 		`HWeight(1, `Label(`id(`initLab), ""))
 	    ),
 	    // progress bar label
-	    `ProgressBar(`id(`initProg), _("Progress:"), 1000, 0),
+	    `ProgressBar(`id(`initProg), _("Progress"), 1000, 0),
 	    `VSpacing(0.5),
 	    `PushButton(`id(`abort), `opt(`key_F9), Label::AbortButton())
 	)
@@ -264,12 +264,12 @@ Wizard::HideAbortButton();
 
 
 // dialog header
-Wizard::SetContents (_("Hardware info"), con,
+Wizard::SetContents (_("Hardware Information"), con,
 
 // help text
  _("<P>The <B>Hardware Information</B> module displays the hardware
 details of your computer. Click any node for more information.</p>\n")
-+ _("<P>You can save hardware information to a file. Click <B>Save to File</B> and enter the file name.</P>"),
++ _("<P>You can save hardware information to a file. Click <B>Save to File</B> and enter the filename.</P>"),
 true, true);
 
 UI::SetFocus(`id(`idTree));

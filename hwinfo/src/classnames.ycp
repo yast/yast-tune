@@ -46,16 +46,16 @@ $[
 	0x01:	_("Token ring network controller"),
 	0x02:	_("FDDI network controller"),
 	0x03:	_("ATM network controller"),
-	0x04:	_("ISDN Controller"),
+	0x04:	_("ISDN controller"),
 	0x80:	_("Network controller"),
-	0x81:	_("Myrinet Controller")
+	0x81:	_("Myrinet controller")
 ],
 0x003:
 $[
 	"name":_("Display controller"),
-	0x00:	_("VGA compatible controller"),
-	0x01:	_("XGA compatible controller"),
-	0x02:	_("3D Controller"),
+	0x00:	_("VGA-compatible controller"),
+	0x01:	_("XGA-compatible controller"),
+	0x02:	_("3D controller"),
 	0x80:	_("Display controller")
 ],
 0x004:
@@ -63,7 +63,7 @@ $[
 	"name":_("Multimedia controller"),
 	0x00:	_("Multimedia video controller"),
 	0x01:	_("Multimedia audio controller"),
-	0x02:	_("Computer Telephony Device"),
+	0x02:	_("Computer telephony device"),
 	0x80:	_("Multimedia controller")
 ],
 0x005:
@@ -84,9 +84,9 @@ $[
 	0x05:	_("PCMCIA bridge"),
 	0x06:	_("NuBus bridge"),
 	0x07:	_("CardBus bridge"),
-	0x08:	_("RACEway Bridge"),
-	0x09:	_("Semitransparent PCI-to-PCI Bridge"),
-	0x0a:	_("InfiniBand to PCI Host Bridge"),
+	0x08:	_("RACEway bridge"),
+	0x09:	_("Semitransparent PCI-to-PCI bridge"),
+	0x0a:	_("InfiniBand to PCI host bridge"),
 	0x80:	_("Bridge")
 ],
 0x007:
@@ -94,7 +94,7 @@ $[
 	"name":_("Communication controller"),
 	0x00:	_("Serial controller"),
 	0x01:	_("Parallel controller"),
-	0x02:	_("Multiport Serial Controller"),
+	0x02:	_("Multiport serial controller"),
 	0x03:	_("Modem"),
 	0x80:	_("Communication controller")
 ],
@@ -105,24 +105,24 @@ $[
 	0x01:	_("DMA controller"),
 	0x02:	_("Timer"),
 	0x03:	_("RTC"),
-	0x04:	_("PCI Hotplug Controller"),
+	0x04:	_("PCI hotplug controller"),
 	0x80:	_("System peripheral")
 ],
 0x009:
 $[
 	"name":_("Input device controller"),
 	0x00:	_("Keyboard controller"),
-	0x01:	_("Digitizer Pen"),
+	0x01:	_("Digitizer pen"),
 	0x02:	_("Mouse controller"),
-	0x03:	_("Scanner Controller"),
-	0x04:	_("Gameport Controller"),
+	0x03:	_("Scanner controller"),
+	0x04:	_("Gameport controller"),
 	0x80:	_("Input device controller")
 ],
 0x00a:
 $[
 	"name":_("Docking station"),
-	0x00:	_("Generic Docking Station"),
-	0x80:	_("Docking Station")
+	0x00:	_("Generic docking station"),
+	0x80:	_("Docking station")
 ],
 0x00b:
 $[
@@ -133,26 +133,26 @@ $[
 	0x10:	_("Alpha"),
 	0x20:	_("Power PC"),
 	0x30:	_("MIPS"),
-	0x40:	_("Co-processor")
+	0x40:	_("Coprocessor")
 ],
 0x00c:
 $[
 	"name":_("Serial bus controller"),
 	0x00:	_("FireWire (IEEE 1394)"),
-	0x01:	_("ACCESS Bus"),
+	0x01:	_("ACCESS bus"),
 	0x02:	_("SSA"),
-	0x03:	_("USB Controller"),
-	0x04:	_("Fiber Channel"),
+	0x03:	_("USB controller"),
+	0x04:	_("Fiber channel"),
 	0x05:	_("SMBus"),
 	0x06:	_("InfiniBand")
 ],
 0x00d:
 $[
-	"name":_("Wireless Controller"),
-	0x00:	_("IRDA Controller"),
-	0x01:	_("Consumer IR Controller"),
-	0x10:	_("RF Controller"),
-	0x80:	_("Wireless Controller")
+	"name":_("Wireless controller"),
+	0x00:	_("IRDA controller"),
+	0x01:	_("Consumer IR controller"),
+	0x10:	_("RF controller"),
+	0x80:	_("Wireless controller")
 ],
 0x00e:
 $[
@@ -161,26 +161,26 @@ $[
 ],
 0x00f:
 $[
-	"name":_("Satellite Communications Controller"),
-	0x00:	_("Satellite TV Controller"),
-	0x01:	_("Satellite Audio Communication Controller"),
-	0x03:	_("Satellite Voice Communication Controller"),
-	0x04:	_("Satellite Data Communication Controller")
+	"name":_("Satellite communications controller"),
+	0x00:	_("Satellite TV controller"),
+	0x01:	_("Satellite audio communication controller"),
+	0x03:	_("Satellite voice communication controller"),
+	0x04:	_("Satellite data communication controller")
 ],
 0x010:
 $[
-	"name":_("Encryption Controller"),
-	0x00:	_("Network and Computing Encryption Device"),
-	0x10:	_("Entertainment Encryption Device"),
-	0x80:	_("Encryption Controller")
+	"name":_("Encryption controller"),
+	0x00:	_("Network and computing encryption device"),
+	0x10:	_("Entertainment encryption device"),
+	0x80:	_("Encryption controller")
 ],
 0x011:
 $[
-	"name":_("Signal Processing Controller"),
-	0x00:	_("DPIO Module"),
-	0x01:	_("Performance Counters"),
-	0x10:	_("Communication Synchronizer"),
-	0x80:	_("Signal Processing Controller")
+	"name":_("Signal processing controller"),
+	0x00:	_("DPIO module"),
+	0x01:	_("Performance counters"),
+	0x10:	_("Communication synchronizer"),
+	0x80:	_("Signal processing controller")
 ],
 0x0ff:
 $[
@@ -191,14 +191,14 @@ $[
 0x100:
 $[
 	"name":_("Monitor"),
-	0x01:	_("CRT Monitor"),
-	0x02:	_("LCD Monitor")
+	0x01:	_("CRT monitor"),
+	0x02:	_("LCD monitor")
 ],
 0x101:
 $[
-	"name":_("Internally Used Class"),
-	0x01:	_("ISA PnP Interface"),
-	0x02:	_("Main Memory"),
+	"name":_("Internally used class"),
+	0x01:	_("ISA PnP interface"),
+	0x02:	_("Main memory"),
 	0x03:	_("CPU"),
 	0x04:	_("FPU"),
 	0x05:	_("BIOS"),
@@ -209,40 +209,40 @@ $[
 $[
 	"name":_("Modem"),
 	0x00:	_("Modem"),
-	0x01:	_("Win-Modem")
+	0x01:	_("Win modem")
 ],
 0x103:
 $[
-	"name":_("ISDN Adapter")
+	"name":_("ISDN adapter")
 ],
 0x104:
 $[
-	"name":_("PS/2 Controller")
+	"name":_("PS/2 controller")
 ],
 0x105:
 $[
 	"name":_("Mouse"),
-	0x00:	_("PS/2 Mouse"),
-	0x01:	_("Serial Mouse"),
-	0x02:	_("Bus Mouse"),
-	0x03:	_("USB Mouse"),
+	0x00:	_("PS/2 mouse"),
+	0x01:	_("Serial mouse"),
+	0x02:	_("Bus mouse"),
+	0x03:	_("USB mouse"),
 	0x80:	_("Mouse")
 ],
 0x106:
 $[
-	"name":_("Mass Storage Device"),
+	"name":_("Mass storage device"),
 	0x00:	_("Disk"),
 	0x01:	_("Tape"),
 	0x02:	_("CD-ROM"),
-	0x03:	_("Floppy Disk"),
-	0x80:	_("Storage Device")
+	0x03:	_("Floppy disk"),
+	0x80:	_("Storage device")
 ],
 0x107:
 $[
-	"name":_("Network Interface"),
+	"name":_("Network interface"),
 	0x00:	_("Loopback"),
 	0x01:	_("Ethernet"),
-	0x02:	_("Tokenring"),
+	0x02:	_("Token ring"),
 	0x03:	_("FDDI"),
 	0x04:	_("CTC"),
 	0x05:	_("IUCV"),
@@ -250,7 +250,7 @@ $[
 	0x07:	_("QETH"),
 	0x08:	_("ESCON"),
 	0x09:	_("Myrinet"),
-	0x80:	_("Network Interface")
+	0x80:	_("Network interface")
 ],
 0x108:
 $[	"name":_("Keyboard"),
@@ -264,11 +264,11 @@ $[
 0x10a:
 $[
 	"name":_("Hub"),
-	0x01:	_("USB Hub")
+	0x01:	_("USB hub")
 ],
 0x10b:
 $[
-	"name":_("Braille Display")
+	"name":_("Braille display")
 ],
 0x10c:
 $[
@@ -281,29 +281,29 @@ $[
 ],
 0x10e:
 $[
-	"name":_("Chipcard Reader")
+	"name":_("Chipcard reader")
 ],
 0x10f:
 $[
 	"name":_("Camera"),
-	0x01:	_("WebCam"),
-	0x02:	_("Digital Camera")
+	0x01:	_("Webcam"),
+	0x02:	_("Digital camera")
 ],
 0x110:
 $[
 	"name":_("Framebuffer"),
-	0x01:	_("VESA Framebuffer")
+	0x01:	_("VESA framebuffer")
 ],
 0x111:
 $[
-	"name":_("DVB Card"),
-	0x01:	_("DVB-C Card"),
-	0x02:	_("DVB-S Card"),
-	0x03:	_("DVB-T Card")
+	"name":_("DVB card"),
+	0x01:	_("DVB-C card"),
+	0x02:	_("DVB-S card"),
+	0x03:	_("DVB-T card")
 ],
 0x112:
 $[
-	"name":_("TV Card")
+	"name":_("TV card")
 ],
 0x113:
 $[
@@ -311,11 +311,11 @@ $[
 ],
 0x114:
 $[
-	"name":_("DSL Card")
+	"name":_("DSL card")
 ],
 0x115:
 $[
-	"name":_("Bluetooth Device")
+	"name":_("Bluetooth device")
 ]
 
 ];

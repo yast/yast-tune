@@ -159,8 +159,8 @@ define map NewIDPopup(map<string,any> newid) {
 
 	    if (driver == "" && sysdir == "")
 	    {
-		// error message, driver name and sysfs directory are empty
-		Report::Error(_("Enter driver or SysFS directory name."));
+		// error message, driver name and sysfs directory are empty. one is needed
+		Report::Error(_("Enter the driver or SysFS directory name."));
 		ui = nil;
 	    }
 	    else if (vendor == "" && subvendor == "" && device == "" && subdevice == ""
@@ -222,7 +222,7 @@ define map NewDeviceIDPopup(map<string,any> newid) {
     term new_id_dialog = `VBox(
 	`VSpacing(0.4),
 	// text in dialog header
-	`Heading(_("PCI ID setup")),
+	`Heading(_("PCI ID Setup")),
 	`VSpacing(0.5),
 	`HBox(
 	    `HSpacing(1),
@@ -270,7 +270,7 @@ define map NewDeviceIDPopup(map<string,any> newid) {
 	    if (driver == "" && sysdir == "")
 	    {
 		// error message, driver name and sysfs directory are empty
-		Report::Error(_("Enter driver or SysFS directory name."));
+		Report::Error(_("Enter the driver or SysFS directory name."));
 		ui = nil;
 	    }
 	    else
@@ -320,8 +320,8 @@ define any NewIDConfigDialog() ``{
 			`VSpacing(0.5),
 			`HBox(
 			    `MenuButton( Label::AddButton() + "...", [
-				`item(`id(`add_selected), _("&Select PCI device from list")),
-				`item(`id(`add), _("&Manually enter PCI values")),
+				`item(`id(`add_selected), _("&From List")),
+				`item(`id(`add), _("&Manually")),
 			    ]),
 			    `HSpacing(1),
 			    `PushButton(`id(`edit), Label::EditButton()),
@@ -338,11 +338,11 @@ define any NewIDConfigDialog() ``{
 	// PCI ID help text
 	+ _("<P>It is possible to add a PCI ID to a device driver to extend its internal database of known supported devices.</P>")
 	// PCI ID help text
-	+ _("<P>PCI ID numbers are entered and displayed as hexadecimal numbers. SysFS dir. is the directory name in the /sys/bus/pci/drivers directory. If it is empty, the driver name is used as the directory name.</P>")
+	+ _("<P>PCI ID numbers are entered and displayed as hexadecimal numbers. <b>SysFS Dir.</b> is the directory name in the /sys/bus/pci/drivers directory. If it is empty, the driver name is used as the directory name.</P>")
 	// PCI ID help text
 	+ _("<P>If the driver is compiled into the kernel, leave the driver name empty and enter the SysFS directory name instead.</P>")
 	// PCI ID help text
-	+ _("<P>Use the buttons below the table to change the list of PCI IDs. Press OK to activate the settings.</P>")
+	+ _("<P>Use the buttons below the table to change the list of PCI IDs. Press <b>OK</b> to activate the settings.</P>")
 	// PCI ID help text
 	+ _("<P><B>Warning:</B> This is an expert configuration. Only continue if you know what you are doing.</P>")
 	,

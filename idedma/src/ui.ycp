@@ -146,7 +146,7 @@ define void refresh_combo() ``{
 	list supported_dma_modes = Idedma::supported_dma_modes(dn);
 
 	list combo_list = [
-	    `item(`id(`nochange), _("No change"), current == "nochange"),
+	    `item(`id(`nochange), _("No Change"), current == "nochange"),
 	    `item(`id(`off), _("DMA Off"), current == "off"),
 	    `item(`id(`on), _("DMA On (default mode)"), current == "on"),
 	];
@@ -178,11 +178,11 @@ define void refresh_combo() ``{
 
 	y2milestone("combo: %1", combo_list);
 
-	UI::ReplaceWidget(`id(`rp), `ComboBox(`id(`dma_combo), `opt(`notify), _("&DMA Mode:"), combo_list));
+	UI::ReplaceWidget(`id(`rp), `ComboBox(`id(`dma_combo), `opt(`notify), _("&DMA Mode"), combo_list));
     }
     else
     {
-	UI::ReplaceWidget(`id(`rp), `ComboBox(`id(`dma_combo), _("&DMA Mode:"), []));
+	UI::ReplaceWidget(`id(`rp), `ComboBox(`id(`dma_combo), _("&DMA Mode"), []));
     }
 }
 
@@ -192,15 +192,15 @@ define void refresh_combo() ``{
  */
 define any DmaConfigDialog () ``{
     // dialog header
-    string caption = _("IDE DMA setup");
+    string caption = _("IDE DMA Setup");
     boolean changed = false;
     list items = get_table_items();
 
     term contents = `VBox(
 			// table header
 			`Table(`id(`device_table), `opt(`notify, `immediate),
-			    `header(_("Current DMA mode"), _("Device name"), _("Type"),
-			    _("Device"), _("Required DMA mode")), items),
+			    `header(_("Current DMA Mode"), _("Device Name"), _("Type"),
+			    _("Device"), _("Required DMA Mode")), items),
 			`ReplacePoint(`id(`rp), `Empty()),
 			`VSpacing(0.5)
 		    );
@@ -397,7 +397,7 @@ define any IdedmaSequence() ``{
  */
 define any IdedmaAutoSequence () ``{
     // dialog header
-    string caption = _("IDE DMA setup");
+    string caption = _("IDE DMA Setup");
     // progress label
     term contents = `Label (_("Initializing ..."));
 

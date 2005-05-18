@@ -20,7 +20,7 @@ Icon=yast-idedma
 Exec=/sbin/yast2 idedma 
 
 Name=IDE DMA Mode
-GenericName=DMA mode configuration of IDE devices
+GenericName=Configure the DMA mode of IDE devices
 Name[cs]=Režim IDE DMA
 GenericName[cs]=Nastavení režimu DMA pro IDE zařízení
 Name[de]=IDE DMA-Modus

@@ -550,7 +550,7 @@
 	    if (Service::Enable("boot.idedma") != true)
 	    {
 		// error message
-		Report::Error(_("Can not enable service 'boot.idedma'."));
+		Report::Error(_("Cannot enable service 'boot.idedma'."));
 		ret = false;
 	    }
 	}
@@ -628,7 +628,7 @@
 		    if (devname != nil && dmasetting != nil && (all == true || dmasetting != "nochange"))
 		    {
 			// summary text - unknown DMA mode is selected
-			devices = devices + ((richtext) ? "<LI><B>":"") + devname + ":" + ((richtext) ? "</B>":"") + " " + sformat("%1 (%2)", dmasetting, mode_names[dmasetting]:_("Unknown Mode")) + ((richtext) ? "</LI>":"\n");
+			devices = devices + ((richtext) ? "<LI><B>":"") + devname + ":" + ((richtext) ? "</B>":"") + " " + sformat("%1 (%2)", dmasetting, mode_names[dmasetting]:_("Unknown mode")) + ((richtext) ? "</LI>":"\n");
 			found = true;
 		    }
 		}
@@ -639,7 +639,7 @@
 	if (found == false)
 	{
 	    // summary text - none device is configured
-	    devices = ((richtext) ? "<LI>":"") + _("No Device") + ((richtext) ? "</LI>":"\n");
+	    devices = ((richtext) ? "<LI>":"") + _("No device") + ((richtext) ? "</LI>":"\n");
 	}
 
 	return summary + ((richtext) ? "<UL>":"") + devices + ((richtext) ? "</UL>":"");

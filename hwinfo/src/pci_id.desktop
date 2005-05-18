@@ -19,5 +19,5 @@ X-SuSE-YaST-AutoInstResource=
 Icon=yast-pci_id
 Exec=/sbin/yast2 pci_id
 
-Name=PCI device drivers
+Name=PCI Device Drivers
 GenericName=Set PCI device IDs used by kernel drivers

@@ -19,8 +19,8 @@ X-SuSE-YaST-AutoInstResource=
 Icon=yast-hwinfo
 Exec=/sbin/yast2 hwinfo 
 
-Name=Hardware information
-GenericName=Show hardware information
+Name=Hardware Information
+GenericName=View hardware information
 Name[cs]=Informace o hardwaru
 GenericName[cs]=Zobrazit informace o hardwaru
 Name[de]=Hardware-Informationen

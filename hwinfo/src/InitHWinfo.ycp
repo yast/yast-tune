@@ -53,7 +53,7 @@ global define boolean Initialize(boolean force) ``{
     map<string,integer> cpus = $[];
 
     foreach(map info, cpu_result, ``{
-	    string str = info["name"]:_("Unknown Processor");
+	    string str = info["name"]:_("Unknown processor");
 	    integer counter = cpus[str]:0;
 	    cpus[str] = counter + 1;
 	}
@@ -241,7 +241,7 @@ global define list<map> DetectedHardware(boolean force, block<boolean> abort) ``
 	paths = (list<string>)union(paths, [ "cdrom", "floppy", "sound", "isdn", "modem", "printer", "tv", "dvb", "scanner", "camera", "chipcard", "usbctrl", "ieee1394ctrl", "hub", "joystick", "pppoe" ]);
     }
 
-    Progress::New(_("Detecting hardware..."), "", size(paths), [_("Hardware Detection")], [_("Detecting hardware...")], _("Hardware detection is in progress. Please wait."));
+    Progress::New(_("Hardware Detection"), "", size(paths), [_("Detect hardware")], [_("Detecting hardware...")], _("Hardware detection is in progress. Please wait."));
 
     Progress::NextStage();
 
