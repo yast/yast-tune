@@ -1,0 +1,55 @@
+[Desktop Entry]
+Type=Application
+Categories=Qt;X-SuSE-YaST;X-SuSE-YaST-Hardware;
+
+X-KDE-ModuleType=Library
+X-KDE-RootOnly=true
+X-KDE-HasReadOnlyMode=true
+X-KDE-Library=yast2
+X-SuSE-YaST-Call=idedma
+
+X-SuSE-YaST-Group=Hardware
+X-SuSE-YaST-Argument=
+X-SuSE-YaST-RootOnly=true
+X-SuSE-YaST-AutoInst=
+X-SuSE-YaST-Geometry=
+X-SuSE-YaST-SortKey=
+X-SuSE-YaST-AutoInstResource=
+
+Icon=yast-idedma
+Exec=/sbin/yast2 idedma 
+
+Name=IDE DMA Mode
+GenericName=Configure the DMA mode of IDE devices
+Name[cs]=Režim IDE DMA
+GenericName[cs]=Nastavení režimu DMA pro IDE zařízení
+Name[de]=IDE DMA-Modus
+GenericName[de]=DMA-Modus-Konfiguration von IDE-Geräten
+Name[es]=Modo IDE DMA
+GenericName[es]=Configuración de modo DMA de dispositivos IDE
+Name[hu]=IDE DMA mód
+GenericName[hu]=DMA mód beállítása IDE eszközök számára
+Name[it]=Modalità DMA IDE
+GenericName[it]=Configurazione della modalità DMA dei dispositivi IDE
+Name[ko]=IDE DMA 모드
+GenericName[ko]=IDE 장치 DMA 모드 구성
+Name[nl]=IDE DMA mode
+GenericName[nl]=DMA mode configuratie van IDE apparaten
+Name[pt]=Modo IDE DMA
+GenericName[pt]=Configuração do modo DMA de dispositivos IDE
+Name[sk]=IDE DMA mód
+GenericName[sk]=Konfigurácia DMA módu IDE zariadení
+Name[sv]=Läge för IDE DMA
+GenericName[sv]=Inställning av DMA-läge på IDE-enheter
+GenericName[da]=Konfiguration af DMA-tilstand på IDE-enheder
+Name[el]=Κατάσταση IDE DMA
+GenericName[el]=Ρύθμιση κατάστασης DMA των IDE συσκευών
+Name[fr]=Mode DMA IDE
+GenericName[fr]=Mode de configuration DMA des périphériques IDE
+Name[ja]=IDE DMA モード
+GenericName[ja]=IDE デバイスの DMA モードの設定
+GenericName[lt]=IDE įrenginių DMA veiksenos konfigūravimas
+GenericName[sl]=Nastavitev DMA načina IDE naprav
+Name[tr]=IDE DMA modu
+GenericName[tr]=IDE aygıtlarının DMA modu yapılandırması
+X-KDE-SubstituteUID=true

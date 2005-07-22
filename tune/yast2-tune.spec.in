@@ -1,0 +1,42 @@
+@HEADER-COMMENT@
+# neededforbuild yast2-devel-packages
+
+@HEADER@
+Requires:	yast2 hdparm
+
+Provides:	yast2-config-hwinfo yast2-tune-idedma yast2-trans-tune
+Obsoletes:	yast2-config-hwinfo yast2-tune-idedma yast2-trans-tune
+Provides:	yast2-trans-hwinfo yast2-trans-idedma y2c_tune y2t_tune yast2-config-tune
+Obsoletes:	yast2-trans-hwinfo yast2-trans-idedma y2c_tune y2t_tune yast2-config-tune
+
+Summary:	System configuration viewer and tuner
+
+%description
+-
+
+@PREP@
+
+@BUILD@
+
+@INSTALL@
+
+@CLEAN@
+
+%files
+%defattr(-,root,root)
+
+%ifnarch s390 s390x
+@desktopdir@/idedma.desktop
+%endif
+
+%dir @yncludedir@/hwinfo
+%dir @yncludedir@/idedma
+@yncludedir@/hwinfo/*
+@yncludedir@/idedma/*
+@clientdir@/*.ycp
+@desktopdir@/hwinfo.desktop
+@desktopdir@/pci_id.desktop
+@moduledir@/*.ycp
+@moduledir@/*.ybc
+@scrconfdir@/*.scr
+%doc @docdir@

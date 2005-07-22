@@ -1,0 +1,101 @@
+/**
+ * File:
+ *   include/idedma/cmdline.ycp
+ *
+ * Package:
+ *   Configuration of IDE DMA mode
+ *
+ * Summary:
+ *   Command line interface functions.
+ *
+ * Authors:
+ *   Ladislav Slezak <lslezak@suse.cz>
+ *
+ * $Id$
+ *
+ * All command line interface functions.
+ *
+ */
+
+{
+    import "Idedma";
+    import "CommandLine";
+
+    textdomain "tune";
+
+    /**
+     * Command line interface - handler for list command
+     * @param options command options
+     * @return boolean Returns true (succeess)
+     */
+    define boolean listHandler(map options) ``{
+	boolean all = !haskey(options, "configured");
+
+	// set plain text output
+	CommandLine::Print(Idedma::Summary(all, false));
+
+	return true;
+    }
+
+    /**
+     * Command line interface - handler for set command
+     * @param options command options
+     * @return boolean True on success
+     */
+    define boolean setHandler(map<string, any> options) ``{
+
+	if (haskey(options, "device") && haskey(options, "mode"))
+	{
+	    string device = (string) (options["device"]:nil);
+	    string mode = (string) (options["mode"]:nil);
+
+	    boolean result = Idedma::set_dma((string) (options["device"]:nil), (string) (options["mode"]:nil));
+	    // status message - %1 is device name (/dev/hdc), %2 is mode name (udma2), %3 is result (Success/Failed)
+	    CommandLine::Print(sformat(_("\nSetting Device '%1' to Mode '%2': %3"), device, mode,
+		// result string
+		(result == true) ? _("Succeeded") : _("Failed")));
+
+	    return result;
+	}
+
+	return false;
+    }
+
+
+    /**
+     * Command line interface - handler for details command
+     * @param options command options
+     * @return boolean Returns true (succeess)
+     */
+    define boolean detailsHandler(map<string, any> options) ``{
+	string device = (string) (options["device"]:nil);
+	list idedevs = Idedma::get_ide_devices();
+
+	if (size(idedevs) > 0)
+	{
+	    foreach(map dev, Idedma::get_ide_devices(), ``{
+		    if (device == nil || device == dev["dev_name"]:"")
+		    {
+			// details about the selected hardware - %1 is device name (e.g. /dev/hda)
+			// %2 is model name (vendor string), %3 is device type (cdrom, disk,...)
+			// %4 is current DMA mode (udma2, mdma2,...), %5 is requested mode,
+			// %6 is list of supported DMA modes by device,
+			// %7 and %8 is full DMA mode name (UltraDMA/100)
+			string info = sformat(_("Device: %1\nModel: %2\nType: %3\nCurrent DMA Mode: %4 (%8)\nConfigured DMA Mode: %5 (%7)\nSupported DMA Modes: %6\n"),
+			    dev["dev_name"]:"", dev["device"]:"", dev["device_type"]:"",
+			    dev["current_dma"]:"", dev["dma_setting"]:"",
+			    mergestring(dev["dma_modes"]:[], ", "),
+			    Idedma::mode_names[dev["dma_setting"]:""]:"",
+			    Idedma::mode_names[dev["current_dma"]:""]:""
+			);
+
+			CommandLine::Print(info);
+		    }
+		}
+	    );
+	}
+
+	return true;
+    }
+
+}

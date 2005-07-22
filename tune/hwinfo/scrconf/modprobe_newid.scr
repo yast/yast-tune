@@ -1,0 +1,12 @@
+/**
+ * File:	modprobe_newid.scr
+ * Summary:	SCR agent for /etc/modprobe.d/newid
+ * Authors:	Ladislav Slezak <lslezak@suse.cz>
+ *
+ * $Id$
+ */
+.modprobe_newid
+
+`ag_modules(
+    `ModulesConf("/etc/modprobe.d/newid")
+)

@@ -1,0 +1,337 @@
+/**
+ *
+ * Module:	Initial HW info module
+ *
+ * Author:	Ladislav Slezak <lslezak@suse.cz>
+ *
+ * $Id$
+ *
+ * Collect and store hardware information.
+ */
+
+{
+
+module "InitHWinfo";
+
+import "String";
+import "Confirm";
+import "Progress";
+import "Arch";
+
+include "hwinfo/routines.ycp";
+
+textdomain "tune";
+
+boolean initialized = false;
+
+// CPU summary string
+string cpu_string = "";
+// memory size
+integer memory_size = 0;
+// system summary string
+string system_string= "";
+
+// list of detected devices
+list<map> detectedHW = nil;
+
+// default is "/dev/fd0" floppy device (used when floppy detection is skipped as a fallback)
+global map<string,string> floppy = $["/dev/fd0" : _("Floppy disk")];
+
+/**
+ * Start hardware detection (only CPU and main memory)
+ * @param force If true then start detection again (discard cached values)
+ * @return boolean True on success
+ */
+global define boolean Initialize(boolean force) ``{
+    if (initialized == true && force == false)
+    {
+	return true;
+    }
+
+    // initialize procesor string
+    list<map> cpu_result = (list<map>) SCR::Read(.probe.cpu);
+    map<string,integer> cpus = $[];
+
+    foreach(map info, cpu_result, ``{
+	    string str = info["name"]:_("Unknown processor");
+	    integer counter = cpus[str]:0;
+	    cpus[str] = counter + 1;
+	}
+    );
+
+    boolean first = true;
+    cpu_string = "";
+
+    foreach(string cpu, integer count, cpus, ``{
+
+	    if (!first)
+	    {
+		cpu_string = cpu_string + ", ";
+	    }
+	    else
+	    {
+		first = false;
+	    }
+
+	    if (count > 1)
+	    {
+		// create processor count string
+		// %1 is integer number (greater than 1)
+		// %2 is processor model name
+		cpu_string = cpu_string + sformat(_("%1x %2"), count, cpu);
+	    }
+	    else
+	    {
+		cpu_string = cpu_string + cpu;
+	    }
+	}
+    );
+
+    list<map> memory = (list<map>) SCR::Read(.probe.memory);
+
+    y2milestone("memory: %1", memory);
+    memory_size = 0;
+
+    foreach(map info, memory, ``{
+	    // internal class, main memory
+	    if (info["class_id"]:0 == 257 && info["sub_class_id"]:0 == 2)
+	    {
+		list<map> minf = info["resource", "phys_mem"]:[];
+		foreach(map i, minf, ``{
+			memory_size = memory_size + i["range"]:0;
+		    }
+		);
+	    }
+	}
+    );
+
+    // initialize system string
+    list bios = (list) SCR::Read(.probe.bios);
+
+    if (size(bios) != 1)
+    {
+	y2warning("Warning: BIOS list size is %1", size(bios));
+    }
+
+    map biosinfo = (map)(bios[0]:$[]);
+    list<map> smbios = (list<map>)(biosinfo["smbios"]:[]);
+
+    map sysinfo = $[];
+
+    foreach(map inf, smbios, ``{
+	    if (inf["type"]:"" == "sysinfo")
+	    {
+		sysinfo = inf;
+	    }
+	}
+    );
+
+    system_string = "";
+
+    if (size(sysinfo) > 0)
+    {
+	// system manufacturer is unknown
+	string manufacturer = (string)(sysinfo["manufacturer"]:_("Unknown"));
+	// system product name is unknown
+	string product = (string)(sysinfo["product"]:_("Unknown"));
+	string version = (string)(sysinfo["version"]:"");
+
+	system_string = sformat("%1 - %2", manufacturer, product);
+
+	if (size(version) > 0)
+	{
+	    system_string = system_string + sformat(" (%1)", version);
+	}
+    }
+    // PPC architecture - use board and generation information
+    else if (Arch::ppc ())
+    {
+	string board = "";
+	string generation = "";
+
+	list<map> systemProbe = (list<map>) SCR::Read(.probe.system);
+	if (systemProbe == nil)
+	{
+	    systemProbe = [];
+	}
+
+	foreach (map systemEntry, systemProbe, ``{
+	    string board_tmp = systemEntry["system"]:"";
+	    if (board_tmp != nil && board_tmp != "")
+	    {
+		board = board_tmp;
+	    }
+
+	    string generation_tmp = systemEntry["generation"]:"";
+	    if (generation_tmp != nil && generation_tmp != "")
+	    {
+		generation = generation_tmp;
+	    }
+	});
+
+	system_string = board;
+
+	if (system_string != "" && generation != "")
+	{
+	    system_string = system_string + sformat(" (%1)", generation);
+	}
+    }
+
+    y2milestone("System string: %1", system_string);
+
+    initialized = true;
+
+    return true;
+}
+
+/**
+ * Return short system description
+ * @param reset If reset is true then always do hardware detection
+ * @return list(string) list of hardware desciptions
+ */
+global define list<string> MakeProposal(boolean reset) ``{
+    Initialize(reset);
+
+    // the installation proposal item
+    // %1 is processor name
+    list<string> ret = [ sformat(_("Processor: %1"), cpu_string),
+	// the installation proposal item
+	// %1 is memory size string
+	sformat(_("Main Memory: %1"), String::FormatSizeWithPrecision(memory_size, 2, true))
+    ];
+
+    // add system string
+    if (size(system_string) > 0)
+    {
+	// the installation proposal item
+	// %1 is system name
+	ret = prepend(ret, sformat(_("System: %1"), system_string));
+    }
+
+    y2milestone("proposal: %1", ret);
+
+    return ret;
+}
+
+/**
+ * Detect all hardware present in the system
+ * @param force If force is true then detection is always started (cached value is discarded)
+ * @return list list of maps - detected hardware items ()
+ */
+global define list<map> DetectedHardware(boolean force, block<boolean> abort) ``{
+
+    // return cached values if possible
+    if (detectedHW != nil && force != true)
+    {
+	return detectedHW;
+    }
+
+    detectedHW = [];
+
+    // probe devices, store model, class, uniq. ID for each device
+
+    // probe by bus
+    // list(string) paths = [ "cpu", "memory", "ide", "pci", "scsi", "isapnp", "floppy", "usb", "monitor" ];
+
+    // probe by device class
+    list<string> paths = [ "cpu", "memory", "disk", "display", "mouse", "keyboard", "storage", "netcard", "monitor", "braille", "bios" ];
+
+    if (!Arch::is_uml())
+    {
+	paths = (list<string>)union(paths, [ "cdrom", "floppy", "sound", "isdn", "modem", "printer", "tv", "dvb", "scanner", "camera", "chipcard", "usbctrl", "ieee1394ctrl", "hub", "joystick", "pppoe" ]);
+    }
+
+    Progress::New(_("Hardware Detection"), "", size(paths), [_("Detect hardware")], [_("Detecting hardware...")], _("Hardware detection is in progress. Please wait."));
+
+    Progress::NextStage();
+
+    boolean aborted = false;
+
+    foreach(string subpath, paths, ``{
+
+	    if (abort != nil && aborted != true)
+	    {
+		aborted = eval(abort);
+	    }
+
+	    y2debug("aborted: %1", aborted);
+
+	    if (!aborted)
+	    {
+		path p = add(.probe, subpath);
+
+		// translate path name
+		string pathname = trans_str(subpath);
+
+		// use untranslated string if translation failed
+		if (pathname == nil)
+		{
+		    pathname = subpath;
+		}
+
+		// set progress bar label
+		Progress::Title(sformat(_("%1..."), pathname));
+
+		// don't ask for probing CPU and memory, they were already probed and detection should be harmless
+		boolean detect = (subpath == "cpu" || subpath == "memory") ? true : Confirm::Detection(pathname);
+
+		// confirm hardware detection in the manual mode
+		if (detect == true)
+		{
+		    y2milestone("Probing: %1", p);
+		    list<map<string, any> > result = (list<map<string, any> >) SCR::Read(p);
+
+		    // store floppy devices, used in hwinfo output saving
+		    if (subpath == "floppy")
+		    {
+			// reset list of floppies
+			floppy = $[];
+
+			if (result != nil && size(result) > 0)
+			{
+			    foreach(map<string,any> f, result, ``{
+				    string device = (string)(f["dev_name"]:nil);
+				    string model = (string)(f["model"]:nil);
+
+				    if (device != nil && model != nil)
+				    {
+					floppy[device] = model;
+				    }
+				}
+			    );
+			}
+
+			y2milestone("Detected floppy devices: %1", floppy);
+		    }
+
+		    if (size(result) > 0)
+		    {
+			foreach(map info, result, ``{
+				// device name (CPU model name string has key "name" instead of "model")
+				string model = (subpath == "cpu") ? info["name"]:_("Unknown device") : info["model"]:_("Unknown device");
+				y2debug("Model: %1", model);
+
+				detectedHW = add(detectedHW, $[ "model" : model, "info" : info ]);
+			    }
+			);
+		    }
+		}
+
+		// update progress bar
+		Progress::NextStep();
+	    }
+	}
+    );
+
+    if (aborted == true)
+    {
+	// set to non-initialized state when detection is aborted
+	detectedHW = nil;
+    }
+
+    y2milestone("Detected HW: %1", detectedHW);
+
+    return detectedHW;
+}
+
+}

@@ -1,0 +1,646 @@
+/**
+ *
+ * Module:	Set new PCI ID for kernel drivers
+ *
+ * Author:	Ladislav Slezak <lslezak@suse.cz>
+ *
+ * $Id$
+ *
+ * Manage new PCI IDs for kernel drivers
+ */
+
+{
+    import "String";
+    import "Report";
+    import "ModuleLoading";
+    import "Linuxrc";
+
+    include "hwinfo/routines.ycp";
+
+    module "NewID";
+    textdomain "tune";
+
+    // list of configured PCI IDs
+    list< map<string,any> > new_ids = nil;
+    list< map<string,any> > removed_ids = [];
+
+    // cache .probe.pci values
+    list<map> pcidevices = nil;
+
+    boolean refresh_proposal = false;
+    string configfile = "/etc/sysconfig/hardware/newids";
+
+    global define list<map> GetPCIdevices() {
+      if (pcidevices == nil)
+      {
+          // initialize list
+          pcidevices = (list<map>)SCR::Read(.probe.pci);
+
+          // still nil, set to empty - avoid reprobing next time
+          if (pcidevices == nil)
+          {
+              pcidevices = [];
+          }
+      }
+
+      return pcidevices;
+    }
+
+
+    global define void AddID(map<string,string> new_id) {
+        // initialize list if needed
+        if (new_ids == nil)
+        {
+            new_ids = [];
+        }
+
+	if (new_id != nil && new_id != $[])
+	{
+	    if (new_ids == nil)
+	    {
+		new_ids = [ new_id ];
+		refresh_proposal = true;
+
+		if (contains(removed_ids, new_id))
+		{
+		    // remove added id from removed list
+		    removed_ids = filter(map<string,any> i, removed_ids, {return i != new_id;});
+		}
+	    }
+	    else if (!contains(new_ids, new_id))
+	    {
+		new_ids = add(new_ids, new_id);
+		refresh_proposal = true;
+	    }
+	}
+    }
+
+    global define void RemoveID(integer index) {
+        map<string,any> removed_id = new_ids[index]:$[];
+
+	new_ids = remove(new_ids, index);
+	refresh_proposal = true;
+
+	// add to removed
+	if (removed_id != nil && removed_id != $[] && !contains(removed_ids, removed_id))
+	{
+	    removed_ids = add(removed_ids, removed_id);
+
+	    if (contains(new_ids, removed_id))
+	    {
+		// remove deleted id from list of new
+		new_ids = filter(map<string,any> i, new_ids, {return i != removed_id;});
+	    }
+	}
+    }
+
+    global define list< map<string,any> > GetNewIDs() {
+	return new_ids;
+    }
+
+    global define map<string,any> GetNewID(integer index) {
+	return new_ids[index]:$[];
+    }
+
+    global define void SetNewID(map<string,any> nid, integer index) {
+	new_ids[index] = nid;
+	refresh_proposal = true;
+    }
+
+    global define boolean RefreshProposal() {
+	return refresh_proposal;
+    }
+
+    global define boolean Read(string filename) {
+	if (filename != nil && filename != "")
+	{
+	    new_ids = [];
+
+	    // read file
+	    string file = (string) SCR::Read(.target.string, filename);
+
+	    if (file == nil)
+	    {
+		return false;
+	    }
+
+	    list<string> lines = splitstring(file, "\n");
+
+	    y2debug("lines: %1", lines);
+	    list<string> comment = [];
+
+	    // parse lines
+	    foreach(string line, lines, {
+		    line = String::CutBlanks(line);
+
+		    if (regexpmatch(line, "^#.*"))
+		    {
+			// line is a comment
+			comment = add(comment, line);
+		    }
+		    else
+		    {
+			list<string> parts = splitstring(line, ",");
+
+			string driver = parts[1]:nil;
+			string sysdir = parts[2]:nil;
+
+			// parse newid line
+			// replace tabs by spaces
+			line = mergestring(splitstring(parts[0]:"", "\t"), " ");
+
+			list<string> idparts = splitstring(line, " ");
+
+			idparts = filter(string part, idparts, {return part != nil && part != "";});
+
+			string vendor = idparts[0]:nil;
+			string device = idparts[1]:nil;
+			string subvendor = idparts[2]:nil;
+			string subdevice = idparts[3]:nil;
+			string class = idparts[4]:nil;
+			string class_mask = idparts[5]:nil;
+			string driver_data = idparts[6]:nil;
+
+			map<string,any> newid = $[];
+
+			// search for existing PCI card if class is not specified
+			if (class_mask == nil && class == nil && vendor != nil && device != nil)
+			{
+			    integer vid = nil;
+			    integer did = nil;
+			    integer svid = nil;
+			    integer sdid = nil;
+
+			    if (vendor != nil)
+			    {
+				vid = tointeger((!has_hex_prefix(vendor)) ? "0x" + vendor : vendor);
+			    }
+			    if (device != nil)
+			    {
+				did = tointeger((!has_hex_prefix(device)) ? "0x" + device : device);
+			    }
+			    if (subvendor != nil)
+			    {
+				svid = tointeger((!has_hex_prefix(subvendor)) ? "0x" + subvendor : subvendor);
+			    }
+			    if (subdevice != nil)
+			    {
+				sdid = tointeger((!has_hex_prefix(subdevice)) ? "0x" + subdevice : subdevice);
+			    }
+
+			    y2debug("vid: %1", vid);
+			    y2debug("did: %1", did);
+			    y2debug("svid: %1", svid);
+			    y2debug("sdid: %1", sdid);
+
+			    foreach(map dev, GetPCIdevices(), {
+				    // check ID
+
+				    if (vid == dev["vendor_id"]:0 - 0x10000 && did == dev["device_id"]:0 - 0x10000)
+				    {
+					// some devices don't have subdevice, subvendor
+					if (haskey(dev, "sub_vendor_id") && haskey(dev, "sub_device_id"))
+					{
+					    if (svid == dev["sub_vendor_id"]:0 - 0x10000 && sdid == dev["sub_device_id"]:0 - 0x10000)
+					    {
+						newid["uniq"] = dev["unique_key"]:"";
+					    }
+					}
+					else
+					{
+					    newid["uniq"] = dev["unique_key"]:"";
+					}
+				    }
+				}
+			    );
+			}
+
+			if (!haskey(newid, "uniq"))
+			{
+			    if (vendor != nil) newid["vendor"] = vendor;
+			    if (device != nil) newid["device"] = device;
+			    if (subvendor != nil) newid["subvendor"] = subvendor;
+			    if (subdevice != nil) newid["subdevice"] = subdevice;
+			    if (class != nil) newid["class"] = class;
+			    if (class_mask != nil) newid["class_mask"] = class_mask;
+			}
+
+			if (driver_data != nil) newid["driver_data"] = driver_data;
+
+			if (driver != nil) newid["driver"] = driver;
+			if (sysdir != nil) newid["sysdir"] = sysdir;
+			if (size(comment) > 0) newid["comment"] = comment;
+
+			y2milestone("read newid: %1", newid);
+
+			if (newid != $[])
+			{
+			    new_ids = add(new_ids, newid);
+			}
+
+			comment = [];
+		    }
+		}
+	    );
+
+	    y2milestone("Read settings: %1", new_ids);
+
+	    return true;
+	}
+	return false;
+    }
+
+    /**
+     * Prepend option to PCI ID string, use default value if required
+     * @param newopt Prepend this option
+     * @param opts Already existing option string
+     * @param defval Default value, used when newopt is empty
+     */
+    define string prepend_option(string newopt, string opts, string defval) {
+
+	if (opts == "" && newopt == "")
+	{
+	    return "";
+	}
+
+	if (size(opts) > 0)
+	{
+	    return ((size(newopt) > 0) ? newopt : defval) + " " + opts;
+	}
+	else
+	{
+	    return newopt;
+	}
+    }
+
+    global define map AddIDs(map id)
+    {
+	map newid = id;
+
+	if (haskey(newid, "uniq"))
+	{
+	    // add device/vendor values from PCI scan for selected PCI device
+	    foreach(map pcidev, GetPCIdevices(), {
+		    if (pcidev["unique_key"]:"" == newid["uniq"]:"")
+		    {
+			y2debug("Found PCI device: %1", pcidev);
+			// libhd uses 0x10000 offset for PCI devices
+			if (haskey(pcidev, "device_id"))
+			{
+			    newid["device"] = tohexstring(pcidev["device_id"]:0 - 0x10000);
+			}
+			if (haskey(pcidev, "sub_device_id"))
+			{
+			    newid["subdevice"] = tohexstring(pcidev["sub_device_id"]:0 - 0x10000);
+			}
+			if (haskey(pcidev, "vendor_id"))
+			{
+			    newid["vendor"] = tohexstring(pcidev["vendor_id"]:0 - 0x10000);
+			}
+			if (haskey(pcidev, "sub_vendor_id"))
+			{
+			    newid["subvendor"] = tohexstring(pcidev["sub_vendor_id"]:0 - 0x10000);
+			}
+		    }
+		}
+	    );
+	}
+
+	return newid;
+    }
+
+    define string FormatActivationString(map newid)
+    {
+	// create ID string which is passed to the driver
+	string ret = "";
+
+	string pci_any_id = "ffffffff";
+	string default_class = "0";
+	string default_mask = "0";
+
+        if (haskey(newid, "uniq"))
+        {
+            newid = AddIDs(newid);
+        }
+
+	ret = prepend_option(remove_hex_prefix(newid["class_mask"]:""), ret, default_mask);
+	ret = prepend_option(remove_hex_prefix(newid["class"]:""), ret, default_class);
+	ret = prepend_option(remove_hex_prefix(newid["subdevice"]:""), ret, pci_any_id);
+	ret = prepend_option(remove_hex_prefix(newid["subvendor"]:""), ret, pci_any_id);
+	ret = prepend_option(remove_hex_prefix(newid["device"]:""), ret, pci_any_id);
+	ret = prepend_option(remove_hex_prefix(newid["vendor"]:""), ret, pci_any_id);
+
+	return ret;
+    }
+
+    /**
+     * Activate value stored in the internal list
+     * @return boolean True if all settings were successfuly set
+     */
+    global define boolean Activate() {
+	boolean ret = true;
+
+	if (new_ids != nil)
+	{
+	    foreach(map newid, new_ids, {
+		    string modulename = newid["driver"]:"";
+		    string sysdir = newid["sysdir"]:"";
+
+		    // load kernel module if it isn't already loaded
+		    if (modulename != nil && modulename != "")
+		    {
+			ModuleLoading::Load(modulename, "", // TODO allow setting of module args?
+				// vendor is empty, device name is unknown
+				"", _("Unknown device"), Linuxrc::manual(), true);
+		    }
+
+
+		    if (sysdir == nil || sysdir == "")
+		    {
+			sysdir = modulename;
+		    }
+
+		    string targetfile = sformat("/sys/bus/pci/drivers/%1/new_id", sysdir);
+
+		    // create ID string passed to the driver
+		    string idstring = FormatActivationString(newid);
+
+		    // check whether target file exists
+		    integer filesize = (integer) SCR::Read(.target.size, targetfile);
+
+		    if (filesize >= 0)
+		    {
+			// set the new value
+			boolean set = (integer) SCR::Execute(.target.bash, sformat("echo '%1' > %2", idstring, targetfile)) == 0;
+
+			if (!set)
+			{
+			    y2error("Setting the new id failed: driver: %1, value: %2", targetfile, idstring);
+			    ret = false;
+			}
+			else
+			{
+			    y2milestone("File %1 - new PCI ID '%2' was succesfully set", targetfile, idstring);
+			}
+		    }
+		    else
+		    {
+			// Error message
+			Report::Error(sformat(_("File '%1' does not exist. Cannot set new PCI ID."), targetfile));
+			ret = false;
+		    }
+
+		}
+	    );
+	}
+
+	return ret;
+    }
+
+    define string HwcfgFileName(map newid) {
+	string ret = "";
+
+        if (haskey(newid, "uniq"))
+        {
+            newid = AddIDs(newid);
+        }
+
+	string vendor = remove_hex_prefix(newid["vendor"]:"");
+	string device = remove_hex_prefix(newid["device"]:"");
+
+	if (size(vendor) > 0 && size(device) > 0)
+	{
+	    ret = sformat("vpid-%1-%2", vendor, device);
+
+	    string subvendor = remove_hex_prefix(newid["subvendor"]:"");
+	    string subdevice = remove_hex_prefix(newid["subdevice"]:"");
+
+	    if (size(subvendor) > 0 && size(subdevice) > 0)
+	    {
+		ret = sformat("%1-%2-%3", ret, subvendor, subdevice);
+	    }
+	}
+
+	y2debug("activation string: %1", ret);
+	return ret;
+    }
+
+    define boolean WriteHwcfg(map newid) {
+	boolean ret = false;
+	string cfgname = HwcfgFileName(newid);
+	string driver = newid["driver"]:"";
+
+	y2debug("newid: %1", newid);
+	y2debug("cfgname: %1", cfgname);
+	y2debug("driver: %1", driver);
+
+	if (cfgname != "" && driver != "")
+	{
+	    // prepare hwcfg values
+	    string startmode = "auto";
+	    string module_options = "";
+
+	    path p = .sysconfig.hardware.value + topath(cfgname);
+
+	    // write the values
+	    SCR::Write(p + .MODULE, driver);
+	    SCR::Write(p + .STARTMODE, startmode);
+	    SCR::Write(p + .MODULE_OPTIONS, module_options);
+
+	    // flush the changes
+	    SCR::Write(.sysconfig.hardware, nil);
+	}
+
+	return ret;
+    }
+
+    define boolean RemoveExistingFile(string fname)
+    {
+	boolean ret = true;
+
+	if (fname != nil && fname != "")
+	{
+	    // remove old config file if it exists
+	    if (SCR::Read(.target.size, fname) > 0)
+	    {
+		integer res = (integer) SCR::Execute(.target.bash, "/bin/rm " + fname);
+
+		if (res != 0)
+		{
+		    y2warning("Removing of file %1 has failed, exit: %2", fname, res);
+		}
+		else
+		{
+		    y2milestone("Removed file: %1", fname);
+		}
+	    }
+	}
+
+	return ret;
+    }
+
+    global define boolean Write() {
+	boolean ret = true;
+
+	// content of /etc/sysconfig/hardware/newids
+	string sysconfig = "";
+
+	// map ID commands to driver
+	map<string,list<string> > settings = $[];
+
+        // handle removed configurations - remove all modprobe entries
+        list<string> drvs = SCR::Dir(.modprobe_newid.install);
+
+        if (drvs != nil && size(drvs) > 0)
+        {
+            foreach(string d, drvs, {
+                    SCR::Write(add(.modprobe_newid.install, d), nil);
+                }
+            );
+        }
+
+	if (new_ids != nil)
+	{
+	    foreach(map newid, new_ids, {
+		    string modulename = newid["driver"]:"";
+		    string sysdir = newid["sysdir"]:"";
+		    string idstring = FormatActivationString(newid);
+
+		    // write settings to /etc/modprobe.d/newid if the module is known
+		    // (the module is not compiled into the kernel)
+		    if (modulename != "")
+		    {
+			string targetfile = (sysdir != "") ? sysdir : modulename;
+			string install_string = sformat("echo '%1' > /sys/bus/pci/drivers/%2/new_id", idstring, targetfile);
+
+			list<string> current = settings[modulename]:[];
+			current = add(current, install_string);
+			settings[modulename] = current;
+		    }
+
+		    // write hwcfg file to load the driver
+		    WriteHwcfg(newid);
+
+		    // add to /etc/sysconfig/hardware/newids
+		    if (haskey(newid, "comment"))
+		    {
+			// add the comment
+			sysconfig = sysconfig + mergestring(newid["comment"]:[], "\n") + "\n";
+		    }
+
+		    sysconfig = sysconfig + idstring + "," + modulename;
+
+		    if (sysdir != "")
+		    {
+			sysconfig = sysconfig + "," + sysdir;
+		    }
+
+		    // add trailing newline
+		    sysconfig = sysconfig + "\n";
+		}
+	    );
+	}
+
+	// write sysconfig settings
+	if (size(sysconfig) > 0)
+	{
+	    // write sysconfig file
+	    ret = ret && (boolean) SCR::Write(.target.string, configfile, sysconfig);
+	}
+	else
+	{
+	    // remove old config file if it exists
+	    RemoveExistingFile(configfile);
+	}
+
+	// write modprobe settings
+	if (size(settings) > 0)
+	{
+	    foreach(string modulename, list<string> values, settings, {
+		    string install_string = sformat("/sbin/modprobe --ignore-install %1; %2", modulename, mergestring(values, "; "));
+
+		    ret = ret && (boolean) SCR::Write(add(.modprobe_newid.install, modulename), install_string);
+		}
+	    );
+
+	    // flush changes
+	    SCR::Write(.modprobe_newid, nil);
+	}
+
+	// handle removed configurations - remove hwcfg files
+	if (size(removed_ids) > 0)
+	{
+	    foreach(map<string,any> rem, removed_ids, {
+		    string fname = HwcfgFileName(rem);
+
+		    if (fname != "")
+		    {
+			// remove the file
+			fname = "/etc/sysconfig/hardware/hwcfg-" + fname;
+			RemoveExistingFile(fname);
+		    }
+		}
+	    );
+	}
+
+	return ret;
+    }
+
+    global define string GetModelString(string uniq) {
+	string ret = "";
+
+	foreach(map d, GetPCIdevices(), {
+		if (d["unique_key"]:"" == uniq)
+		{
+		    ret = d["model"]:"";
+		}
+	    }
+	);
+
+	return ret;
+    }
+
+    /**
+     * Return new ID description
+     * @return list(string) list of hardware desciptions
+     */
+    global define list<string> MakeProposal() ``{
+	list<string> ret = [];
+
+	if (size(new_ids) > 0)
+	{
+	    foreach(map newid, new_ids, {
+		    string modulename = newid["driver"]:"";
+		    string sysdir = newid["sysdir"]:"";
+
+		    string idstring = FormatActivationString(newid);
+		    string targetfile = (sysdir != "") ? sysdir : modulename;
+
+		    // test for installation proposal
+		    // %1 - name of kernel driver (e.g. e100)
+		    // %2 - PCI ID (hexnumbers)
+		    string info = sformat(_("Driver: %1, New PCI ID: %2"), targetfile, idstring);
+
+		    if (haskey(newid, "uniq"))
+		    {
+			string model = GetModelString(newid["uniq"]:"");
+
+			if (model != nil && model != "")
+			{
+			    info = info + sformat(" (%1)", model);
+			}
+		    }
+
+		    ret = add(ret, info);
+		}
+	    );
+	}
+
+	y2milestone("NewID proposal: %1", ret);
+
+	// proposal is valid
+	refresh_proposal = false;
+
+	return ret;
+    }
+}

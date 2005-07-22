@@ -1,0 +1,649 @@
+/**
+ * File:
+ *   modules/Idedma.ycp
+ *
+ * Package:
+ *   Configuration of IDE DMA mode
+ *
+ * Summary:
+ *   Data for configuration of IDE DMA mode, input and output functions.
+ *
+ * Authors:
+ *   Ladislav Slezak <lslezak@suse.cz>
+ *
+ * $Id$
+ *
+ * Representation of the configuration of IDE DMA mode.
+ * Input and output routines.
+ *
+ */
+
+{
+    // Set the name of the module
+    module "Idedma";
+    import "Report";
+    import "Service";
+
+    include "hwinfo/classnames.ycp";
+
+    textdomain "tune";
+
+    // Settings: Define all variables needed for configuration of IDE DMA
+
+    /**
+     * List of all IDE devices with descriptions and DMA settings
+     */
+    list<map<string,any> > ide_devices = [];
+
+    /**
+     * Full path to hdparm binary
+     */
+    string hdparm_bin = "/sbin/hdparm";
+
+    /**
+     * String with DMA on status text
+     * (For translators: translation can be long - text is used in the table
+     * in column "Required DMA mode" and "Current DMA mode")
+     */
+    global string dma_on_string = _("On");
+
+    /**
+     * String with DMA off status text
+     * (For translators: translation can be long - text is used in the table
+     * in column "Required DMA mode" and "Current DMA mode")
+     */
+    global string dma_off_string = _("Off");
+
+    /**
+     * String with no change of DMA status text
+     * (For translators: translation can be long - text is used in the table
+     * in column "Required DMA mode" and "Current DMA mode")
+     */
+    global string dma_default_string = _("No change");
+
+
+    global map mode_names = $[
+	// DMA status is unknown
+	""      : _("Unknown"),
+	// do not change DMA setting
+	"nochange"	: dma_default_string,
+	// DMA is enabled, but mode is unknown
+	"on"    : dma_on_string,
+	// DMA is disabled
+	"off"   : dma_off_string,
+
+	"sdma0" : "SW DMA/2.1",
+	"sdma1" : "SW DMA/4.2",
+	"sdma2" : "SW DMA/8.3",
+
+	"mdma0" : "DMA/4.2",
+	"mdma1" : "DMA/13.3",
+	"mdma2" : "DMA/16",
+
+	"udmaS" : "UltraDMA/13",
+	"udma0" : "UltraDMA/16",
+	"udma1" : "UltraDMA/22",
+	"udma2" : "UltraDMA/33",
+	"udma3" : "UltraDMA/44",
+	"udma4" : "UltraDMA/66",
+	"udma5" : "UltraDMA/100",
+	"udma6" : "UltraDMA/133"
+    ];
+
+    /**
+     * Return actual DMA status of IDE device
+     * @param device Identification of ide device, e.g. "/dev/hdc"
+     * @return string true if DMA is on, false if DMA is off or nil on error
+     */
+    global define string get_device_dma_status(string device) ``{
+	string result = "";
+
+	if (device != nil && device != "")
+	{
+	    // run hdparm to get DMA status
+	    map out = (map) SCR::Execute(.target.bash_output, hdparm_bin + " -d " + device);
+
+	    if (out["exit"]:-1 == 0)
+	    {
+		list<string> output = splitstring(out["stdout"]:"", "\n");
+
+		y2debug("hdparm output: %1", output);
+
+		// search for status string in output
+		foreach(string l, output, ``{
+
+			if (l == " using_dma    =  1 (on)")
+			{
+			    result = "on";
+
+			}
+
+			if (l == " using_dma    =  0 (off)")
+			{
+			    result = "off";
+			}
+		    }
+		);
+	    }
+	}
+
+	return result;
+    }
+
+    /**
+     * Get DMA information status for device
+     * @param device device name (e.g. "/dev/hdc")
+     * @return string DMA information from hdparm ("mdma2 udma0 udma1 *udma2")
+     */
+    define string get_dma_info(string device) ``{
+	string result = "";
+
+	if (device != nil && device != "")
+	{
+	    // DMA mode is enabled, get DMA mode number
+	    map out = (map) SCR::Execute(.target.bash_output, hdparm_bin + " -i " + device);
+
+	    if (out["exit"]:-1 == 0)
+	    {
+		list<string> output = splitstring(out["stdout"]:"", "\n");
+
+		foreach(string line, output, ``{
+			string dmaline = (regexpsub(line, "^[ \t]*[U]{0,1}DMA modes:[ \t]*(.*)$", "\\1"));
+
+			if (dmaline != nil)
+			{
+			    y2debug("dmaline: %1", dmaline);
+			    result = (result == "") ? dmaline : (result + " " + dmaline);
+			}
+		    }
+		);
+	    }
+	}
+
+	y2debug("device: %1 DMA modes: %2", device, result);
+
+	return result;
+    }
+
+
+    /**
+     * Parse DMA info string from hdparm output - return current DMA mode (has mark '*')
+     * @param dma_info DMA support string (e.g. "mdma2 udma0 udma1 *udma2")
+     * @return string current DMA mode or "" if unknown
+     */
+    define string get_current_dma_mode(string dma_info) ``{
+	string result = "";
+
+	if (dma_info != nil && dma_info != "")
+	{
+	    list<string> modes = splitstring(dma_info, " ");
+
+	    foreach(string mode, modes, ``{
+		    string current = regexpsub(mode, "^\\*(.*)", "\\1");
+
+		    if (current != nil)
+		    {
+			result = current;
+		    }
+		}
+	    );
+	}
+
+	return result;
+    }
+
+    /**
+     * Parse DMA info string from hdparm output - return list of supported DMA modes
+     * @param dma_info DMA support string (e.g. "mdma2 udma0 udma1 *udma2")
+     * @return list<string> list of supported DMA modes
+     */
+    define list<string> get_supported_dma_modes(string dma_info) ``{
+	list<string> result = [];
+
+	if (dma_info != nil && dma_info != "")
+	{
+	    list<string> modes = splitstring(dma_info, " ");
+
+	    foreach(string mode, modes, ``{
+
+		    if (size(mode) > 0)
+		    {
+			string current = regexpsub(mode, "^\\*(.*)", "\\1");
+
+			// add mode or current mode (filter out * mark)
+			result = add(result, (current != nil) ? current : mode);
+		    }
+		}
+	    );
+	}
+	else
+	{
+	    // DMA info line is empty - no information is available
+	    // offer all possible values
+	    result = [ "mdma2", "udma0", "udma2", "udma4", "udma5", "udma6"];
+	}
+
+	return result;
+    }
+
+    /**
+     * Read all DMA settings from the SCR
+     * @return boolean true on success
+     */
+    global define boolean Read() ``{
+	ide_devices = [];
+
+	// read information about all IDE devices
+	list<map<string,any> > devices = (list<map<string, any> >) SCR::Read(.probe.ide);
+
+	// remove SATA devices (/dev/sd*)
+	devices = filter(map<string,any> dn, devices, {
+		string d = dn["dev_name"]:"";
+		return regexpmatch(d, "^/dev/hd");
+	    }
+	);
+
+	// read SCSI devices
+	list<map<string,any> > scsi_devices = (list<map<string, any> >) SCR::Read(.probe.scsi);
+
+	if (size(scsi_devices) > 0)
+	{
+	    // leave only devices with IDE-SCSI emulation
+	    scsi_devices = filter(map<string,any> dev, scsi_devices, ``(dev["driver"]:nil == "ide-scsi"));
+	}
+
+	// add ide-scsi devices to ide devices
+	if (size(scsi_devices) > 0)
+	{
+	    devices = (list<map<string,any> >) merge(devices, scsi_devices);
+	}
+
+	y2milestone("Detected ide-scsi devices: %1", scsi_devices);
+
+	// read setting from sysconfig
+	string devices_setting_str = (string) SCR::Read(.sysconfig.ide.DEVICES_FORCE_IDE_DMA);
+
+	y2debug("Read configuration: %1", devices_setting_str);
+
+	if (devices_setting_str == nil)
+	{
+	    devices_setting_str = "";
+	}
+
+
+	// split string to list of devices
+	list<string> device_settings = splitstring(devices_setting_str, " ");
+
+	// create map of settings <device>:<DMA_setting>
+	map device_setting_map = $[];
+
+	foreach(string setting, device_settings, ``{
+		string dev =  regexpsub(setting, "^(.*):(.*)", "\\1");
+		string mode =  regexpsub(setting, "^(.*):(.*)", "\\2");
+
+		if (size(dev) > 0 && size(mode) > 0)
+		{
+		    device_setting_map = add(device_setting_map, dev, mode);
+		}
+	    }
+	);
+
+
+	y2milestone("Read config: %1", device_setting_map);
+
+	// for each detected IDE device build internal
+	foreach(map<string, any> dev, devices, ``{
+		// device model name is unknown
+		string device = (string) (dev["device"]:_("Unknown device"));
+		string dev_name = (string) (dev["dev_name"]:nil);
+		string scsi_name = nil;
+
+		if (dev["driver"]:nil == "ide-scsi")
+		{
+		    // this is ide-scsi device
+		    // set device name to IDE name
+		    dev_name = (string) (dev["dev_name2"]:nil);
+		    scsi_name = (string) (dev["dev_name"]:nil);
+		}
+
+		if (dev_name != nil)
+		{
+		    integer subclass_id = (integer) (dev["sub_class_id"]:nil);
+		    integer class_id = (integer) (dev["class_id"]:nil);
+
+		    string dma_setting = device_setting_map[dev_name]:"nochange";
+
+		    // get textual information about device type (disk, CD-ROM, tape, ...) from identification number - device type was not found
+		    string subclass_id_string = (string) eval(ClassNames[class_id, subclass_id]: _("Unknown device type"));
+
+		    // get current DMA setting
+		    string current_dma = get_device_dma_status(dev_name);
+		    string dma_info = get_dma_info(dev_name);
+
+		    y2milestone("dma_info: %1", dma_info);
+
+		    string current_dma_string = get_current_dma_mode(dma_info);
+		    if (current_dma == "on" && size(current_dma_string) > 0)
+		    {
+			current_dma = current_dma_string;
+		    }
+
+		    list<string> dma_modes = get_supported_dma_modes(dma_info);
+
+		    map<string,any> dev_map = $["device" : device, "dev_name" : dev_name, "dma_setting" : dma_setting, "device_type" : subclass_id_string, "current_dma" : current_dma, "dma_modes" : dma_modes];
+
+		    if (scsi_name != nil)
+		    {
+			// add scsi name if device is ide-scsi
+			dev_map["scsi_name"] = scsi_name;
+		    }
+
+		    ide_devices = (list<map<string,any> >) add(ide_devices, dev_map);
+		}
+	    }
+	);
+
+	y2milestone("Detected IDE devices: %1", ide_devices);
+
+	return true;
+    }
+
+
+    /**
+     * Return information about all IDE devices
+     * @return list List of maps with information about all IDE devices
+     */
+    global define list<map> get_ide_devices() ``{
+	return ide_devices;
+    }
+
+    /**
+     * Get list of supported DMA modes for selected device
+     * @param device device name ("/dev/hda")
+     * @return list supported DMA modes (["mdma2", "udma0", "udma1", "udma2"])
+     */
+    global define list supported_dma_modes(string device) ``{
+	list result = [];
+
+	if (size(device) > 0)
+	{
+	    foreach(map info, ide_devices, ``{
+		    if (info["dev_name"]:"" == device)
+		    {
+			result = info["dma_modes"]:[];
+		    }
+		}
+	    );
+	}
+
+	return result;
+    }
+
+    /**
+     * Get selected DMA mode, which will be saved and set in Write
+     * @param device device name ("/dev/hda")
+     * @return string selected DMA mode ("on", "off", "nochange", or mode supported by hdparm - "udma5",...)
+     */
+    global define string selected_mode(string device) ``{
+	string mode = "";
+
+	if (size(device) > 0)
+	{
+	    foreach(map info, ide_devices, ``{
+		    if (info["dev_name"]:"" == device)
+		    {
+			mode = info["dma_setting"]:"";
+		    }
+		}
+	    );
+	}
+
+	return mode;
+    }
+
+    /**
+     * Set DMA of device
+     * @param device Identification of IDE device, e.g. "/dev/hda"
+     * @param dma_setting DMA mode (e.g. "mdma2", "udma5", "off",...)
+     * @return boolean true on success
+     */
+    global define boolean set_dma(string device, string dma_setting) ``{
+	if (device == nil || device == "" || dma_setting == nil || dma_setting == "")
+	{
+	    return false;
+	}
+
+	// check if mode name in known
+	if (!haskey(mode_names, dma_setting))
+	{
+	    return false;
+	}
+
+	// store required DMA status
+	ide_devices = maplist(map<string,any> d, ide_devices, ``{
+		if (d["dev_name"]:nil == device)
+		{
+		    d = add(d, "dma_setting", dma_setting);
+		}
+
+		return d;
+	    }
+	);
+
+	return true;
+    }
+
+    /**
+     * Update the SCR according to DMA settings
+     * @return boolean true on success
+     */
+    global define boolean Write() ``{
+	boolean ret = true;
+
+	// create strings with device indentifications
+	// e.g. new_dma_setting = "/dev/hda:udma5 /dev/hdc:off";
+	string new_dma_setting = "";
+	boolean first = true;
+
+	// is boot.idedma init script needed?
+	// avoid calling hdparm if configuration wasn't changed
+	boolean initscript_needed = false;
+	// is sync call needed?
+	// call sync before DMA is turned on, usefull when machine
+	// hangs just after enabling DMA
+	boolean sync_needed = false;
+
+	y2milestone("ide_devices: %1", ide_devices);
+
+	foreach(map<string, any> d, ide_devices, ``{
+		string d_name = (string) (d["dev_name"]:nil);
+
+		if (d_name != nil)
+		{
+		    string dma_setting = (string) (d["dma_setting"]:"nochange");
+
+		    string dma_current_setting = (string) (d["current_dma"]:"nochange");
+		    string dma_required_setting = dma_setting;
+
+		    if (dma_setting != "nochange")
+		    {
+			y2debug("d_name: %1  dma_setting: %2", d_name, dma_setting);
+			dma_setting = d_name + ":" + dma_setting;
+
+			if (first == true)
+			{
+			    new_dma_setting = dma_setting;
+			    first = false;
+			}
+			else
+			{
+			    new_dma_setting = new_dma_setting + " " + dma_setting;
+			}
+
+			y2debug("dma_setting: %1, dma_current_setting: %2", dma_setting, dma_current_setting);
+
+			// use boot.idedma only if current DMA mode and required DMA mode differ
+			if (dma_required_setting != dma_current_setting &&
+			    // don't distinguish between "on" and exact DMA mode
+			    // (required is "on", current is not "off" nor "nochange" (it is e.g. "udma2"))
+			    !(dma_required_setting == "on" && dma_current_setting != "off" && dma_current_setting != "nochange")
+			)
+			{
+			    initscript_needed = true;
+
+			    if (dma_current_setting == "off" && dma_required_setting != "off" && dma_required_setting != "nochange")
+			    {
+				sync_needed = true;
+			    }
+			}
+		    }
+		}
+	    }
+	);
+
+	y2milestone("new_dma_setting: %1", new_dma_setting);
+
+	// write device strings to sysconfig
+	if (SCR::Write(.sysconfig.ide.DEVICES_FORCE_IDE_DMA, new_dma_setting) == false)
+	{
+	    // error message - %1 is file name
+	    Report::Error(sformat(_("Unable to write settings to '%1'."), "/etc/sysconfig/ide"));
+	    return false;
+	}
+
+	// flush changes
+	SCR::Write(.sysconfig.ide, nil);
+
+	// flush disc cache before enabling DMA
+	if (sync_needed == true)
+	{
+	    y2milestone("Flushing disc cache before enabling DMA...");
+	    integer exit = (integer) SCR::Execute(.target.bash, "/bin/sync");
+
+	    if (exit != 0)
+	    {
+		y2warning("Warning: sync failed! (status = %1)", exit);
+	    }
+	}
+
+	// activate settings
+	if (initscript_needed == true)
+	{
+	    y2milestone("Executing /etc/init.d/boot.idedma start");
+
+	    integer result = (integer) SCR::Execute(.target.bash, "/etc/init.d/boot.idedma start");
+
+	    y2milestone("boot.idedma result: %1", result);
+
+	    if (result != 0)
+	    {
+		// error message
+		Report::Error(_("Error occurred while activating changes."));
+		y2error("boot.idedma result: %1", result);
+		ret = false;
+	    }
+	}
+
+	if (new_dma_setting != "")
+	{
+	    // enable service
+	    if (Service::Enable("boot.idedma") != true)
+	    {
+		// error message
+		Report::Error(_("Cannot enable service 'boot.idedma'."));
+		ret = false;
+	    }
+	}
+
+	return ret;
+    }
+
+    /**
+     * Set module data
+     * @param settings set data from YCP
+     * @return void
+     */
+    global define void Set (list<map<string,any> > settings) ``{
+
+	ide_devices = settings;
+	return;
+    }
+
+    /**
+     * Get all IDE DMA  settings from the first parameter
+     * (For use by autoinstallation.)
+     * @param settings The YCP structure to be imported.
+     * @return boolean True
+     */
+    global define boolean Import (list<map<string,any> > settings) ``{
+	if (size(settings) == 0)
+	{
+	    return false;
+	}
+
+	Set(settings);
+	return true;
+    }
+
+    /**
+     * Dump the IDE DMA settings to a single map
+     * (For use by autoinstallation.)
+     * @return list Dumped settings (later acceptable by Import ())
+     */
+    global define list Export () ``{
+	return ide_devices ;
+    }
+
+    /**
+     * Set system configuration without reading values from
+     * system - for testing and screenshot mode
+     */
+    global define void set_test_data() ``{
+	ide_devices = [ $["current_dma":"udma2", "dev_name":"/dev/hda",
+	    "device":"IBM-DJNA-351520", "device_type":"Disk", "dma_setting":"udma2"],
+	    $["current_dma":"off", "dev_name":"/dev/hdc", "device":"CD-532E-B",
+	    "device_type":"CD-ROM", "dma_on":"nochange"]
+	];
+    }
+
+    /**
+     * Create rich text description of the current configuration
+     * @param all when true all IDE devices are contained in the summary text
+     * (even unconfigured devices with default DMA mode)
+     * @param richtext select rich/plain text output
+     * @return string summary text
+     */
+    global define string Summary(boolean all, boolean richtext) ``{
+	// summary text - header
+	string summary = (all == true) ? ((richtext) ? "<P><B>":"") + _("All IDE Devices:") + ((richtext) ? "</B></P>":"\n") : ((richtext) ? "<P><B>":"") + _("Configured Devices:") + ((richtext) ? "</B></P>":"\n");
+	string devices = "";
+	boolean found = false;
+
+	if (size(ide_devices) > 0)
+	{
+	    foreach(map<string, any> dev, ide_devices, ``{
+		    string dmasetting = (string) (dev["dma_setting"]:nil);
+		    string devname = (string) (dev["dev_name"]:nil);
+
+		    if (devname != nil && dmasetting != nil && (all == true || dmasetting != "nochange"))
+		    {
+			// summary text - unknown DMA mode is selected
+			devices = devices + ((richtext) ? "<LI><B>":"") + devname + ":" + ((richtext) ? "</B>":"") + " " + sformat("%1 (%2)", dmasetting, mode_names[dmasetting]:_("Unknown mode")) + ((richtext) ? "</LI>":"\n");
+			found = true;
+		    }
+		}
+	    );
+	}
+
+	// is any device configured?
+	if (found == false)
+	{
+	    // summary text - none device is configured
+	    devices = ((richtext) ? "<LI>":"") + _("No device") + ((richtext) ? "</LI>":"\n");
+	}
+
+	return summary + ((richtext) ? "<UL>":"") + devices + ((richtext) ? "</UL>":"");
+    }
+
+
+}

@@ -1,0 +1,541 @@
+-------------------------------------------------------------------
+Fri Jul 22 11:41:44 CEST 2005 - lslezak@suse.cz
+
+- translate also "dsl" string
+- 2.12.1
+
+-------------------------------------------------------------------
+Wed May 18 16:44:44 CEST 2005 - lslezak@suse.cz
+
+- merged proofread texts
+- 2.12.0
+
+-------------------------------------------------------------------
+Wed Apr  6 07:49:48 CEST 2005 - lslezak@suse.cz
+
+- PCI ID: added runtime client, improved read/write support,
+  select detected PCI device and get the IDs automatically
+- 2.11.7
+
+-------------------------------------------------------------------
+Mon Mar 14 17:01:07 CET 2005 - lslezak@suse.cz
+
+- idedma: don't show SATA disks - DMA cannot be changed (#71879)
+- 2.11.6
+
+-------------------------------------------------------------------
+Tue Mar  8 14:12:53 CET 2005 - lslezak@suse.cz
+
+- always retranslate memory string (#71109)
+- 2.11.5
+
+-------------------------------------------------------------------
+Tue Mar  1 14:59:20 CET 2005 - lslezak@suse.cz
+
+- PCI ID - nil handling - allow adding of an ID (#67023)
+- 2.11.4
+
+-------------------------------------------------------------------
+Mon Feb  7 17:09:57 CET 2005 - lslezak@suse.cz
+
+- merged proofread texts
+- version 2.11.3
+
+-------------------------------------------------------------------
+Mon Nov 29 16:44:53 CET 2004 - lslezak@suse.cz
+
+- PCI ID - write hwcfg file to load kernel module by
+  coldplug/hotplug (#48500)
+
+-------------------------------------------------------------------
+Tue Nov 23 11:12:45 CET 2004 - lslezak@suse.cz
+
+- merged PCI ID feature from 9.1 branch (#36084)
+- select&lookup replaced by bracket operator 
+- version 2.11.2
+
+-------------------------------------------------------------------
+Tue Nov 23 10:24:22 CET 2004 - lslezak@suse.cz
+
+- updated to new Mode:: API
+
+-------------------------------------------------------------------
+Tue Oct 19 13:46:25 CEST 2004 - lslezak@suse.cz
+
+- updated: class DB, probe agent path translations
+- version 2.11.1
+
+-------------------------------------------------------------------
+Wed Oct 13 14:42:44 CEST 2004 - lslezak@suse.cz
+
+- UML mode enhancements (#40835)
+- version 2.11.0
+
+-------------------------------------------------------------------
+Mon Oct 11 16:46:39 CEST 2004 - jsrain@suse.cz
+
+- adapted to new Arch:: interface
+
+-------------------------------------------------------------------
+Fri Sep  3 13:24:23 CEST 2004 - lslezak@suse.cz
+
+- traslate new device types (wlan, tape)
+- version 2.10.1
+
+-------------------------------------------------------------------
+Tue Aug 10 17:55:38 CEST 2004 - mvidner@suse.cz
+
+- Merged proofread texts.
+
+-------------------------------------------------------------------
+Wed Jun 16 16:56:40 CEST 2004 - lslezak@suse.cz
+
+- updated testsuite (use Testsuite:: module, set testedfiles)
+- version 2.10.0
+
+-------------------------------------------------------------------
+Tue May 25 15:04:58 CEST 2004 - lslezak@suse.cz
+
+- don't show .boot_disk value (not reliable and works only on
+  some i386 systems) (#40949)
+- new subpath names (is_uml, redasd, block)
+- version 2.9.22
+
+-------------------------------------------------------------------
+Tue May  4 14:49:57 CEST 2004 - lslezak@suse.cz
+
+- merged proofread texts
+- version 2.9.21
+
+-------------------------------------------------------------------
+Fri Apr  2 16:28:00 CEST 2004 - lslezak@suse.cz
+
+- changed license to GPL
+- version 2.9.20
+
+-------------------------------------------------------------------
+Fri Mar 26 13:18:40 CET 2004 - lslezak@suse.cz
+
+- added missing translation mark (#37063)
+- use -i option in hdaprm call (#36565), testsuite update
+- added missing import
+- version 2.9.18
+
+-------------------------------------------------------------------
+Wed Mar 17 17:41:16 CET 2004 - lslezak@suse.cz
+
+- fixed monitor resolution
+- type fixes
+- don't loose data from probe agent
+- enable save button (#36230)
+- version 2.9.17
+
+-------------------------------------------------------------------
+Wed Mar 10 02:16:57 CET 2004 - nashif@suse.de
+
+- Adapted to new wizard
+
+-------------------------------------------------------------------
+Mon Mar  8 18:40:22 CET 2004 - lslezak@suse.cz
+
+- use Sequencer::
+- set icon
+- fixed ycphook in Makefile.am
+- version 2.9.15
+
+-------------------------------------------------------------------
+Mon Mar  1 16:34:29 CET 2004 - lslezak@suse.cz
+
+- merged proofread texts
+- typed lists and maps
+- version 2.9.14
+
+-------------------------------------------------------------------
+Fri Feb 27 16:46:42 CET 2004 - lslezak@suse.cz
+
+- InitHWinfo - only [OK] button in details dialog (#34915)
+- allow aborting during detection
+- version 2.9.13
+
+-------------------------------------------------------------------
+Thu Feb 26 20:32:53 CET 2004 - nashif@suse.de
+
+- Changed proposal file name proposal_* to *_proposal
+- 2.9.12
+
+-------------------------------------------------------------------
+Tue Feb 24 11:05:49 CET 2004 - lslezak@suse.cz
+
+- InitHWinfo - only [OK] button in HW summary dialog (#34915)
+- version 2.9.11
+
+-------------------------------------------------------------------
+Tue Feb 17 17:37:50 CET 2004 - lslezak@suse.cz
+
+- NI fixes (removed globals)
+- InitHWinfo: changed column order
+
+-------------------------------------------------------------------
+Tue Feb 17 15:28:09 CET 2004 - lslezak@suse.cz
+
+- InitHWinfo: use board and generation info for PPC architecture
+- version 2.9.10
+
+-------------------------------------------------------------------
+Thu Feb 12 18:16:16 CET 2004 - lslezak@suse.cz
+
+- use new config file (/etc/sysconfig/ide)
+- cfg_hardware.scr renamed to cfg_ide.scr (.sysconfig.ide path)
+- testsuite update
+- InitHWinfo: use String::FormatSizeWithPrecision function
+- version 2.9.9
+
+-------------------------------------------------------------------
+Thu Feb 12 11:25:55 CET 2004 - arvin@suse.de
+
+- added type names for new udev and sysfs infos (bug #34355)
+
+-------------------------------------------------------------------
+Mon Feb 09 11:30:33 CET 2004 - arvin@suse.de
+
+- removed config files (*.y2cc)
+
+-------------------------------------------------------------------
+Fri Jan 30 11:21:09 CET 2004 - lslezak@suse.cz
+
+- fixes for new interpreter (data types)
+- build fix (ycp hook, testsuite update)
+- version 2.9.6
+
+-------------------------------------------------------------------
+Tue Jan 13 12:40:04 CET 2004 - lslezak@suse.cz
+
+- init_hwinfo - read system name (SMBIOS entry), NI fixes
+- idedma - use Service:: module
+- version 2.9.5
+
+-------------------------------------------------------------------
+Mon Dec  1 14:27:52 CET 2003 - lslezak@suse.cz
+
+- fixes for the new interpreter
+- version 2.9.4
+
+-------------------------------------------------------------------
+Wed Nov 19 16:58:03 CET 2003 - lslezak@suse.cz
+
+- use UI:: file popup builtin
+- version 2.9.3
+
+-------------------------------------------------------------------
+Thu Nov 13 12:39:13 CET 2003 - lslezak@suse.cz
+
+- syntax fixes for new interpreter (by jhumpol)
+- command line UI
+- autoinstallation support
+- version 2.9.2
+
+-------------------------------------------------------------------
+Thu Oct 30 10:55:58 CET 2003 - lslezak@suse.cz
+
+- fixes for the new interpreter
+- flush disc cache (sync) before DMA is enabled
+- version 2.9.1
+
+-------------------------------------------------------------------
+Fri Oct 17 16:59:41 CEST 2003 - lslezak@suse.de
+
+- added new 'initial hwnifo' module (new module in the
+  installation proposal - show hardware information, allow saving
+  hwinfo output to the file/floppy)
+- hwinfo: fixed visualization of list with just one map
+  item (#31144)
+- more items returned by .probe agent are translated
+- version 2.9.0
+
+-------------------------------------------------------------------
+Sun Sep 14 20:32:35 CEST 2003 - adrian@suse.de
+
+- make it working in kcontrol
+
+-------------------------------------------------------------------
+Mon Sep  1 14:24:09 CEST 2003 - lslezak@suse.de
+
+- added missing import
+- ignore cdb_isdn path
+- set focus to the tree widget
+- version 2.8.5
+
+-------------------------------------------------------------------
+Mon Aug 25 15:48:24 CEST 2003 - lslezak@suse.cz
+
+- removed "Initializing..." dialog in idedma module
+- version 2.8.4
+
+-------------------------------------------------------------------
+Tue Aug 12 13:08:12 CEST 2003 - lslezak@suse.cz
+
+- detect and configure ide-scsi devices correctly (#25640)
+- updated testsuite
+- version 2.8.3
+
+-------------------------------------------------------------------
+Mon Aug 11 09:36:18 CEST 2003 - lslezak@suse.de
+
+- merged proofread texts
+- version 2.8.2
+
+-------------------------------------------------------------------
+Fri Aug  8 11:31:31 CEST 2003 - lslezak@suse.de
+
+- use Label:: and Popup:: modules
+- fixed displaying of the warning message in idedma
+- added .desktop files
+- version 2.8.1
+
+-------------------------------------------------------------------
+Mon Jun  9 13:14:26 CEST 2003 - lslezak@suse.de
+
+- fixed package build on s390
+- removed obsoleted comments
+- version 2.8.0
+
+-------------------------------------------------------------------
+Fri Mar 21 12:26:21 CET 2003 - lslezak@suse.de
+
+- hwinfo: save hwinfo output to the file (enh. #16771), use Wizard
+  module, small fixes
+
+-------------------------------------------------------------------
+Mon Mar  3 12:53:58 CET 2003 - lslezak@suse.de
+
+- merged proof-read texts
+- version 2.7.6
+
+-------------------------------------------------------------------
+Wed Feb 19 15:00:12 CET 2003 - lslezak@suse.de
+
+- hwinfo: increased size of progress window (#23791)
+- idedma: added testsuites, start boot.idedma only if it's needed
+- version 2.7.5
+
+-------------------------------------------------------------------
+Fri Feb 14 13:21:07 CET 2003 - lslezak@suse.de
+
+- edit DMA transfer mode
+- use DEVICES_FORCE_IDE_DMA sysconfig variable
+- documentation and testsuite update
+- version 2.7.4
+
+-------------------------------------------------------------------
+Fri Feb  7 15:14:54 CET 2003 - lslezak@suse.de
+
+- don't probe for chipcards when X server is running
+  (moves mouse cursor)
+- updated class names (hwinfo 5.51)
+- updated probe agent mapping (from path to translateable string)
+- version 2.7.3
+
+-------------------------------------------------------------------
+Mon Feb  3 15:30:08 CET 2003 - lslezak@suse.cz
+
+- merged proof-read texts
+- version 2.7.2
+
+-------------------------------------------------------------------
+Fri Jan 17 17:25:56 CET 2003 - lslezak@suse.cz
+
+- function keys in ncurses UI
+- version 2.7.1
+
+-------------------------------------------------------------------
+Wed Dec 11 17:05:19 CET 2002 - lslezak@suse.cz
+
+- fixed CPU information (#22379)
+- version 2.7.0
+
+-------------------------------------------------------------------
+Mon Sep  9 18:27:33 CEST 2002 - lslezak@suse.cz
+
+- removed noarch architecture from spec file (required by %ifnarch)
+- version 2.6.14
+
+-------------------------------------------------------------------
+Mon Sep  9 14:51:47 CEST 2002 - lslezak@suse.cz
+
+- exclude IDE DMA configuration from y2cc on S390
+- version 2.6.13
+
+-------------------------------------------------------------------
+Fri Sep  6 17:46:02 CEST 2002 - lslezak@suse.cz
+
+- provide/obsolete old packages
+- version 2.6.12
+
+-------------------------------------------------------------------
+Mon Sep  2 17:04:54 CEST 2002 - lslezak@suse.cz
+
+- version 2.6.11
+
+-------------------------------------------------------------------
+Tue Aug 27 20:00:00 CEST 2002 - jsuchome@suse.cz
+
+- provide/obsolete old translation packages
+
+-------------------------------------------------------------------
+Mon Aug 19 17:38:50 CEST 2002 - lslezak@suse.cz
+
+- added translation message "isapnp" -> _("ISA PnP")
+- version 2.6.10
+
+-------------------------------------------------------------------
+Wed Aug 14 12:59:35 CEST 2002 - lslezak@suse.cz
+
+- merged proofread texts
+- version 2.6.9
+
+-------------------------------------------------------------------
+Sun Aug 11 22:47:28 CEST 2002 - mvidner@suse.cz
+
+- Fix building (testsuite adapted to changes in yast2.rpm, due to #17608).
+- 2.6.8
+
+-------------------------------------------------------------------
+Fri Aug 09 14:59:35 CEST 2002 - arvin@suse.de
+
+- added some more translation texts
+
+-------------------------------------------------------------------
+Thu Aug 08 11:41:40 CEST 2002 - arvin@suse.de
+
+- added string "Requires" to translate texts
+
+-------------------------------------------------------------------
+Wed Aug  7 15:59:40 CEST 2002 - lslezak@suse.de
+
+- hwinfo: better check if X server is running
+- idedma: fixed loading class database, fixed testsuite
+- version 2.6.5
+
+-------------------------------------------------------------------
+Tue Aug  6 10:56:12 CEST 2002 - lslezak@suse.de
+
+- added help texts for translators
+- removed yast2-runlevel from Requires and #neededforbuild
+- hwinfo: added new path descriptions for translation
+- version 2.6.4
+
+-------------------------------------------------------------------
+Fri Jul 12 16:28:16 CEST 2002 - arvin@suse.de
+
+- use proper namespace for Args and CallFunction (#16776)
+
+-------------------------------------------------------------------
+Fri Jul 05 12:38:44 CEST 2002 - arvin@suse.de
+
+- moved non binary files to /usr/share/YaST2
+
+-------------------------------------------------------------------
+Mon Jul  1 13:12:12 CEST 2002 - lslezak@suse.cz
+
+- merged yast2-config-hwinfo and  yast2-tune-idedma packages to
+  yast2-tune
+- textdomains merged to "tune" textdomain
+- version 2.6.1
+
+-------------------------------------------------------------------
+Tue Jun 25 14:40:26 CEST 2002 - lslezak@suse.cz
+
+- fixed double CPU entry (#15905)
+- version 2.6.0
+
+-------------------------------------------------------------------
+Wed Apr 10 12:32:12 CEST 2002 - lslezak@suse.cz
+
+- SuSE-8_0-Branch merged to the head
+
+-------------------------------------------------------------------
+Tue Mar  5 16:10:32 CET 2002 - dmeszar@suse.cz
+
+- fixed #13284 (partially overlapped horizontal scrollbar)
+
+-------------------------------------------------------------------
+Fri Feb 22 15:18:56 CET 2002 - dmeszar@suse.cz
+
+- fixed #13661 (empty values)
+
+-------------------------------------------------------------------
+Mon Feb 18 19:59:51 CET 2002 - dmeszar@suse.cz
+
+- skip .probe.status
+
+-------------------------------------------------------------------
+Tue Feb  5 16:19:43 CET 2002 - dmeszar@suse.cz
+
+- shows 'modules' entry of some devices in more readable form
+
+-------------------------------------------------------------------
+Tue Dec 18 11:56:22 CET 2001 - dmeszar@suse.cz
+
+- 3rd param for 'select', fixed specfile
+
+-------------------------------------------------------------------
+Fri Nov  9 14:16:33 CET 2001 - dmeszar@suse.cz
+
+- changes due to new libycp implemented
+
+-------------------------------------------------------------------
+Mon Sep 10 14:08:36 CEST 2001 - dmeszar@suse.cz
+
+- bug #10332 fixed (label for monitor)
+
+-------------------------------------------------------------------
+Wed Aug  8 14:55:21 CEST 2001 - dmeszar@suse.cz
+
+- now arrows are used as a fallback for list items.
+  each item should have reasonable label.
+- documented & formated sources
+
+-------------------------------------------------------------------
+Tue Jul 31 19:00:08 CEST 2001 - dmeszar@suse.cz
+
+- model or device_name (if presesnt) is used instead of arrows in lists
+
+-------------------------------------------------------------------
+Tue Jul 31 10:11:31 CEST 2001 - dmeszar@suse.cz
+
+- more info on cpu added
+
+-------------------------------------------------------------------
+Mon Jul 30 16:27:06 CEST 2001 - dmeszar@suse.cz
+
+- show processor description
+- list members are shown not with index but with descprition inside,
+  or with arrow
+
+-------------------------------------------------------------------
+Mon Jul 23 12:49:57 CEST 2001 - dmeszar@suse.cz
+
+- added yast2-agent-probe to rpm 'requires' entry
+
+-------------------------------------------------------------------
+Fri May 11 13:16:21 CEST 2001 - kkaempf@suse.de
+
+- use bzip2 for packaging
+
+-------------------------------------------------------------------
+Fri May  4 15:07:31 CEST 2001 - dmeszar@suse.cz
+
+- abort button for stopping immediatelly, entries translation,
+  close button instead of next/abort
+- class_id, sub_class_id translated
+
+-------------------------------------------------------------------
+Tue Apr 24 09:49:40 PDT 2001 - dmeszar@suse.cz
+
+- menuentry fixed, occasional division by zero fixed
+
+-------------------------------------------------------------------
+Thu Apr  5 11:37:10 CEST 2001 - dmeszar@suse.cz
+
+- initial version
+

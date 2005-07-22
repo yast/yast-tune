@@ -1,0 +1,110 @@
+/**
+ * File:
+ *   clients/idedma.ycp
+ *
+ * Package:
+ *   Configuration of IDE DMA mode
+ *
+ * Summary:
+ *   Main file
+ *
+ * Authors:
+ *   Ladislav Slezak <lslezak@suse.cz>
+ *
+ * $Id$
+ *
+ * Main file for IDE DMA mode configuration. Uses all other files.
+ *
+ */
+
+{
+    /***
+     * <h3>Configuration of the IDE DMA mode</h3>
+     */
+
+    textdomain "tune";
+
+    import "Mode";
+    import "Idedma";
+    import "CommandLine";
+    include "idedma/ui.ycp";
+    include "idedma/cmdline.ycp";
+
+    /* The main () */
+    y2milestone ("Idedma module started");
+    y2milestone ("----------------------------------------");
+
+    /* main ui function */
+    any ret = nil;
+
+
+    /**
+     * Command line definition
+     */
+    map cmdline = $[
+	// help text
+	"help"      : _("Configure the DMA mode for IDE devices"),
+	"id"        : "idedma",
+	"guihandler": IdedmaSequence,
+	"initialize": Idedma::Read,
+	"finish"    : Idedma::Write,
+	"actions"   : $[
+	    "list" : $[
+		// command description
+		"help"      : _("Display configuration summary"),
+		"handler"   : listHandler
+	    ],
+	    "set" : $[
+		// command description
+		"help"      : _("Set DMA mode"),
+		"handler"   : setHandler
+	     ],
+	    "details" : $[
+		// command description
+		"help"      : _("Show detailed information"),
+		"handler"   : detailsHandler
+	    ]
+	],
+	"options" : $[
+	    "configured" : $[
+		// option description
+		"help"      : _("List only configured devices")
+	    ],
+	    "all" : $[
+		// option description
+		"help"	    : _("List all detected IDE devices")
+	    ],
+	    "device" : $[
+		// option description
+		"help"      : _("Selected IDE device")
+	    ],
+	    "mode" : $[
+		// option description
+		"help"      : _("Requested DMA mode")
+	    ]
+	],
+	"mappings" : $[
+	    "list" : ["configured", "all"],
+	    "set"  : ["device", "mode"],
+	    "details" : ["device"]
+	]
+    ];
+
+
+    if (Mode::test() == true)
+    {
+	// in test mode set some data and display only main dialog
+	Idedma::set_test_data();
+	ret = IdedmaAutoSequence();
+    }
+    else
+    {
+	ret = CommandLine::Run(cmdline);
+    }
+
+    y2debug ("ret == %1", ret);
+
+    /* Finish */
+    y2milestone ("Idedma module finished");
+    return ret;
+}
