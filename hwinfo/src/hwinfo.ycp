@@ -139,7 +139,11 @@ define term buildHwTree(string p, integer progMin, integer progMax) ``{
 	return nil;
     }
 
-    UI::ChangeWidget(`id(`initLab), `Value, trans_str(afterLast(p)));
+    string node = afterLast(p);
+    string node_translated = trans_str(node);
+
+    UI::ChangeWidget(`id(`initLab), `Value, node_translated);
+    y2milestone("Probing %1 (%2)...", node, node_translated);
     path pat = topath(p);
 
     y2debug("Reading path: %1", p);

@@ -227,8 +227,13 @@ $[
     // tree node string - tape devices
     "tape"             :   _("Tape"),
     // tree node string - Bluetooth devices
-    "bluetooth"        :   _("Bluetooth")
-
+    "bluetooth"        :   _("Bluetooth"),
+    // tree node string - DSL devices
+    "dsl"              :   _("DSL"),
+    // translate "probe" to empty string
+    // search starts from .probe node which doesn't
+    // contain any hardware information
+    "probe"		: ""
 ]);
 
 /**
@@ -330,6 +335,10 @@ list<string> representant_order = [
  * @return string translated string or original string if translation is unknown
  */
 define string trans_str(string str) ``{
+	if (!haskey(trans_table, str)
+	{
+	    y2warning("Cannot translate string '%1'");
+	}
 	return (string) (trans_table[str]:str);
 }
 
