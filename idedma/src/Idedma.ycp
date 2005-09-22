@@ -141,14 +141,14 @@
 	if (device != nil && device != "")
 	{
 	    // DMA mode is enabled, get DMA mode number
-	    map out = (map) SCR::Execute(.target.bash_output, hdparm_bin + " -i " + device);
+	    map out = (map) SCR::Execute(.target.bash_output, hdparm_bin + " -I " + device);
 
 	    if (out["exit"]:-1 == 0)
 	    {
 		list<string> output = splitstring(out["stdout"]:"", "\n");
 
 		foreach(string line, output, ``{
-			string dmaline = (regexpsub(line, "^[ \t]*[U]{0,1}DMA modes:[ \t]*(.*)$", "\\1"));
+			string dmaline = (regexpsub(line, "^[ \t]*DMA:[ \t]*(.*)$", "\\1"));
 
 			if (dmaline != nil)
 			{

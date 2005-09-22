@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Thu Sep 22 08:18:16 CEST 2005 - lslezak@suse.cz
+
+- use hdparm parameter -I instead of -i (get the status directly
+  from the drive) (#117684)
+- 2.13.0
+
+-------------------------------------------------------------------
 Fri Jul 22 11:41:44 CEST 2005 - lslezak@suse.cz
 
 - translate also "dsl" string
