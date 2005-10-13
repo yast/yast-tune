@@ -453,6 +453,8 @@
 	// hangs just after enabling DMA
 	boolean sync_needed = false;
 
+	map<string,string> changeDMA = $[];
+
 	y2milestone("ide_devices: %1", ide_devices);
 
 	foreach(map<string, any> d, ide_devices, ``{
@@ -495,6 +497,9 @@
 			    {
 				sync_needed = true;
 			    }
+
+			    // remember the new setting
+			    changeDMA[d_name] = dma_required_setting;
 			}
 		    }
 		}
@@ -529,30 +534,43 @@
 	// activate settings
 	if (initscript_needed == true)
 	{
-	    y2milestone("Executing /etc/init.d/boot.idedma start");
+	    foreach(string dev, string mode, changeDMA, {
+		    y2milestone("Changing DMA mode:  device=%1 mode=%2", dev, mode);
 
-	    integer result = (integer) SCR::Execute(.target.bash, "/etc/init.d/boot.idedma start");
+		    if (mode != "nochange")
+		    {
+			string hdparm_opt = "";
 
-	    y2milestone("boot.idedma result: %1", result);
+			if (mode == "on")
+			{
+			    hdparm_opt = "-d 1";
+			}
+			else if (mode == "off")
+			{
+			    hdparm_opt = "-d 0";
+			}
+			else
+			{
+			    hdparm_opt = "-d 1 -X " + mode;
+			}
 
-	    if (result != 0)
-	    {
-		// error message
-		Report::Error(_("Error occurred while activating changes."));
-		y2error("boot.idedma result: %1", result);
-		ret = false;
-	    }
-	}
+			string command = sformat("%1 %2 %3", hdparm_bin, hdparm_opt, dev);
 
-	if (new_dma_setting != "")
-	{
-	    // enable service
-	    if (Service::Enable("boot.idedma") != true)
-	    {
-		// error message
-		Report::Error(_("Cannot enable service 'boot.idedma'."));
-		ret = false;
-	    }
+			y2milestone("Starting '%1'", command);
+			integer result = (integer) SCR::Execute(.target.bash, command);
+
+			if (result != 0)
+			{
+			    // error message
+			    // %1 is string "on", "off" or DMA string mode e.g. "udma5", "mdma2", ...
+			    // %2 is device node (e.g. /dev/hdc)
+			    Report::Error(_("An error occurred while activating the changes.\nCannot set required mode '%1' for device %2."));
+			    y2error("hdparm result: %1", result);
+			    ret = false;
+			}
+		    }
+		}
+	    );
 	}
 
 	return ret;

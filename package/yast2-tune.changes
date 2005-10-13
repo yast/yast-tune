@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Thu Oct 13 09:00:05 CEST 2005 - lslezak@suse.cz
+
+- don't use boot.idedma initscript (the script has been replaced
+  by an udev rule and an udev script) (#117683)
+- 2.13.1
+
+-------------------------------------------------------------------
 Thu Sep 22 08:18:16 CEST 2005 - lslezak@suse.cz
 
 - use hdparm parameter -I instead of -i (get the status directly
