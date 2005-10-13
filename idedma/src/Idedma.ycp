@@ -41,6 +41,11 @@
     string hdparm_bin = "/sbin/hdparm";
 
     /**
+     * Full path to udev script which sets the DMA mode
+     */
+    string udev_script = "/sbin/udev.idedma.sh";
+
+    /**
      * String with DMA on status text
      * (For translators: translation can be long - text is used in the table
      * in column "Required DMA mode" and "Current DMA mode")
@@ -539,23 +544,8 @@
 
 		    if (mode != "nochange")
 		    {
-			string hdparm_opt = "";
 
-			if (mode == "on")
-			{
-			    hdparm_opt = "-d 1";
-			}
-			else if (mode == "off")
-			{
-			    hdparm_opt = "-d 0";
-			}
-			else
-			{
-			    hdparm_opt = "-d 1 -X " + mode;
-			}
-
-			string command = sformat("%1 %2 %3", hdparm_bin, hdparm_opt, dev);
-
+			string command = udev_script + " " + dev;
 			y2milestone("Starting '%1'", command);
 			integer result = (integer) SCR::Execute(.target.bash, command);
 
@@ -565,7 +555,6 @@
 			    // %1 is string "on", "off" or DMA string mode e.g. "udma5", "mdma2", ...
 			    // %2 is device node (e.g. /dev/hdc)
 			    Report::Error(_("An error occurred while activating the changes.\nCannot set required mode '%1' for device %2."));
-			    y2error("hdparm result: %1", result);
 			    ret = false;
 			}
 		    }
