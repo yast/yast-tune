@@ -1,0 +1,118 @@
+/**
+ *
+ * Module:	Set Kernel and System Settings
+ *
+ * Author:	Lukas Ocilka <locilka@suse.cz>
+ *
+ * $Id: SystemSettings.ycp 22934 2005-04-06 09:28:00Z lslezak $
+ *
+ * This module manages the System and Kernel settings such as I/O Scheduler type,
+ * Serial Console, SysRq Keys...
+ */
+
+{
+    module "SystemSettings";
+    textdomain "tune";
+
+    /* Internal Data */
+    boolean ENABLE_SYSRQ = nil;
+    
+    string ELEVATOR_VARIABLE = nil;
+    /* Internal Data */
+
+    list <string> GetPossibleElevatorValues () {
+	    // here are listed all known values of the 'elevator' variable
+	    return ["cfq","as","noop","deadline"];
+    }
+
+    global define boolean Read () {
+	ENABLE_SYSRQ = ((string) SCR::Read(.sysconfig.sysctl.ENABLE_SYSRQ) == "yes");
+	y2milestone("SysRq Enabled %1", ENABLE_SYSRQ);
+
+        /*
+	 * I have to admit that this is very ugly but it is here
+	 * to avoid of the very long starting time of the yast module
+	 * because the Storage module (which is imported by the Bootloader (imported by the SystemSettings module))
+	 * has a Read() function call in its constructor.
+	 */
+						         
+	import "Bootloader";
+	// FIXME: only for configuration!
+	Bootloader::Read();
+	
+	// FIXME: "DEFAULT" change to the variable
+	any elevator_parameter = Bootloader::getKernelParam("DEFAULT", "elevator");
+	// Variable is not set
+	if (elevator_parameter == false || elevator_parameter == "false") {
+	    ELEVATOR_VARIABLE = "";
+	// Variable is set but has not parameter
+	} else if (elevator_parameter == true || elevator_parameter == "true") {
+	    y2warning("'elevator' variable has to have some value");
+	    ELEVATOR_VARIABLE = "";
+	// Variable is set but hasn't any known value
+	} else if (!contains(GetPossibleElevatorValues(), (string) elevator_parameter)) {
+	    y2warning("'elevator' variable has to have a value from %1 instead of being set to %2", GetPossibleElevatorValues(), elevator_parameter);
+	    ELEVATOR_VARIABLE = "";
+	// Variable is OK
+	} else {
+	    ELEVATOR_VARIABLE = (string) elevator_parameter;
+	}
+
+	// FIXME: probe available serial line devices
+
+	return true;
+    }
+
+    global define boolean Write () {
+	// writing SysRq settings
+	SCR::Write(.sysconfig.sysctl.ENABLE_SYSRQ, (ENABLE_SYSRQ ? "yes":"no"));
+	SCR::Write(.sysconfig.sysctl, nil);
+
+	// FIXME: other writes...
+	return true;
+    }
+
+    // Kernel param 'elevator'
+    global define string GetIOScheduler () {
+	return "";
+    }
+
+    global define void SetIOScheduler (string io_scheduler) {
+	return nil;
+    }
+
+    global define boolean GetSysRqKeysEnabled () {
+	if (ENABLE_SYSRQ == true || ENABLE_SYSRQ == false)
+	    return ENABLE_SYSRQ;
+	else
+	    return false;
+    }
+
+    global define void SetSysRqKeysEnabled (boolean enable_sysrq) {
+	if (enable_sysrq != true && enable_sysrq != false)
+	    y2warning("enable_sysrq should be 'true' or 'false'");
+	ENABLE_SYSRQ = enable_sysrq;
+	y2milestone("SysRq was set to %1", ENABLE_SYSRQ);
+    }
+
+    /**
+     * Default settings for serial console
+     */
+    map <string, any> default_sc_settings = $[
+	"enabled" : false,
+	"baud_rate" : 9600,
+	"serial_device" : "/dev/ttyS0",
+    ];
+
+    global define map <string, any> GetSerialConsoleSettings () {
+	return $[
+	    "enabled" : true,
+	    "baud_rate" : 9600,
+	    "serial_device" : "/dev/ttyS0",
+	];
+    }
+
+    global define void SetSerialDeviceConsoleSettings (map <string, any> settings) {
+	return nil;
+    }
+}

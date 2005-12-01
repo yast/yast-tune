@@ -14,6 +14,7 @@
     import "Report";
     import "ModuleLoading";
     import "Linuxrc";
+    import "FileUtils";
 
     include "hwinfo/routines.ycp";
 
@@ -117,7 +118,12 @@
 	    new_ids = [];
 
 	    // read file
-	    string file = (string) SCR::Read(.target.string, filename);
+	    string file = nil;
+	    if (FileUtils::Exists(filename)) {
+		file = (string) SCR::Read(.target.string, filename);
+	    } else {
+		y2milestone("File %1 does not exist yet", filename);
+	    }
 
 	    if (file == nil)
 	    {

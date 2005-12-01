@@ -25,6 +25,15 @@ import "Label";
 
 include "hwinfo/routines.ycp";
 
+define symbol ReadSettings() {
+    NewID::Read("/etc/sysconfig/hardware/newids");
+    return `next;
+}
+	
+define symbol WriteSettings() {
+    return (NewID::Write()) ? `next : `abort;
+}
+
 /**
  * Return list of items for table widget
  * @return list List of items
@@ -302,21 +311,12 @@ define void RefreshTableContent() {
     UI::ChangeWidget(`newid_table, `Items, items);
 }
 
-/**
- * Main PCI ID configuration dialog
- * @return any Result from UserInput()
- */
-define any NewIDConfigDialog() ``{
-    // dialog header
-    string caption = _("PCI ID Setup");
-    boolean changed = false;
-    list items = get_table_items();
-
-    term contents = `VBox(
+define term NewPCIIDDialogContent () {
+    return 	`VBox(
 			// table header, use as short texts as possible
 			`Table(`id(`newid_table), `header(_("Driver"), _("Card Name"), _("Vendor"), _("Device"),
 			// table header, use as short texts as possible
-			    _("Subvendor"), _("Subdevice"), _("Class"), _("Class Mask"), _("SysFS Dir.")), items),
+			    _("Subvendor"), _("Subdevice"), _("Class"), _("Class Mask"), _("SysFS Dir."))),
 			`VSpacing(0.5),
 			`HBox(
 			    `MenuButton( Label::AddButton() + "...", [
@@ -329,10 +329,11 @@ define any NewIDConfigDialog() ``{
 			    `PushButton(`id(`delete), Label::DeleteButton())
 			),
 			`VSpacing(0.5)
-		    );
+		);
+}
 
-    Wizard::SetContents(caption,
-	contents,
+define string NewPCIIDDialogHelp () {
+    return
 	// help text header
 	_("<P><B>PCI ID Setup</B><BR></P>")
 	// PCI ID help text
@@ -344,51 +345,80 @@ define any NewIDConfigDialog() ``{
 	// PCI ID help text
 	+ _("<P>Use the buttons below the table to change the list of PCI IDs. Press <b>OK</b> to activate the settings.</P>")
 	// PCI ID help text
-	+ _("<P><B>Warning:</B> This is an expert configuration. Only continue if you know what you are doing.</P>")
-	,
-	true, true
-    );
+	+ _("<P><B>Warning:</B> This is an expert configuration. Only continue if you know what you are doing.</P>");
+}
 
-    // remove Back button - workflow has only one dialog
-    Wizard::HideAbortButton();
-    Wizard::SetNextButton(`next, Label::OKButton());
+define string NewPCIIDDialogCaption () {
+    // dialog header
+    return _("PCI ID Setup");
+}
 
+define void InitNewPCIIDDialog (string id) {
+    y2milestone("Init: %1", id);
+    UI::ChangeWidget(`id(`newid_table), `Items, get_table_items());
+}
 
-    symbol ret = nil;
-    while (true)
-    {
-	ret = (symbol) UI::UserInput();
+// FIXME: move to the NewID.ycp module
+/* PCI ID settings have been changed */
+boolean pci_id_changed = false;
 
-	y2milestone("ui: %1", ret);
+/*
+ * Function sets whether PCI ID settings have been changed
+ */
+void SetNewPCIIDChanged (boolean changed) {
+    pci_id_changed = changed;
+}
 
-	if (ret == `back)
-	{
-	    break;
+/*
+ * Function returns whether PCI ID settings have been changed
+ */
+boolean GetNewPCIIDChanged () {
+    return pci_id_changed;
+}
+
+symbol handle_function_returns = nil;
+define symbol HandleNewPCIIDDialog (string key, map event) {
+	// we serve only PC_ID settings
+	if (key != "pci_id_table_and_buttons") return nil;
+	if (event["ID"]:nil == "kernel_settings") return nil;
+
+	y2milestone("Key: %1, Event: %2", key, event);
+
+	symbol handle_function_returns = (symbol) event["ID"]:nil;
+
+	if (handle_function_returns== nil) {
+	    y2warning("Unknown event");
 	}
-	else if (ret == `next)
+	else if (handle_function_returns== `back)
+	{
+	    // returning back
+	    handle_function_returns = `back;
+	}
+	else if (handle_function_returns== `next)
 	{
 	    // activate the settings
 	    NewID::Activate();
-	    break;
+	    // returning next
+	    handle_function_returns = `next;
 	}
-	else if (ret == `cancel)
+	else if (handle_function_returns== `cancel)
 	{
-	    if (changed == true)
+	    if (GetNewPCIIDChanged())
 	    {
 		if (Popup::ReallyAbort(true) == false)
 		{
-		    continue;
+		    // loop - continue
+		    handle_function_returns = `continue;
 		}
 	    }
-	    ret = `abort;
-	    break;
+	    // returning abort
+	    handle_function_returns = `abort;
 	}
-	else if (ret == `add || ret == `add_selected)
+	else if (handle_function_returns== `add || handle_function_returns== `add_selected)
 	{
-	    map result = (ret == `add) ? NewIDPopup($[]) : NewDeviceIDPopup($[]);
+	    map result = (handle_function_returns== `add) ? NewIDPopup($[]) : NewDeviceIDPopup($[]);
 
-	    if (result["ui"]:`cancel == `ok)
-	    {
+	    if (result["ui"]:`cancel == `ok) {
 		// add new id
 		NewID::AddID(result["newid"]:$[]);
 
@@ -396,21 +426,20 @@ define any NewIDConfigDialog() ``{
 		RefreshTableContent();
 	    }
 	}
-	else if (ret == `edit)
+	else if (handle_function_returns== `edit)
 	{
 	    integer curr = (integer) UI::QueryWidget(`id(`newid_table), `CurrentItem);
 	    map<string,any> nid = NewID::GetNewID(curr);
 
 	    map result = (haskey(nid, "uniq")) ? NewDeviceIDPopup(nid) : NewIDPopup(nid);
 
-	    if (result["ui"]:`cancel == `ok)
-	    {
+	    if (result["ui"]:`cancel == `ok) {
 		NewID::SetNewID(result["newid"]:$[], curr);
 		RefreshTableContent();
 		UI::ChangeWidget(`id(`newid_table), `CurrentItem, curr);
 	    }
 	}
-	else if (ret == `delete)
+	else if (handle_function_returns== `delete)
 	{
 	    integer curr = (integer) UI::QueryWidget(`id(`newid_table), `CurrentItem);
 	    NewID::RemoveID(curr);
@@ -430,9 +459,39 @@ define any NewIDConfigDialog() ``{
 		UI::ChangeWidget(`id(`newid_table), `CurrentItem, curr);
 	    }
 	}
+
+    y2milestone("Returning %1", handle_function_returns);
+}
+
+/**
+ * Main PCI ID configuration dialog
+ * @return any Result from UserInput()
+ */
+define any NewIDConfigDialog() ``{
+    Wizard::SetContents(
+	NewPCIIDDialogCaption(),
+	NewPCIIDDialogContent(),
+	NewPCIIDDialogHelp(),
+	true, true
+    );
+
+    // remove Back button - workflow has only one dialog
+    Wizard::HideAbortButton();
+    Wizard::SetNextButton(`next, Label::OKButton());
+
+    InitNewPCIIDDialog("pci_id_table_and_buttons");
+
+    handle_function_returns = nil;
+    while (true)
+    {
+	handle_function_returns = (symbol) UI::UserInput();
+	HandleNewPCIIDDialog("pci_id_table_and_buttons", $["ID" : handle_function_returns]);
+	// breaking the loop
+	if (handle_function_returns== `back || handle_function_returns== `next || handle_function_returns== `abort) break;
     };
 
-    return ret;
+    y2milestone("New PCI ID: %1", handle_function_returns);
+    return handle_function_returns;
 }
 
 

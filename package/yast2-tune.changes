@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Thu Dec  1 09:55:14 CET 2005 - locilka@suse.cz
+
+- pci_id prepaired for CWM needed for implementing other features
+  and moving pci_id to the tab
+
+-------------------------------------------------------------------
 Thu Oct 13 09:00:05 CEST 2005 - lslezak@suse.cz
 
 - don't use boot.idedma initscript (the script has been replaced

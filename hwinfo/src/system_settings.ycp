@@ -1,12 +1,13 @@
 /**
  *
- * Module:	PCI ID client
+ * Module:	System Settings Client
  *
- * Author:	Ladislav Slezak <lslezak@suse.cz>
+ * Author:	Lukas Ocilka <locilka@suse.cz>
+ *		Ladislav Slezak <lslezak@suse.cz>
  *
- * $Id: pci_id.ycp,v 1.1.2.1 2005/04/06 06:48:41 lslezak Exp $
+ * $Id: system_settings.ycp,v 1.1 2005/04/06 06:48:41 locilka Exp $
  *
- * PCI ID - runtime configuration client
+ * System Settings for PCI ID, I/O Scheduler, Serial Console, etc.
  */
 
 {
@@ -15,10 +16,14 @@ textdomain "tune";
 
 import "Wizard";
 import "Sequencer";
-import "NewID";
 import "CommandLine";
 
+// PCI ID (backward compatibility)
 include "hwinfo/newid.ycp";
+// UI handling functions
+include "hwinfo/system_settings_ui.ycp";
+// UI definition functions
+include "hwinfo/system_settings_dialogs.ycp";
 
 /**************************************
  *
@@ -29,9 +34,9 @@ include "hwinfo/newid.ycp";
 // aliases for wizard sequencer
 map aliases =
     $[
-	"read"	: [``(ReadSettings()), true],
-	"main"	: ``(NewIDConfigDialog()),
-	"write"	: ``(WriteSettings())
+	"read"	: [``(ReadSystemSettingsDialog()), true],
+	"main"	: ``(SystemSettingsDialog()),
+	"write"	: ``(WriteSystemSettingsDialog())
     ];
 
 // workflow sequence
@@ -61,8 +66,9 @@ define any GUIhandler()
 
     // start workflow
     any ret = Sequencer::Run(aliases, sequence);
+    y2milestone("Finishing with %1", ret);
 
-    Wizard::CloseDialog();
+    UI::CloseDialog();
 
     return ret;
 }
