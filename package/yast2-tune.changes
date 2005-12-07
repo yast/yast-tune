@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Wed Dec  7 10:57:23 CET 2005 - lslezak@suse.cz
+
+- added translations to pci_id.desktop file (#135688)
+
+-------------------------------------------------------------------
 Thu Dec  1 09:55:14 CET 2005 - locilka@suse.cz
 
 - pci_id prepaired for CWM needed for implementing other features
