@@ -104,8 +104,9 @@ This help describes usage of the <tt>elevator</tt> kernel parameter.</b>"),
 	    // TRANSLATORS: Help text - over taken from /etc/sysconfig/sysctl file
 	    "help" : _("<p><b><big>Enable SysRq Keys</big></b><br>
 If you enable SysRq Keys, you will have some control over the system even
-if it crashes (e.g. during kernel debugging). For further information see
-<tt>/usr/src/linux/Documentation/sysrq.txt</tt></p>")
+if it crashes (such as during kernel debugging). For further information, see
+<tt>/usr/src/linux/Documentation/sysrq.txt</tt>.</p>
+")
 	],
 	// http://www.vanemery.com/Linux/Serial/serial-console.html
 	// http://www.mikrotik.com/Documentation/manual_2.7/System/Serial.html

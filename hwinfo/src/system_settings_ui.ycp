@@ -21,12 +21,12 @@
     define symbol ReadSystemSettingsDialog () {
 	string caption = _("Reading the Configuration");
 	Progress::New ( caption, " ", 2, [
-	        _("Read the PCI ID Settings"),
-		_("Read the System Settings"),
+	        _("Read the PCI ID settings"),
+		_("Read the system settings"),
 	    ],
 	    [
-		_("Reading the PCI ID Settings..."),
-	        _("Reading the System Settings..."),
+		_("Reading the PCI ID settings..."),
+	        _("Reading the system settings..."),
 	        _("Finished"),
 	    ],
 	    _("<p><b><big>Reading the Configuration</big></b><br>
@@ -61,12 +61,12 @@ Please wait...</p>")
     define symbol WriteSystemSettingsDialog () {
 	string caption = _("Saving the Configuration");
 	Progress::New ( caption, " ", 2, [
-	        _("Save the PCI ID Settings"),
-		_("Save the System Settings"),
+	        _("Save the PCI ID settings"),
+		_("Save the system settings"),
 	    ],
 	    [
-		_("Saving the PCI ID Settings..."),
-	        _("Saving the System Settings..."),
+		_("Saving the PCI ID settings..."),
+	        _("Saving the system settings..."),
 	        _("Finished"),
 	    ],
 	    _("<p><b><big>Saving the Configuration</big></b><br>
