@@ -1,7 +1,7 @@
 @HEADER-COMMENT@
-# neededforbuild yast2-devel-packages
 
 @HEADER@
+BuildRequires:	yast2-devel-packages
 Requires:	yast2 hdparm
 
 Provides:	yast2-config-hwinfo yast2-tune-idedma yast2-trans-tune
