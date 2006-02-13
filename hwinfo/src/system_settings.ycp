@@ -5,7 +5,7 @@
  * Author:	Lukas Ocilka <locilka@suse.cz>
  *		Ladislav Slezak <lslezak@suse.cz>
  *
- * $Id: system_settings.ycp,v 1.1 2005/04/06 06:48:41 locilka Exp $
+ * $Id$
  *
  * System Settings for PCI ID, I/O Scheduler, Serial Console, etc.
  */

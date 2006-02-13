@@ -4,7 +4,7 @@
  *
  * Author:	Ladislav Slezak <lslezak@suse.cz>
  *
- * $Id: pci_id.ycp,v 1.1.2.1 2005/04/06 06:48:41 lslezak Exp $
+ * $Id$
  *
  * PCI ID - runtime configuration client
  */

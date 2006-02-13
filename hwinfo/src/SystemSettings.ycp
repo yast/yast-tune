@@ -4,7 +4,7 @@
  *
  * Author:	Lukas Ocilka <locilka@suse.cz>
  *
- * $Id: SystemSettings.ycp 22934 2005-04-06 09:28:00Z lslezak $
+ * $Id$
  *
  * This module manages the System and Kernel settings such as I/O Scheduler type,
  * Serial Console, SysRq Keys...
