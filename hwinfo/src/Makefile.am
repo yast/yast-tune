@@ -4,7 +4,15 @@
 
 client_DATA = hwinfo.ycp hwinfo_proposal.ycp inst_hwinfo.ycp pci_id.ycp
 
+if ARCH_S390
+
+desktop_DATA = hwinfo.desktop
+
+else
+
 desktop_DATA = hwinfo.desktop pci_id.desktop
+
+endif
 
 yncludedir = @yncludedir@/hwinfo
 ynclude_DATA = classnames.ycp routines.ycp newid.ycp

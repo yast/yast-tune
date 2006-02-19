@@ -27,6 +27,7 @@ Summary:	System configuration viewer and tuner
 
 %ifnarch s390 s390x
 @desktopdir@/idedma.desktop
+@desktopdir@/pci_id.desktop
 %endif
 
 %dir @yncludedir@/hwinfo
@@ -35,7 +36,6 @@ Summary:	System configuration viewer and tuner
 @yncludedir@/idedma/*
 @clientdir@/*.ycp
 @desktopdir@/hwinfo.desktop
-@desktopdir@/pci_id.desktop
 @moduledir@/*.ycp
 @moduledir@/*.ybc
 @scrconfdir@/*.scr
