@@ -1,0 +1,95 @@
+<HTML>
+<HEAD>
+  <TITLE>Specification of IDE DMA YaST2 configuration module</TITLE>
+</HEAD>
+
+<!-- $Id$ -->
+
+<BODY BGCOLOR=#FFFFFF>
+
+<H2>IDE DMA module specification</H2>
+
+<P>
+<I>Author: Ladislav Slezak &lt;<A HREF="mailto:lslezak@suse.cz">
+lslezak@suse.cz</A>&gt;</I>
+</P>
+
+<P>
+Changes:
+</P>
+
+<P>
+<UL>
+  <LI><B>2003-10-29:</B> Added Details section</LI>
+  <LI><B>2003-02-14:</B> Update - set transfer DMA mode</LI>
+  <LI><B>2002-01-21:</B> Initial version</LI>
+</UL>
+</P>
+
+<HR>
+
+
+<H3>Why set IDE DMA mode</H3>
+
+<P>Some IDE devices are broken and they do not work properly if they have DMA
+mode enabled (especially CD-ROM drives) or Linux kernel sometimes detect wrong
+maximux DMA transfer mode. DMA mode is enabled by kernel after boot for disk
+devices and disabled for CD-ROMs. Default DMA mode can be changed by
+boot.idedma init script after boot.</P>
+
+<P>This YaST2 module uses boot.idedma initscript which is frontend for hdparm utility.</P>
+
+
+<H3>Module description</H3>
+
+<P>
+In this YaST2 module DMA mode of selected device
+can be enabled, disabled or changed (e.g. from UltraDMA/100 to UltraDMA/66).</P>
+
+<P>Features of YaST2 module are available <A HREF="idedma_features.txt">here</A>.</P>
+
+<P>Settings are stored in file /etc/sysconfig/hardware in variable
+DEVICES_FORCE_IDE_DMA. This variable contains pairs
+&lt;device&gt;:&lt;DMA_mode&gt; separated by space. <EM>Device</EM> is device
+file (e.g. /dev/hdc), <EM>DMA_mode</EM> is on (enable default DMA mode), off
+(disable DMA mode, use PIO mode instead) or DMA mode specification supported by
+hdparm (e.g. mdma2, udma2, udma5,...). </P>
+
+<P>Other devices (not specified in DEVICES_FORCE_IDE_DMA variable) have their
+DMA mode unchanged.</P>
+
+
+<H3>Workflow</H3>
+
+<P>IDE DMA configuration module has only one dialog.</P>
+
+<P>
+<IMG SRC="idedma.png">
+</P>
+
+<P>There are displayed all attached IDE devices in the table. Column 'Required
+DMA mode' contains DMA mode which will be set after 'Finish' button is pressed
+and after boot by init script. Other columns contain device information and
+current DMA mode.</P>
+
+<P>To change DMA mode select device in the table and select required DMA mode
+in combo box below the table. Press Finish to save values to sysconfig/hardware
+file and activate changes. </P>
+
+<H3>Details</H3>
+
+<P>Disc cache is flushed (/bin/sync) before DMA is enabled to minimize data loss
+if the machine hangs just after enabling DMA.</P>
+
+<P>IDE devices which use ide-scsi emulation (usually CD recorders) can be
+also configured by this tool. Their original IDE device name is used to set up
+DMA mode.</P>
+
+<P>Although not all DMA modes can be set in the Yast2 module (e.g. UltraDMA/44)
+they can be set up manually in the sysconfig file. These modes are read-only
+for Yast2 to not confuse users with too many (usually not used) DMA modes.</P>
+
+</BODY>
+</HTML>
+
+

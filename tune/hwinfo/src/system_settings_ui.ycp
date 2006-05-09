@@ -1,0 +1,121 @@
+/**
+ *
+ * Module:	System Settings UI Handling
+ *
+ * Author:	Lukas Ocilka <locilka@suse.cz>
+ *
+ * $Id$
+ *
+ * System Settings for PCI ID, I/O Scheduler, Serial Console, etc.
+ */
+
+{
+    import "Progress";
+    import "SystemSettings";
+
+    textdomain "tune";
+
+    /* Short sleep between reads or writes */
+    integer sl = 500;
+
+    define symbol ReadSystemSettingsDialog () {
+	string caption = _("Reading the Configuration");
+	Progress::New ( caption, " ", 2, [
+	        _("Read the PCI ID settings"),
+		_("Read the system settings"),
+	    ],
+	    [
+		_("Reading the PCI ID settings..."),
+	        _("Reading the system settings..."),
+	        _("Finished"),
+	    ],
+	    _("<p><b><big>Reading the Configuration</big></b><br>
+Please wait...</p>")
+	);
+
+	boolean progress_orig = nil;
+
+	Progress::NextStage();
+	progress_orig = Progress::set(false);
+	// calling PCI ID Read()
+	ReadSettings();
+	Progress::set(progress_orig);
+	
+	Progress::NextStage();
+	progress_orig = Progress::set(false);
+	/*
+	 * I have to admit that this is very ugly but it is here
+	 * to avoid of the very long starting time of the yast module
+	 * because the Storage module (which is imported by the Bootloader (imported by the SystemSettings module))
+	 * has a Read() function call in its constructor.
+	 */
+	SystemSettings::Read();
+	Progress::set(progress_orig);
+	
+	Progress::NextStage();
+	sleep(2 * sl);
+	
+	return `next;
+    }
+		
+    define symbol WriteSystemSettingsDialog () {
+	string caption = _("Saving the Configuration");
+	Progress::New ( caption, " ", 2, [
+	        _("Save the PCI ID settings"),
+		_("Save the system settings"),
+	    ],
+	    [
+		_("Saving the PCI ID settings..."),
+	        _("Saving the system settings..."),
+	        _("Finished"),
+	    ],
+	    _("<p><b><big>Saving the Configuration</big></b><br>
+Please wait...</p>")
+	);
+
+	boolean progress_orig = nil;
+
+	Progress::NextStage();
+	progress_orig = Progress::set(false);
+	// calling PCI ID Write()
+	WriteSettings();
+	Progress::set(progress_orig);
+	
+	sleep(sl);
+
+	Progress::NextStage();
+	progress_orig = Progress::set(false);
+	SystemSettings::Write();
+	Progress::set(progress_orig);
+	
+	Progress::NextStage();
+	sleep(2 * sl);
+
+	return `next;
+    }
+				
+    define symbol HandleElevatorSettings (string key, map event) {
+	y2milestone("Key: %1, Event: %2", key, event);
+	return nil;
+    }
+
+    define void InitSysRqSettings (string key) {
+	UI::ChangeWidget(`id("sysrq"), `Value, SystemSettings::GetSysRqKeysEnabled());
+    }
+
+    define void StoreSysRqSettings (string key, map event) {
+	y2milestone("Key: %1, Event: %2", key, event);
+	
+	boolean sysrq_new = (boolean) UI::QueryWidget(`id("sysrq"), `Value);
+	if (SystemSettings::GetSysRqKeysEnabled() != sysrq_new) {
+	    SystemSettings::SetSysRqKeysEnabled(sysrq_new);
+	}
+    }
+
+    define symbol HandleSerialConsoleSettings (string key, map event) {
+	y2milestone("Key: %1, Event: %2", key, event);
+	return nil;
+    }
+
+}
+

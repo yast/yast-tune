@@ -1,0 +1,86 @@
+Dump	Read test
+Read	.probe.ide [$["dev_name":"/dev/hda", "device":"ABC-13245"], $["dev_name":"/dev/hdc", "device":"XYZ-6789"]]
+Read	.probe.scsi [$["class_id":262, "dev_name":"/dev/sr0", "dev_name2":"/dev/hdb", "device":"TOSHIBA DVD-ROM SD-M1402", "driver":"ide-scsi", "sub_class_id":2]]
+Read	.sysconfig.ide.DEVICES_FORCE_IDE_DMA nil
+Execute	.target.bash_output "/sbin/hdparm -d /dev/hda" $["exit":0, "stdout":" using_dma    =  1 (on)"]
+Execute	.target.bash_output "/sbin/hdparm -I /dev/hda" $["exit":0, "stdout":" using_dma    =  1 (on)"]
+Execute	.target.bash_output "/sbin/hdparm -d /dev/hdc" $["exit":0, "stdout":" using_dma    =  1 (on)"]
+Execute	.target.bash_output "/sbin/hdparm -I /dev/hdc" $["exit":0, "stdout":" using_dma    =  1 (on)"]
+Execute	.target.bash_output "/sbin/hdparm -d /dev/hdb" $["exit":0, "stdout":" using_dma    =  1 (on)"]
+Execute	.target.bash_output "/sbin/hdparm -I /dev/hdb" $["exit":0, "stdout":" using_dma    =  1 (on)"]
+Return	true
+Dump	[$["current_dma":"on", "dev_name":"/dev/hda", "device":"ABC-13245", "device_type":"Unknown device type", "dma_modes":["mdma2", "udma0", "udma2", "udma4", "udma5", "udma6"], "dma_setting":"nochange"], $["current_dma":"on", "dev_name":"/dev/hdc", "device":"XYZ-6789", "device_type":"Unknown device type", "dma_modes":["mdma2", "udma0", "udma2", "udma4", "udma5", "udma6"], "dma_setting":"nochange"], $["current_dma":"on", "dev_name":"/dev/hdb", "device":"TOSHIBA DVD-ROM SD-M1402", "device_type":"CD-ROM", "dma_modes":["mdma2", "udma0", "udma2", "udma4", "udma5", "udma6"], "dma_setting":"nochange", "scsi_name":"/dev/sr0"]]
+Dump	Read test2
+Read	.probe.ide [$["dev_name":"/dev/hda", "device":"ABC-13245"], $["dev_name":"/dev/hdc", "device":"XYZ-6789"]]
+Read	.probe.scsi [$["class_id":262, "dev_name":"/dev/sr0", "dev_name2":"/dev/hdb", "device":"TOSHIBA DVD-ROM SD-M1402", "driver":"ide-scsi", "sub_class_id":2]]
+Read	.sysconfig.ide.DEVICES_FORCE_IDE_DMA ""
+Execute	.target.bash_output "/sbin/hdparm -d /dev/hda" $["exit":-1, "stdout":"Error"]
+Execute	.target.bash_output "/sbin/hdparm -I /dev/hda" $["exit":-1, "stdout":"Error"]
+Execute	.target.bash_output "/sbin/hdparm -d /dev/hdc" $["exit":-1, "stdout":"Error"]
+Execute	.target.bash_output "/sbin/hdparm -I /dev/hdc" $["exit":-1, "stdout":"Error"]
+Execute	.target.bash_output "/sbin/hdparm -d /dev/hdb" $["exit":-1, "stdout":"Error"]
+Execute	.target.bash_output "/sbin/hdparm -I /dev/hdb" $["exit":-1, "stdout":"Error"]
+Return	true
+Dump	[$["current_dma":"", "dev_name":"/dev/hda", "device":"ABC-13245", "device_type":"Unknown device type", "dma_modes":["mdma2", "udma0", "udma2", "udma4", "udma5", "udma6"], "dma_setting":"nochange"], $["current_dma":"", "dev_name":"/dev/hdc", "device":"XYZ-6789", "device_type":"Unknown device type", "dma_modes":["mdma2", "udma0", "udma2", "udma4", "udma5", "udma6"], "dma_setting":"nochange"], $["current_dma":"", "dev_name":"/dev/hdb", "device":"TOSHIBA DVD-ROM SD-M1402", "device_type":"CD-ROM", "dma_modes":["mdma2", "udma0", "udma2", "udma4", "udma5", "udma6"], "dma_setting":"nochange", "scsi_name":"/dev/sr0"]]
+Dump	Read test3
+Read	.probe.ide [$["dev_name":"/dev/hda", "device":"ABC-13245"], $["dev_name":"/dev/hdc", "device":"XYZ-6789"]]
+Read	.probe.scsi [$["class_id":262, "dev_name":"/dev/sr0", "dev_name2":"/dev/hdb", "device":"TOSHIBA DVD-ROM SD-M1402", "driver":"ide-scsi", "sub_class_id":2]]
+Read	.sysconfig.ide.DEVICES_FORCE_IDE_DMA "/dev/hda:on"
+Execute	.target.bash_output "/sbin/hdparm -d /dev/hda" $["exit":0, "stdout":" using_dma    =  1 (on)"]
+Execute	.target.bash_output "/sbin/hdparm -I /dev/hda" $["exit":0, "stdout":" using_dma    =  1 (on)"]
+Execute	.target.bash_output "/sbin/hdparm -d /dev/hdc" $["exit":0, "stdout":" using_dma    =  1 (on)"]
+Execute	.target.bash_output "/sbin/hdparm -I /dev/hdc" $["exit":0, "stdout":" using_dma    =  1 (on)"]
+Execute	.target.bash_output "/sbin/hdparm -d /dev/hdb" $["exit":0, "stdout":" using_dma    =  1 (on)"]
+Execute	.target.bash_output "/sbin/hdparm -I /dev/hdb" $["exit":0, "stdout":" using_dma    =  1 (on)"]
+Return	true
+Dump	[$["current_dma":"on", "dev_name":"/dev/hda", "device":"ABC-13245", "device_type":"Unknown device type", "dma_modes":["mdma2", "udma0", "udma2", "udma4", "udma5", "udma6"], "dma_setting":"on"], $["current_dma":"on", "dev_name":"/dev/hdc", "device":"XYZ-6789", "device_type":"Unknown device type", "dma_modes":["mdma2", "udma0", "udma2", "udma4", "udma5", "udma6"], "dma_setting":"nochange"], $["current_dma":"on", "dev_name":"/dev/hdb", "device":"TOSHIBA DVD-ROM SD-M1402", "device_type":"CD-ROM", "dma_modes":["mdma2", "udma0", "udma2", "udma4", "udma5", "udma6"], "dma_setting":"nochange", "scsi_name":"/dev/sr0"]]
+Dump	Read test4
+Read	.probe.ide [$["dev_name":"/dev/hda", "device":"ABC-13245"], $["dev_name":"/dev/hdc", "device":"XYZ-6789"]]
+Read	.probe.scsi [$["class_id":262, "dev_name":"/dev/sr0", "dev_name2":"/dev/hdb", "device":"TOSHIBA DVD-ROM SD-M1402", "driver":"ide-scsi", "sub_class_id":2]]
+Read	.sysconfig.ide.DEVICES_FORCE_IDE_DMA "/dev/hda:off"
+Execute	.target.bash_output "/sbin/hdparm -d /dev/hda" $["exit":0, "stdout":" using_dma    =  1 (on)"]
+Execute	.target.bash_output "/sbin/hdparm -I /dev/hda" $["exit":0, "stdout":" using_dma    =  1 (on)"]
+Execute	.target.bash_output "/sbin/hdparm -d /dev/hdc" $["exit":0, "stdout":" using_dma    =  1 (on)"]
+Execute	.target.bash_output "/sbin/hdparm -I /dev/hdc" $["exit":0, "stdout":" using_dma    =  1 (on)"]
+Execute	.target.bash_output "/sbin/hdparm -d /dev/hdb" $["exit":0, "stdout":" using_dma    =  1 (on)"]
+Execute	.target.bash_output "/sbin/hdparm -I /dev/hdb" $["exit":0, "stdout":" using_dma    =  1 (on)"]
+Return	true
+Dump	[$["current_dma":"on", "dev_name":"/dev/hda", "device":"ABC-13245", "device_type":"Unknown device type", "dma_modes":["mdma2", "udma0", "udma2", "udma4", "udma5", "udma6"], "dma_setting":"off"], $["current_dma":"on", "dev_name":"/dev/hdc", "device":"XYZ-6789", "device_type":"Unknown device type", "dma_modes":["mdma2", "udma0", "udma2", "udma4", "udma5", "udma6"], "dma_setting":"nochange"], $["current_dma":"on", "dev_name":"/dev/hdb", "device":"TOSHIBA DVD-ROM SD-M1402", "device_type":"CD-ROM", "dma_modes":["mdma2", "udma0", "udma2", "udma4", "udma5", "udma6"], "dma_setting":"nochange", "scsi_name":"/dev/sr0"]]
+Dump	Write test1
+Dump	[$["current_dma":"on", "dev_name":"/dev/hda", "device":"ABC-13245", "device_type":"Unknown device type", "dma_modes":["mdma2", "udma0", "udma2", "udma4", "udma5", "udma6"], "dma_setting":"on"], $["current_dma":"on", "dev_name":"/dev/hdc", "device":"XYZ-6789", "device_type":"Unknown device type", "dma_modes":["mdma2", "udma0", "udma2", "udma4", "udma5", "udma6"], "dma_setting":"off"], $["current_dma":"on", "dev_name":"/dev/hdb", "device":"TOSHIBA DVD-ROM SD-M1402", "device_type":"CD-ROM", "dma_modes":["mdma2", "udma0", "udma2", "udma4", "udma5", "udma6"], "dma_setting":"nochange", "scsi_name":"/dev/sr0"]]
+Write	.sysconfig.ide.DEVICES_FORCE_IDE_DMA "/dev/hda:on /dev/hdc:off" true
+Write	.sysconfig.ide nil true
+Execute	.target.bash "/sbin/udev.idedma.sh /dev/hdc" 0
+Return	true
+Dump	Write test2
+Dump	[$["current_dma":"on", "dev_name":"/dev/hda", "device":"ABC-13245", "device_type":"Unknown device type", "dma_modes":["mdma2", "udma0", "udma2", "udma4", "udma5", "udma6"], "dma_setting":"udma5"], $["current_dma":"on", "dev_name":"/dev/hdc", "device":"XYZ-6789", "device_type":"Unknown device type", "dma_modes":["mdma2", "udma0", "udma2", "udma4", "udma5", "udma6"], "dma_setting":"udma2"], $["current_dma":"on", "dev_name":"/dev/hdb", "device":"TOSHIBA DVD-ROM SD-M1402", "device_type":"CD-ROM", "dma_modes":["mdma2", "udma0", "udma2", "udma4", "udma5", "udma6"], "dma_setting":"nochange", "scsi_name":"/dev/sr0"]]
+Write	.sysconfig.ide.DEVICES_FORCE_IDE_DMA "/dev/hda:udma5 /dev/hdc:udma2" true
+Write	.sysconfig.ide nil true
+Execute	.target.bash "/sbin/udev.idedma.sh /dev/hda" 0
+Execute	.target.bash "/sbin/udev.idedma.sh /dev/hdc" 0
+Return	true
+Dump	Write test3
+Dump	[$["current_dma":"on", "dev_name":"/dev/hda", "device":"ABC-13245", "device_type":"Unknown device type", "dma_modes":["mdma2", "udma0", "udma2", "udma4", "udma5", "udma6"], "dma_setting":"udma5"], $["current_dma":"on", "dev_name":"/dev/hdc", "device":"XYZ-6789", "device_type":"Unknown device type", "dma_modes":["mdma2", "udma0", "udma2", "udma4", "udma5", "udma6"], "dma_setting":"udma2"], $["current_dma":"on", "dev_name":"/dev/hdb", "device":"TOSHIBA DVD-ROM SD-M1402", "device_type":"CD-ROM", "dma_modes":["mdma2", "udma0", "udma2", "udma4", "udma5", "udma6"], "dma_setting":"nochange", "scsi_name":"/dev/sr0"]]
+Write	.sysconfig.ide.DEVICES_FORCE_IDE_DMA "/dev/hda:udma5 /dev/hdc:udma2" true
+Write	.sysconfig.ide nil true
+Execute	.target.bash "/sbin/udev.idedma.sh /dev/hda" 0
+Execute	.target.bash "/sbin/udev.idedma.sh /dev/hdc" 0
+Return	true
+Dump	Write test4
+Dump	[$["current_dma":"on", "dev_name":"/dev/hda", "device":"ABC-13245", "device_type":"Unknown device type", "dma_modes":["mdma2", "udma0", "udma2", "udma4", "udma5", "udma6"], "dma_setting":"nochange"], $["current_dma":"on", "dev_name":"/dev/hdc", "device":"XYZ-6789", "device_type":"Unknown device type", "dma_modes":["mdma2", "udma0", "udma2", "udma4", "udma5", "udma6"], "dma_setting":"udma2"], $["current_dma":"on", "dev_name":"/dev/hdb", "device":"TOSHIBA DVD-ROM SD-M1402", "device_type":"CD-ROM", "dma_modes":["mdma2", "udma0", "udma2", "udma4", "udma5", "udma6"], "dma_setting":"nochange", "scsi_name":"/dev/sr0"]]
+Write	.sysconfig.ide.DEVICES_FORCE_IDE_DMA "/dev/hdc:udma2" true
+Write	.sysconfig.ide nil true
+Execute	.target.bash "/sbin/udev.idedma.sh /dev/hdc" 0
+Return	true
+Return	
+Return	
+Return	
+Return	udma2
+Return	udma2
+Return	udma2
+Return	["mdma2", "udma0", "udma2", "udma4", "udma5", "udma6"]
+Return	["mdma2", "udma0", "udma2", "udma4", "udma5", "udma6"]
+Return	["mdma2", "udma0", "udma1", "udma2"]
+Return	["mdma2", "udma0", "udma1", "udma2"]
+Return	["mdma2", "udma0", "udma1", "udma2"]
+Return	["mdma2", "udma0", "udma1", "udma2"]

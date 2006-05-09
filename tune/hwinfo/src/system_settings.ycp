@@ -1,0 +1,86 @@
+/**
+ *
+ * Module:	System Settings Client
+ *
+ * Author:	Lukas Ocilka <locilka@suse.cz>
+ *		Ladislav Slezak <lslezak@suse.cz>
+ *
+ * $Id$
+ *
+ * System Settings for PCI ID, I/O Scheduler, Serial Console, etc.
+ */
+
+{
+
+textdomain "tune";
+
+import "Wizard";
+import "Sequencer";
+import "CommandLine";
+
+// PCI ID (backward compatibility)
+include "hwinfo/newid.ycp";
+// UI handling functions
+include "hwinfo/system_settings_ui.ycp";
+// UI definition functions
+include "hwinfo/system_settings_dialogs.ycp";
+
+/**************************************
+ *
+ *            Main part
+ *
+ **************************************/
+
+// aliases for wizard sequencer
+map aliases =
+    $[
+	"read"	: [``(ReadSystemSettingsDialog()), true],
+	"main"	: ``(SystemSettingsDialog()),
+	"write"	: ``(WriteSystemSettingsDialog())
+    ];
+
+// workflow sequence
+map sequence = $[
+    "ws_start" : "read",
+    "read" :
+    $[
+	`abort	: `abort,
+	`next	: "main"
+    ],
+    "main" :
+    $[
+	`abort	: `abort,
+	`next	: "write"
+    ],
+    "write" :
+    $[
+	`abort	: `abort,
+	`next	: `next
+    ]
+];
+
+define any GUIhandler()
+{
+    Wizard::CreateDialog();
+    Wizard::SetDesktopIcon("powertweak");
+
+    // start workflow
+    any ret = Sequencer::Run(aliases, sequence);
+    y2milestone("Finishing with %1", ret);
+
+    UI::CloseDialog();
+
+    return ret;
+}
+
+
+map cmdline_description = $[
+    "guihandler" : GUIhandler
+];
+
+any ret = CommandLine::Run(cmdline_description);
+
+return ret;
+
+}
+

@@ -1,0 +1,179 @@
+/**
+ * File:
+ *   system_settings.ycp
+ *
+ * Summary:
+ *   Configuration of System Settings. PCI ID, Kernel parameters,
+ *   Bootloader parameters etc.
+ *
+ * Authors:
+ *   Lukas Ocilka <locilka@suse.cz>
+ *
+ * $Id$
+ *
+ */
+
+{
+
+    import "CWM";
+    import "CWMTab";
+    import "Label";
+
+    textdomain "tune";
+
+    term contents = `VBox ( "tab" );
+
+    map tabs_descr = $[
+	"pci_id" : $[
+	    "header" : NewPCIIDDialogCaption(),
+	    "contents" : `HBox (
+		`HSpacing(1),
+		`VBox (
+		    `VSpacing(0.3),
+		    "pci_id_table_and_buttons",
+		    `VSpacing(0.3)
+		),
+		`HSpacing(1)
+	    ),
+	    "widget_names" : ["pci_id_table_and_buttons"],
+	],
+	"kernel_settings" : $[
+	    "header" : _("Kernel Settings"),
+	    "contents" : `HBox (
+		`HSpacing(1),
+		`VBox (
+		    `VSpacing(0.3),
+		    `Left( "elevator" ),
+		    `VSpacing(1),
+		    `Left( "sysrq" ),
+		    `VSpacing(1),
+		    `Left ( "serial_console" ),
+		    `VStretch()
+		),
+		`HSpacing (1)
+	    ),
+	    "widget_names" : ["elevator", "sysrq", "serial_console"],
+	],
+    ];
+
+    string initial_tab = "pci_id";
+
+    list <string> widget_names = ["tab"];
+    map <string, map <string, any> > widget_descr = $[
+	"pci_id_table_and_buttons" : $[
+	    "widget" : `custom,
+	    "custom_widget" : NewPCIIDDialogContent(),
+	    "help" : NewPCIIDDialogHelp(),
+	    "init" : InitNewPCIIDDialog,
+	    "handle" : HandleNewPCIIDDialog,
+	],
+
+	/* /usr/src/linux/Documentation/kernel-parameters.txt
+	 * http://www.redhat.com/magazine/008jun05/features/schedulers/
+	 *
+	 * elevator=    [IOSCHED]
+	 * 		Format: {"as"|"cfq"|"deadline"|"noop"}
+	 *		See Documentation/block/as-iosched.txt
+	 *		and Documentation/block/deadline-iosched.txt for details.
+	 *
+	 *	*'deadline' =>	Deadline. Database servers, especially those using "TCQ" disks should
+	 *			investigate performance with the 'deadline' IO scheduler. Any system with high
+	 *			disk performance requirements should do so, in fact.
+	 *	*'as' => Anticipatory (the default one)
+	 *	*'noop' => NOOP
+	 *	'cfq' => Completely Fair Queuing
+	 */									 
+	"elevator" : $[
+	    "widget" : `custom,
+	    "custom_widget" : `ComboBox (_("&I/O Scheduler"), [
+		`item( `id("as"),	_("Anticipatory [as]")),
+		`item( `id("cfq"),	_("Completely Fair Queuing [cfq]")),
+		`item( `id("noop"),	_("NOOP [noop]")),
+		`item( `id("deadline"),	_("Deadline [deadline]"))
+	    ]),
+	    "handle" : HandleElevatorSettings,
+	    "help" : _("<p><b><big>Elevator</big></b><br>
+This help describes usage of the <tt>elevator</tt> kernel parameter.</b>"),
+	],
+	// .sysconfig.sysctl
+	"sysrq" : $[
+	    "widget" : `checkbox,
+	    "label" : _("Enable &SysRq Keys"),
+	    "store" : StoreSysRqSettings,
+	    "init" : InitSysRqSettings,
+	    // TRANSLATORS: Help text - over taken from /etc/sysconfig/sysctl file
+	    "help" : _("<p><b><big>Enable SysRq Keys</big></b><br>
+If you enable SysRq Keys, you will have some control over the system even
+if it crashes (such as during kernel debugging). For further information, see
+<tt>/usr/src/linux/Documentation/sysrq.txt</tt>.</p>
+")
+	],
+	// http://www.vanemery.com/Linux/Serial/serial-console.html
+	// http://www.mikrotik.com/Documentation/manual_2.7/System/Serial.html
+	// http://www.camiresearch.com/Data_Com_Basics/RS232_standard.html
+	
+	// http://www.tldp.org/HOWTO/Remote-Serial-Console-HOWTO/configure-boot-loader-lilo.html
+	// http://www.tldp.org/HOWTO/Remote-Serial-Console-HOWTO/configure-boot-loader-grub.html
+	
+	/*
+	 * LILO:
+	 *	serial=<serial_port>[,<speed>[<parity n|e|o>[<data>]]]
+	 *		syntax <serial_port> ::= 0 | 1| ... | 3 (/dev/tty0 -> 0)
+	 *	console=<serial device (ttyS0)>,<speed>
+	 *
+	 * GRUB
+	 *	serial --unit=0 --speed=<speed> --word=8 --parity=[no|even|odd] --stop=1
+	 *	terminal --timeout=0 [--dumb] serial console / terminal serial
+	 */	
+	"serial_console" : $[
+	    // FIXME: serial line has to have funkcionality defined more precisely
+	    "widget" : `custom,
+	    "custom_widget" : `Frame( _("Serial Console"),
+		`VBox (
+		    `Left( `CheckBox (_("&Enable the Serial Console"))),
+		    `Left( `ComboBox (`opt(`editable), _("Serial Line &Baud Rate"), [
+			"110", "300", "1200", "2400", "4800", "9600", "19200", "38400", "57600", "115200"
+		    ])),
+		    `Left( `ComboBox (`opt(`editable), _("Serial &Device"), [
+			"/dev/ttyS0", "/dev/ttyS1"
+		    ]))
+		)
+	    ),
+	    "handle" : HandleSerialConsoleSettings,
+	    "help" : _("<p><b><big>Serial Console</big></b><br>
+help for the Serial console settings</p>"),
+	],
+    ];
+
+    define symbol SystemSettingsDialog () {
+	widget_descr["tab"] = CWMTab::CreateWidget($[
+	    "tab_order": ["pci_id", "kernel_settings"],
+	    "tabs": tabs_descr,
+	    "widget_descr": widget_descr,
+	    "initial_tab" : initial_tab,
+	]);
+
+	string caption = _("System Settings");
+    
+	Wizard::SetContentsButtons("", `VBox (), "",
+	    Label::BackButton(), Label::NextButton());
+	Wizard::SetDesktopIcon("powertweak");
+    
+	symbol ret = CWM::ShowAndRun ($[
+	    "widget_descr" : widget_descr,
+	    "widget_names" : widget_names,
+	    "contents" : contents,
+	    "caption" : caption,
+	    "back_button" : "",
+	    "abort_button" : Label::AbortButton (),
+	    "next_button" : Label::FinishButton (),
+	]);
+
+	if (ret != `back && ret != `abort && ret != `cancel) {
+	    initial_tab = CWMTab::CurrentTab ();
+	}
+	y2milestone("Returning %1", ret);
+
+	return ret;
+    }
+}

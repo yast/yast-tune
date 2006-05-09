@@ -1,0 +1,80 @@
+/**
+ *
+ * Module:	PCI ID client
+ *
+ * Author:	Ladislav Slezak <lslezak@suse.cz>
+ *
+ * $Id$
+ *
+ * PCI ID - runtime configuration client
+ */
+
+{
+
+textdomain "tune";
+
+import "Wizard";
+import "Sequencer";
+import "NewID";
+import "CommandLine";
+
+include "hwinfo/newid.ycp";
+
+/**************************************
+ *
+ *            Main part
+ *
+ **************************************/
+
+// aliases for wizard sequencer
+map aliases =
+    $[
+	"read"	: [``(ReadSettings()), true],
+	"main"	: ``(NewIDConfigDialog()),
+	"write"	: ``(WriteSettings())
+    ];
+
+// workflow sequence
+map sequence = $[
+    "ws_start" : "read",
+    "read" :
+    $[
+	`abort	: `abort,
+	`next	: "main"
+    ],
+    "main" :
+    $[
+	`abort	: `abort,
+	`next	: "write"
+    ],
+    "write" :
+    $[
+	`abort	: `abort,
+	`next	: `next
+    ]
+];
+
+define any GUIhandler()
+{
+    Wizard::CreateDialog();
+    Wizard::SetDesktopIcon("powertweak");
+
+    // start workflow
+    any ret = Sequencer::Run(aliases, sequence);
+
+    Wizard::CloseDialog();
+
+    return ret;
+}
+
+
+map cmdline_description = $[
+    "guihandler" : GUIhandler
+];
+
+any ret = CommandLine::Run(cmdline_description);
+
+return ret;
+
+}
+

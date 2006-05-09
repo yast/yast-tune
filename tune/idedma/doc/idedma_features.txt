@@ -1,0 +1,15 @@
+Features of YaST2 idedma module
+-------------------------------
+
+Name: IDE DMA mode configuration
+
+Purpose: Set IDE DMA mode (enable/disable, set required DMA mode)
+
+Features:
+
+    * display all attached IDE devices with current DMA mode status
+
+    * change DMA mode of selected devices
+
+    * store settings to file (can be used to make changes at boot)
+

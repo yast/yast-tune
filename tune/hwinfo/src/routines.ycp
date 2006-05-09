@@ -1,0 +1,640 @@
+/**
+ * File:	routines.ycp
+ *
+ * Author:	Ladislav Slezak <lslezak@suse.cz>
+ * $Id$
+ *
+ * Functions used in hwinfo and in init_hwinfo modules.
+ */
+
+{
+
+textdomain "tune";
+
+import "Report";
+
+include "hwinfo/classnames.ycp";
+
+/*
+ * translation table- key is replaced by value on it's way to ui
+ * must be done this way, because keys are machine-generated
+ */
+map<string, string> trans_table = (map<string, string>) eval(
+$[
+    // tree node string
+    "architecture"	:   _("Architecture"),
+    // tree node string - means "hardware bus"
+    "bus"		:   _("Bus"),
+    // tree node string - means "hardware bus ID"
+    "bus_id"		: _("Bus ID"),
+    // tree node string
+    "cache"		:   _("Cache"),
+    // tree node string
+    "card_type"	:   _("Card Type"),
+    // tree node string
+    "cardtype"	:   _("Card Type"),
+    // tree node string - means "class of hardware"
+    "class_id"	:   _("Class"),
+    // tree node string
+    "cdtype"	:   _("CD Type"),
+    // tree node string
+    "dev_name"	:   _("Device Name"),
+    // tree node string
+    "dev_num"	:   _("Device Numbers"),
+    // tree node string
+    "sysfs_id"	:   _("Sysfs ID"),
+    // tree node string
+    "device"	:   _("Device"),
+    // tree node string
+    "device_id"	:   _("Device Identifier"),
+    // tree node string - means "hardware drivers"
+    "drivers"	:   _("Drivers"),
+    // tree node string - means "hardware driver"
+    "driver"	:   _("Driver"),
+    // tree node string
+    "type"	: _("Type"),
+    // tree node string
+    "major"	: _("Major"),
+    // tree node string
+    "minor"	: _("Minor"),
+    // tree node string
+    "range"	: _("Range"),
+    // tree node string (System Management BIOS)
+    "smbios"	: _("SMBIOS"),
+    // tree node string
+    "prog_if"	:   _("Interface"),
+    // tree node string
+    "resource"	:   _("Resources"),
+    // tree node string
+    "requires"	:   _("Requires"),
+    // tree node string
+    "rev"		:   _("Revision"),
+    // tree node string - location of hardware in the machine
+    "slot_id"	:	_("Slot ID"),
+    // tree node string
+    "old_unique_key"	: _("Old Unique Key"),
+    // tree node string
+    "sub_class_id"	:   _("Class (spec)"),
+    // tree node string
+    "sub_device"	:   _("Device (spec)"),
+    // tree node string
+    "sub_device_id" :   _("Device Identifier (spec)"),
+    // tree node string
+    "sub_vendor"	:   _("Subvendor"),
+    // tree node string
+    "sub_vendor_id" :   _("Subvendor Identifier"),
+    // tree node string
+    "unique_key"	:   _("Unique Key"),
+    // tree node string
+    "vendor"	:   _("Vendor"),
+    // tree node string
+    "vendor_id"        :   _("Vendor Identifier"),
+    // tree node string
+    "bios_video"       :   _("BIOS Video"),
+    // tree node string
+    "boot_arch"        :   _("Boot Architecture"),
+    // tree node string
+    "boot_disk"        :   _("Boot Disk"),
+    // tree node string
+    "block"		: _("Block Devices"),
+    // tree node string
+    "redasd"		: _("DASD Disks"),
+    // tree node string
+    "cdrom"            :   _("CD-ROM"),
+    // tree node string
+    "cpu"              :   _("CPU"),
+    // tree node string
+    "disk"             :   _("Disk"),
+    // tree node string
+    "display"  :   _("Display"),
+    // tree node string
+    "floppy"   :   _("Floppy Disk"),
+    // tree node string
+    "framebuffer"      :   _("Framebuffer"),
+    // tree node string (powermanagement)
+    "has_apm"  :   _("Has APM"),
+    // tree node string
+    "has_pcmcia"       :   _("Has PCMCIA"),
+    // tree node string (multiprocessing)
+    "has_smp"  :   _("Has SMP"),
+    // tree node string - UML = User Mode Linux
+    "is_uml"	:	_("UML System"),
+    // tree node string
+    "ihw_data" :   _("Hardware Data"),
+    // tree node string
+    "isdn"             :   _("ISDN"),
+    // tree node string
+    "keyboard" :   _("Keyboard"),
+    // tree node string
+    "monitor"  :   _("Monitor"),
+    // tree node string
+    "netdev"   :   _("Network Devices"),
+    // tree node string
+    "netif"            :   _("Network Interface"),
+    // tree node string
+    "printer"  :   _("Printer"),
+    // tree node string
+    "modem"            :   _("Modem"),
+    // tree node string
+    "sound"            :   _("Sound"),
+    // tree node string
+    "storage"  :   _("Storage Media"),
+    // tree node string
+    "system"   :   _("System"),
+    // tree node string
+    "tv"               :   _("TV Card"),
+    // tree node string
+    "dvb"              :   _("DVB Card"),
+    // tree node string
+    "usb_type" :   _("USB Type"),
+    // tree node string
+    "version"  :   _("Version"),
+    // tree node string - memory (RAM) information
+    "memory"   :   _("Memory"),
+    // tree node string
+    "netcard"  :   _("Network Card"),
+    // tree node string
+    "bios"     :   _("BIOS"),
+    // tree node string
+    "fbdev"    :   _("Framebuffer Device"),
+    // tree node string - bus type
+    "ide"      :   _("IDE"),
+    // tree node string - bus type
+    "pci"      :   _("PCI"),
+    // tree node string - bus type
+    "usb"      :   _("USB"),
+    // tree node string - bus type
+    "isapnp"   :   _("ISA PnP"),
+    // tree node
+    "usbctrl"  :   _("USB Controller"),
+    // tree node
+    "hub"      :   _("USB Hub"),
+    // tree node
+    "ieee1394ctrl"     :  _("IEEE1394 Controller"),
+    // tree node
+    "scsi"     :   _("SCSI"),
+    // tree node
+    "scanner"  :   _("Scanner"),
+    // tree node
+    "mouse"    :   _("Mouse"),
+    // tree node
+    "joystick" :   _("Joystick"),
+    // tree node
+    "braille"  :   _("Braille Display"),
+    // tree node
+    "chipcard" :   _("Chipcard Reader"),
+    // tree node - Digital camera or WebCam
+    "camera"   :   _("Camera"),
+    // Point-to-Point Protocol Over Ethernet
+    "pppoe"    :   _("PPP over Ethernet"),
+
+    // tree node string - CPU information
+    "bogomips" :   _("Bogus Millions of Instructions Per Second"),
+    // tree node string - CPU information
+    "cache"            :   _("Cache"),
+    // tree node string - CPU information
+    "coma_bug" :   _("Coma Bug"),
+    // tree node string - CPU information
+    "f00f_bug" :   _("f00f Bug"),
+    // tree node string - CPU information
+    "cpuid_level"      :   _("CPU ID Level"),
+    // tree node string - CPU information
+    "mhz"              :   _("Frequency"),
+    // tree node string - CPU information
+    "fdiv_bug" :   "Floating point division bug",
+    // tree node string - CPU information
+    "flags"            :   _("Flags"),
+    // tree node string - CPU information
+    "fpu"              :   _("Floating Point Unit"),
+    // tree node string - CPU information
+    "fpu_exception"    :   _("Floating Point Unit Exception"),
+    // tree node string - CPU information
+    "hlt_bug"  :   _("Halt Bug"),
+    // tree node string - CPU information
+    "processor"        :   _("Processor"),
+    // tree node string - CPU information
+    "stepping" :   _("Stepping"),
+    // tree node string - CPU information
+    "vendor_id"        :   _("Vendor Identifier"),
+    // tree node string - CPU information
+    "family"   :   _("Family"),
+    // tree node string - CPU information
+    "model"            :   _("Model"),
+    // tree node string - CPU information
+    "wp"               :   _("WP"),
+    // tree node string - wireless network adapters
+    "wlan"             :   _("Wireless LAN"),
+    // tree node string - tape devices
+    "tape"             :   _("Tape"),
+    // tree node string - Bluetooth devices
+    "bluetooth"        :   _("Bluetooth"),
+    // tree node string - DSL devices
+    "dsl"              :   _("DSL"),
+    // translate "probe" to empty string
+    // search starts from .probe node which doesn't
+    // contain any hardware information
+    "probe"		: ""
+]);
+
+/**
+ * reads values from map and creates formatted label for monitor resolution data
+ * @param a dummy parameter?
+ * @param m device info
+ * @return string formatted label
+ */
+
+define string resolution(any a, map m) ``{
+    if (haskey(m, "height"))
+    {
+	return sformat("%1x%2", m["width"]:nil, m["height"]:nil);
+    }
+    return m["width"]:"";
+}
+
+define list<string> modules(list<list<string> > val) ``{
+    y2warning("calling modules with param: %1", val);
+    list<string> outlist = maplist(list<string> e, val,
+    ``{
+	return "modprobe " + mergestring(e, " ");
+    });
+    return outlist;
+}
+
+/**
+ * tries to determine hardware name by class_id and sub_class_id
+ * and substitues them in given map. returns modified map
+ * @param hw device info
+ * @return map device info with translated class information
+ */
+
+define map<string,any> translate_hw_entry(map<string,any> hw) ``{
+
+    map<string,any> ret = hw;
+
+    if (haskey(hw, "class_id"))
+    {
+	integer iclassid = hw["class_id"]:0xff;
+	string classid = ClassNames[iclassid, "name"]:"";
+
+	ret = add(ret, "class_id", classid);
+
+	if (haskey(hw, "sub_class_id"))
+	{
+	    integer isubclassid = hw["sub_class_id"]:0;
+	    string subclassid = ClassNames[iclassid, isubclassid]:"";
+	    ret = add(ret, "sub_class_id", subclassid);
+	}
+
+    }
+    return ret;
+}
+
+/**
+ * Translate subclass identification of the device
+ * @param a dummy parameter?
+ * @param m device information
+ * @return string translated subclass name
+ */
+define string classtostring(any a, map<string,any> m) ``{
+    map<string,any> trans = translate_hw_entry(m);
+    return trans["sub_class_id"]:"";
+}
+
+
+/**
+ * order table: list of lists.
+ * first item of nested list is key name
+ * second is term that should be used for formating the key- takes key name as first argument
+ * if third item is true, the whole map will be passed to term as second argument
+ */
+list<string> representant_order = [
+    "sub_device",
+    "device",
+    "model name",
+    "model",
+    "vendor",
+    "irq",
+    "start",
+    "name",
+    "xkbmodel",
+    "server",
+    "size",
+    "unit",
+    "width",
+    "cylinders",
+    "dev_name",
+    "modules",
+    "sub_class_id",
+    "modules",
+    "type"
+];
+
+/**
+ * translate string - looks to the translation table and returns value
+ * @param str string to translate
+ * @return string translated string or original string if translation is unknown
+ */
+define string trans_str(string str) ``{
+	if (!haskey(trans_table, str))
+	{
+	    y2warning("Cannot translate string '%1'", str);
+	}
+	return (string) (trans_table[str]:str);
+}
+
+/**
+ * translate boolean to Yes/No
+ * @param b any value
+ * @return string parameter b converted to string, if b is boolean then Yes/No is returned
+ */
+define string trans_bool(any b) ``{
+    if (is(b, boolean))
+    {
+	// yes/no strings
+	return (b == true) ? _("Yes") : _("No");
+    }
+    return sformat("%1", b);
+}
+
+/**
+ * evals to true if given value is scalar (not map or term or list)
+ * @param node any value
+ * @return boolean true if parameter node is a scalar value (it isn't a list or a map)
+ */
+
+define boolean scalar(any node) ``{
+    if (
+	is(node, string) ||
+	is(node, boolean) ||
+	is(node, integer) ||
+	is(node, float) ||
+	is(node, locale) ||
+	is(node, path))
+    {
+	return true;
+    }
+    return false;
+}
+
+
+/**
+ * if expandTree function tries to explore list, it should use some
+ * label for each item. it tree items are maps, this function decides
+ * which value from map will be used as label
+ * @param m device info
+ * @return string name of the selected representant for whole map
+ */
+define string get_representant(map<string,any> m) ``{
+    string out = "";
+    integer i = 0;
+    // search the 'order' table
+    while(i < size(representant_order))
+    {
+	string key_name = (string)(representant_order[i]:"");
+	if (haskey(m, key_name))
+	{
+	    if (key_name == "start")
+	    {
+		out = tohexstring((integer)(m[key_name]:0));
+	    }
+	    else if (key_name == "modules")
+	    {
+		// Linux kernel modules (drivers)
+		out = _("Modules");
+	    }
+	    else if (key_name == "width")
+	    {
+		out = resolution("dummy", m);
+	    }
+	    else if (key_name == "sub_class_id")
+	    {
+		out = classtostring("dummy", m);
+	    }
+	    else
+	    {
+		out = sformat("%1", m[key_name]:nil);
+	    }
+	    break;
+	}
+	i = i + 1;
+    }
+
+    return out;
+}
+
+/**
+ * Recursively converts (scalar/nested) lists and maps to tree datastructure
+ * @param node any value
+ * @return list list of items (content of tree widget)
+ */
+
+define list expandTree(any node) ``{
+    if (node == nil)
+    {
+	return [];
+    }
+
+    // workaround for bug #31144 - don't visualize list
+    // with only one map item
+    if (is(node, list) && size((list) node) == 1)
+    {
+        list node_list = (list) node;
+
+        if (is(node_list[0]:nil, map))
+	{
+	    map tmp = (map)eval(node_list[0]:$[]);
+
+	    // if map has "model" key then don't flatten list,
+	    // device model name would be removed from the tree
+	    // when there is only one device in a device category
+	    if (!haskey(tmp, "model"))
+	    {
+		node = tmp;
+	    }
+	}
+    }
+
+    // if node is scalar, we just return the new item.
+    if (scalar(node))
+    {
+	return [`item(sformat("%1", node))];
+    }
+
+
+    if (is(node, list))
+    {
+	// if node is list ...
+	list    lout = [];
+	integer q = size((list) node);
+	integer pos = 0;
+	foreach(any e, (list) node,
+	``{
+	    if (scalar(e))
+	    {
+		if (e != nil)
+		{
+		    lout = add(lout, `item(sformat("%1", e)));
+		}
+	    }
+	    else
+	    {
+		string lab = UI::Glyph(`ArrowRight);
+		if (is(e, map<string,any>))
+		{
+		    // ... create label for each item ...
+		    string s = get_representant((map<string,any>) e);
+		    if(s != "")
+		    {
+			lab = s;
+		    }
+		}
+		lout = add(lout, `item(lab, expandTree(e)));
+	    }
+	    // ... and add it to item list
+	    pos = pos + 1;
+	}
+	);
+	return lout;
+    }
+    if (is(node, map))
+    {
+	// if node is map ...
+	map<string,any> node_map = translate_hw_entry((map<string, any>) node);
+	list ltmp = [];
+	foreach(string key, any v, node_map,
+	``{
+	    // haha, hack! we need to translate the 'modules' entry into some more readable form...
+	    // unfortunatelly 'modules' is used in several places and in different meaings...
+	    if(key == "modules" && is(v, list))
+	    {
+		v = modules((list<list<string> >) v);
+	    }
+
+	    // ... explore all pairs
+	    if(scalar(v) || v == $[] || v == [])
+	    {
+		ltmp = add(ltmp, `item(sformat("%1: %2", trans_str(key), trans_bool(v))));
+	    }
+	    else if (v == [""])
+	    {
+		ltmp = add(ltmp, `item(sformat("%1", trans_str(key))));
+	    }
+	    else
+	    {
+		ltmp = add(ltmp, `item(trans_str(sformat("%1", key)), expandTree(v)));
+	    }
+	}
+	);
+	// ... and finally sort the items alphabetically
+	return sort(ltmp);
+    }
+
+    return [];
+}
+
+/**
+ * Save hwinfo output to the specified file
+ * @param file Target file
+ * @return boolean True if saving was successful
+ */
+define boolean save_hwinfo(string file) ``{
+    if (file == "" || file == nil)
+    {
+	return false;
+    }
+
+    string command = "/usr/sbin/hwinfo > " + file;
+    return SCR::Execute(.target.bash, command) == 0;
+}
+
+
+/**
+ * Save hwinfo output to the specified file, progress popup is displayed.
+ * Display error message when saving failed.
+ * @param target_file_name Target file
+ * @return boolean True if saving was successful
+ */
+define boolean save_hwinfo_to_file(string target_file_name) ``{
+    // window title
+    string filename = UI::AskForSaveFileName(target_file_name, "*", _("Save hwinfo Output to File"));
+    boolean saved = false;
+
+    if (filename != nil && size(filename) > 0)
+    {
+	// progress window content
+	UI::OpenDialog(`Label(_("Saving hardware information...")));
+	saved = save_hwinfo(filename);
+	UI::CloseDialog();
+
+	if (saved == false)
+	{
+	    // error popup message
+	    Report::Error(sformat(_("Saving output to the file '%1' failed."), target_file_name));
+	}
+    }
+
+    return saved;
+}
+
+/**
+ * Mount specified device
+ * @param device device name to mount
+ * @return string mount point where device was mounted (in /tmp subdirectory)
+ *         or nil when mount failed
+ */
+define string mount_device(string device) ``{
+    string tmpdir = (string) SCR::Read(.target.tmpdir);
+    string mpoint = tmpdir + "/mount";
+
+    // create mount point directory
+    SCR::Execute(.target.mkdir, mpoint);
+
+    // mount device
+    boolean result = (boolean) SCR::Execute(.target.mount, [device, mpoint], "");
+
+    return (result == true) ? mpoint : nil;
+}
+
+/**
+ * Unmount device
+ * @param mount_point directory where device is mounted
+ * @return boolean true on success
+ */
+define boolean umount_device(string mount_point) ``{
+    return (boolean) SCR::Execute(.target.umount, mount_point);
+}
+
+define boolean has_hex_prefix (string in) {
+    if (size(in) < 2)
+    {
+	return false;
+    }
+
+    // check whether string has hex prefix (0x or 0X)
+    string start = substring(in, 0, 2);
+    return (start == "0x" || start == "0X");
+}
+
+define string remove_hex_prefix(string in) {
+    if (!has_hex_prefix(in))
+    {
+	return in;
+    }
+
+    return substring(in, 2);
+}
+
+define string add_hex_prefix(string in)
+{
+    if (in == nil || in == "")
+    {
+	return "";
+    }
+    else
+    {
+	return (!has_hex_prefix(in)) ? "0x" + in : in;
+    }
+}
+
+
+}
