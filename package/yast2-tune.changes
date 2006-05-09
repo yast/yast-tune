@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Tue May  9 16:52:07 CEST 2006 - lslezak@suse.cz
+
+- updated the testsuite
+- 2.13.6
+
+-------------------------------------------------------------------
 Tue May  9 16:38:14 CEST 2006 - lslezak@suse.cz
 
 - fixed udev script filename (#173126)
