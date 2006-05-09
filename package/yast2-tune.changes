@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Tue May  9 16:38:14 CEST 2006 - lslezak@suse.cz
+
+- fixed udev script filename (#173126)
+- 2.13.5
+
+-------------------------------------------------------------------
 Mon Feb 20 08:57:26 CET 2006 - lslezak@suse.cz
 
 - updated BuildRequires (replaced yast2-devel-packages macro)

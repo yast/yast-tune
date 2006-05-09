@@ -43,7 +43,7 @@
     /**
      * Full path to udev script which sets the DMA mode
      */
-    string udev_script = "/sbin/udev.idedma.sh";
+    string udev_script = "/lib/udev/idedma.sh";
 
     /**
      * String with DMA on status text
@@ -554,7 +554,7 @@
 			    // error message
 			    // %1 is string "on", "off" or DMA string mode e.g. "udma5", "mdma2", ...
 			    // %2 is device node (e.g. /dev/hdc)
-			    Report::Error(_("An error occurred while activating the changes.\nCannot set required mode '%1' for device %2."));
+			    Report::Error(sformat(_("An error occurred while activating the changes.\nCannot set required mode '%1' for device %2."), mode, dev));
 			    ret = false;
 			}
 		    }
