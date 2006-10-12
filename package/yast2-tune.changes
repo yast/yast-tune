@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Tue Jul 18 11:04:32 CEST 2006 - lslezak@suse.cz
+
+- hwinfo - translate some generic device names (#179880)
+- 2.13.7
+
+-------------------------------------------------------------------
 Tue May  9 16:52:07 CEST 2006 - lslezak@suse.cz
 
 - updated the testsuite

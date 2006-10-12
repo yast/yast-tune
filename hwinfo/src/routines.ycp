@@ -230,6 +230,30 @@ $[
     "bluetooth"        :   _("Bluetooth"),
     // tree node string - DSL devices
     "dsl"              :   _("DSL"),
+
+    // tree node string - generic device name
+    "Ethernet network interface"	: _("Ethernet Network Interface"),
+    // tree node string - generic device name
+    "Network Interface"		: _("Network Interface"),
+    // tree node string - generic device name
+    "Loopback network interface"		: _("Loopback Network Interface"),
+    // tree node string - generic device name
+    "Partition"		: _("Partition"),
+    // tree node string - generic device name
+    "Floppy Disk"	: _("Floppy Disk"),
+    // tree node string - generic device name
+    "Floppy disk controller"	: _("Floppy Disk Controller"),
+    // tree node string - generic device name
+    "PnP Unclassified device"		: _("PnP Unclassified Device"),
+    // tree node string - generic device name
+    "Main Memory"	: _("Main Memory"),
+    // tree node string - generic device name
+    "UHCI Host Controller"		: _("UHCI Host Controller"),
+    // tree node string - generic device name
+    "EHCI Host Controller"		: _("EHCI Host Controller"),
+    // tree node string - generic device name
+    "OHCI Host Controller"		: _("OHCI Host Controller"),
+
     // translate "probe" to empty string
     // search starts from .probe node which doesn't
     // contain any hardware information
@@ -412,7 +436,7 @@ define string get_representant(map<string,any> m) ``{
 	    }
 	    else
 	    {
-		out = sformat("%1", m[key_name]:nil);
+		out = trans_str(sformat("%1", m[key_name]:nil));
 	    }
 	    break;
 	}
@@ -457,7 +481,7 @@ define list expandTree(any node) ``{
     // if node is scalar, we just return the new item.
     if (scalar(node))
     {
-	return [`item(sformat("%1", node))];
+	return [`item(trans_str(sformat("%1", node)))];
     }
 
 
