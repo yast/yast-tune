@@ -384,7 +384,7 @@ define symbol HandleNewPCIIDDialog (string key, map event) {
 
 	y2milestone("Key: %1, Event: %2", key, event);
 
-	symbol handle_function_returns = (symbol) event["ID"]:nil;
+	any handle_function_returns = event["ID"]:nil;
 
 	if (handle_function_returns== nil) {
 	    y2warning("Unknown event");

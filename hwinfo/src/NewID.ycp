@@ -486,6 +486,8 @@
     }
 
     global define boolean Write() {
+	y2milestone("Writing PCI ID cofiguration...");
+
 	boolean ret = true;
 
 	// content of /etc/sysconfig/hardware/newids
@@ -495,15 +497,18 @@
 	map<string,list<string> > settings = $[];
 
         // handle removed configurations - remove all modprobe entries
-        list<string> drvs = SCR::Dir(.modprobe_newid.install);
+	if (size(removed_ids) > 0)
+	{
+	    list<string> drvs = SCR::Dir(.modprobe_newid.install);
 
-        if (drvs != nil && size(drvs) > 0)
-        {
-            foreach(string d, drvs, {
-                    SCR::Write(add(.modprobe_newid.install, d), nil);
-                }
-            );
-        }
+	    if (drvs != nil && size(drvs) > 0)
+	    {
+		foreach(string d, drvs, {
+			SCR::Write(add(.modprobe_newid.install, d), nil);
+		    }
+		);
+	    }
+	}
 
 	if (new_ids != nil)
 	{
