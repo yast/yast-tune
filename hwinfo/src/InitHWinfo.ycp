@@ -17,6 +17,7 @@ import "String";
 import "Confirm";
 import "Progress";
 import "Arch";
+import "SystemSettings";
 
 include "hwinfo/routines.ycp";
 
@@ -206,6 +207,13 @@ global define list<string> MakeProposal(boolean reset) ``{
 	// the installation proposal item
 	// %1 is system name
 	ret = prepend(ret, sformat(_("System: %1"), system_string));
+    }
+
+    // add SysRq status line
+    if (SystemSettings::GetSysRqKeysEnabled())
+    {
+	// item in the installation proposal (displayed only when SysRq key is enabled
+	ret = add(ret, _("SysRq Key: Enabled"));
     }
 
     y2milestone("proposal: %1", ret);

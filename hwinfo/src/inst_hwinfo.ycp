@@ -24,7 +24,8 @@ import "Arch";
 
 include "hwinfo/routines.ycp";
 include "hwinfo/classnames.ycp";
-include "hwinfo/newid.ycp";
+include "hwinfo/system_settings_ui.ycp";
+include "hwinfo/system_settings_dialogs.ycp";
 
 string selected_model = "";
 map selected_info = $[];
@@ -213,9 +214,12 @@ define symbol detected_dialog() ``{
 	`VSpacing(0.4),
 	`HBox(
 	    // push button label
-	    `PushButton(`id(`newid), _("&Set PCI ID...")),
+	    `PushButton(`id(`newid), _("&System Settings...")),
+	    `HSpacing(4),
 	    // push button label
 	    `PushButton(`id(`details), _("&Details...")),
+
+	    // FIXME: there should be only "Save to file" in Xen and UML system
 	    (!Arch::is_uml()) ?
 	    // menu button label
 	    `MenuButton(`id(`savemenu), _("&Save to File"),
@@ -329,6 +333,15 @@ define symbol detected_dialog() ``{
     return ret;
 }
 
+// only activate the settings,
+// the configuration is written in system_settings_finish.ycp
+symbol ActivateSystemSetting()
+{
+    SystemSettings::Activate();
+
+    return `next;
+}
+
 /**************************************
  *
  *            Main part
@@ -340,7 +353,8 @@ map aliases =
     $[
 	"detected"	:   ``(detected_dialog()),
 	"details"	:   [``(details_dialog(selected_model, selected_info)), true],
-	"newid"		:   [``(NewIDConfigDialog()), true]
+	"newid"		:   [``(SystemSettingsDialog()), true],
+	"activate"	:   ``(ActivateSystemSetting())
     ];
 
 // workflow sequence
@@ -349,10 +363,7 @@ map sequence = $[
     "detected" :
     $[
 	`abort	: `abort,
-	// return `abort even when module was correctly finished
-	// (avoids restarting installation proposal of all other modules
-	//  which doesn't make sense - InitHWinfo is read only module)
-	`ok	: `abort,
+	`ok	: "activate",
 	`details	: "details",
 	`newid : "newid"
     ],
@@ -365,6 +376,10 @@ map sequence = $[
     $[
 	`abort	: `abort,
 	`next	: "detected"
+    ],
+    "activate" :
+    $[
+	`next	: `next
     ]
 ];
 

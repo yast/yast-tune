@@ -2,22 +2,14 @@
 # Makefile.am for tune/hwinfo/src
 #
 
-client_DATA = hwinfo.ycp hwinfo_proposal.ycp inst_hwinfo.ycp pci_id.ycp
+client_DATA = hwinfo.ycp hwinfo_proposal.ycp inst_hwinfo.ycp system_settings.ycp
 
-if ARCH_S390
-
-desktop_DATA = hwinfo.desktop
-
-else
-
-desktop_DATA = hwinfo.desktop pci_id.desktop
-
-endif
+desktop_DATA = hwinfo.desktop system_settings.desktop
 
 yncludedir = @yncludedir@/hwinfo
-ynclude_DATA = classnames.ycp routines.ycp newid.ycp
+ynclude_DATA = classnames.ycp routines.ycp newid.ycp system_settings_dialogs.ycp system_settings_ui.ycp
 
-module_DATA = InitHWinfo.ycp NewID.ycp
+module_DATA = InitHWinfo.ycp NewID.ycp SystemSettings.ycp
 
 hwinfo:
 	ln -sf . hwinfo

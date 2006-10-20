@@ -14,20 +14,30 @@
     module "SystemSettings";
     textdomain "tune";
 
+    import "Service";
+    import "Mode";
+
     /* Internal Data */
     boolean ENABLE_SYSRQ = nil;
-    
-    string ELEVATOR_VARIABLE = nil;
+
+    string elevator = nil;
     /* Internal Data */
 
-    list <string> GetPossibleElevatorValues () {
+    global list<string> GetPossibleElevatorValues () {
 	    // here are listed all known values of the 'elevator' variable
 	    return ["cfq","as","noop","deadline"];
     }
 
     global define boolean Read () {
 	ENABLE_SYSRQ = ((string) SCR::Read(.sysconfig.sysctl.ENABLE_SYSRQ) == "yes");
-	y2milestone("SysRq Enabled %1", ENABLE_SYSRQ);
+	y2milestone("SysRq enabled: %1", ENABLE_SYSRQ);
+
+	boolean current_sysrq = (string)SCR::Read(.target.string, "/proc/sys/kernel/sysrq") == "1\n";
+
+	if (current_sysrq != ENABLE_SYSRQ)
+	{
+	    y2warning("SysRq mismatch: sysconfig value: %1, current: %2", ENABLE_SYSRQ, current_sysrq);
+	}
 
         /*
 	 * I have to admit that this is very ugly but it is here
@@ -35,50 +45,104 @@
 	 * because the Storage module (which is imported by the Bootloader (imported by the SystemSettings module))
 	 * has a Read() function call in its constructor.
 	 */
-						         
 	import "Bootloader";
-	// FIXME: only for configuration!
-	Bootloader::Read();
-	
-	// FIXME: "DEFAULT" change to the variable
-	any elevator_parameter = Bootloader::getKernelParam("DEFAULT", "elevator");
+
+	if (Mode::normal())
+	{
+	    // runtime - read the settings
+	    Bootloader::Read();
+	}
+
+	// get 'elevator' option from the default section
+	any elevator_parameter = Bootloader::getKernelParam(Bootloader::getDefaultSection(), "elevator");
+
+	y2milestone("elevator_parameter: %1", elevator_parameter);
+
 	// Variable is not set
 	if (elevator_parameter == false || elevator_parameter == "false") {
-	    ELEVATOR_VARIABLE = "";
+	    elevator = "";
 	// Variable is set but has not parameter
 	} else if (elevator_parameter == true || elevator_parameter == "true") {
 	    y2warning("'elevator' variable has to have some value");
-	    ELEVATOR_VARIABLE = "";
+	    elevator = "";
 	// Variable is set but hasn't any known value
 	} else if (!contains(GetPossibleElevatorValues(), (string) elevator_parameter)) {
 	    y2warning("'elevator' variable has to have a value from %1 instead of being set to %2", GetPossibleElevatorValues(), elevator_parameter);
-	    ELEVATOR_VARIABLE = "";
+	    elevator = "";
 	// Variable is OK
 	} else {
-	    ELEVATOR_VARIABLE = (string) elevator_parameter;
+	    elevator = (string) elevator_parameter;
 	}
+
+	y2milestone("Global IO scheduler: %1", elevator);
 
 	// FIXME: probe available serial line devices
 
 	return true;
     }
 
+    global boolean Activate()
+    {
+	// activate the SysRq setting
+	string proc_value = (ENABLE_SYSRQ) ? "1" : "0";
+	y2milestone("Activating SysRq config: %1", proc_value);
+
+	SCR::Execute(.target.bash, sformat("echo '%1' > /proc/sys/kernel/sysrq", proc_value));
+
+	if (elevator != nil)
+	{
+	    import "Bootloader";
+//	    FIXME: setting nil value doesn't remove the option
+//	    string new_elevator = (elevator == "") ? nil : elevator;
+
+	    y2internal("Activating scheduler: %1", /*FIXME: new_*/elevator);
+	    // set the scheduler
+	    Bootloader::setKernelParam(Bootloader::getDefaultSection(), "elevator", /*FIXME: new_*/elevator);
+
+	    // TODO FIXME: set the scheduler for all disk devices,
+	    // reboot is required to activate the new scheduler now
+	}
+
+	return true;
+    }
+
+
     global define boolean Write () {
 	// writing SysRq settings
+	y2milestone("ENABLE_SYSRQ: %1", ENABLE_SYSRQ);
 	SCR::Write(.sysconfig.sysctl.ENABLE_SYSRQ, (ENABLE_SYSRQ ? "yes":"no"));
 	SCR::Write(.sysconfig.sysctl, nil);
 
-	// FIXME: other writes...
+	// enable boot.proc service which sets the value after boot
+	Service::Enable("boot.proc");
+
+	// the bootloader configuration is written at the end of the first stage
+	if (Mode::normal())
+	{
+	    // write the elevator setting
+	    import "Bootloader";
+	    Bootloader::Write();
+	}
+
+	// FIXME: write serial console...
 	return true;
     }
 
     // Kernel param 'elevator'
     global define string GetIOScheduler () {
-	return "";
+	return elevator;
     }
 
     global define void SetIOScheduler (string io_scheduler) {
-	return nil;
+	// empty string = use the default scheduler
+	if (contains(GetPossibleElevatorValues(), io_scheduler) || io_scheduler == "")
+	{
+	    elevator = io_scheduler;
+	}
+	else
+	{
+	    y2error("unknown IO scheduler '%1', use: %2", io_scheduler, GetPossibleElevatorValues());
+	}
     }
 
     global define boolean GetSysRqKeysEnabled () {

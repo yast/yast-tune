@@ -16,8 +16,8 @@ X-SuSE-YaST-Geometry=
 X-SuSE-YaST-SortKey=
 X-SuSE-YaST-AutoInstResource=
 
-Icon=yast-system_settings
+Icon=yast-powertweak
 Exec=/sbin/yast2 system_settings
 
 Name=System Settings
-GenericName=Set PCI ID, I/O Scheduler, Serial Console, etc.
+GenericName=Configure Low-Level System Options

@@ -13,6 +13,9 @@
     import "Progress";
     import "SystemSettings";
 
+    // ReadSettings()
+    include "hwinfo/newid.ycp";
+
     textdomain "tune";
 
     /* Short sleep between reads or writes */
@@ -20,6 +23,8 @@
 
     define symbol ReadSystemSettingsDialog () {
 	string caption = _("Reading the Configuration");
+
+	// FIXME: s390: disable reading PCI IDs
 	Progress::New ( caption, " ", 2, [
 	        _("Read the PCI ID settings"),
 		_("Read the system settings"),
@@ -40,7 +45,7 @@ Please wait...</p>")
 	// calling PCI ID Read()
 	ReadSettings();
 	Progress::set(progress_orig);
-	
+
 	Progress::NextStage();
 	progress_orig = Progress::set(false);
 	/*
@@ -51,13 +56,13 @@ Please wait...</p>")
 	 */
 	SystemSettings::Read();
 	Progress::set(progress_orig);
-	
+
 	Progress::NextStage();
 	sleep(2 * sl);
-	
+
 	return `next;
     }
-		
+
     define symbol WriteSystemSettingsDialog () {
 	string caption = _("Saving the Configuration");
 	Progress::New ( caption, " ", 2, [
@@ -80,23 +85,43 @@ Please wait...</p>")
 	// calling PCI ID Write()
 	WriteSettings();
 	Progress::set(progress_orig);
-	
+
 	sleep(sl);
 
 	Progress::NextStage();
 	progress_orig = Progress::set(false);
+
+	// activate the current configuration
+	SystemSettings::Activate();
+
+	// save the configuration
 	SystemSettings::Write();
+
 	Progress::set(progress_orig);
-	
+
 	Progress::NextStage();
 	sleep(2 * sl);
 
 	return `next;
     }
-				
+
+
     define symbol HandleElevatorSettings (string key, map event) {
 	y2milestone("Key: %1, Event: %2", key, event);
 	return nil;
+    }
+
+    void InitElevatorSettings(string value)
+    {
+	UI::ChangeWidget(`id("elevator"), `Value, SystemSettings::GetIOScheduler());
+    }
+
+    void StoreElevatorSettings(string key, map event)
+    {
+	y2milestone("Key: %1, Event: %2", key, event);
+	string elevator_new = (string) UI::QueryWidget(`id("elevator"), `Value);
+
+	SystemSettings::SetIOScheduler(elevator_new);
     }
 
     define void InitSysRqSettings (string key) {
@@ -105,7 +130,7 @@ Please wait...</p>")
 
     define void StoreSysRqSettings (string key, map event) {
 	y2milestone("Key: %1, Event: %2", key, event);
-	
+
 	boolean sysrq_new = (boolean) UI::QueryWidget(`id("sysrq"), `Value);
 	if (SystemSettings::GetSysRqKeysEnabled() != sysrq_new) {
 	    SystemSettings::SetSysRqKeysEnabled(sysrq_new);

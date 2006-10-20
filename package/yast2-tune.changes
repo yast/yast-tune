@@ -1,4 +1,12 @@
 -------------------------------------------------------------------
+Fri Oct 20 12:24:57 CEST 2006 - lslezak@suse.cz
+
+- added SysRq configuration option (feature #110071)
+- added global I/O scheduler option (feature #110070)
+- removed pci_id client (merged into system_settings client)
+- 2.13.8
+
+-------------------------------------------------------------------
 Tue Jul 18 11:04:32 CEST 2006 - lslezak@suse.cz
 
 - hwinfo - translate some generic device names (#179880)
