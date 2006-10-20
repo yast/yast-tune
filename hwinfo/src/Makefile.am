@@ -2,7 +2,7 @@
 # Makefile.am for tune/hwinfo/src
 #
 
-client_DATA = hwinfo.ycp hwinfo_proposal.ycp inst_hwinfo.ycp system_settings.ycp
+client_DATA = hwinfo.ycp hwinfo_proposal.ycp inst_hwinfo.ycp system_settings.ycp system_settings_finish.ycp
 
 desktop_DATA = hwinfo.desktop system_settings.desktop
 
