@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Mon Nov 13 13:53:58 CET 2006 - lslezak@suse.cz
+
+- 2.14.0
+
+-------------------------------------------------------------------
 Fri Oct 20 15:00:35 CEST 2006 - lslezak@suse.cz
 
 - added missing system_settings_finish.ycp client - save settings
