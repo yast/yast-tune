@@ -72,6 +72,66 @@ $[
     // tree node string - location of hardware in the machine
     "slot_id"	:	_("Slot ID"),
     // tree node string
+    "length"	: _("Length"),
+    // tree node string
+    "width"	: _("Width"),
+    // tree node string
+    "height"	: _("Height"),
+    // tree node string
+    "active"	: _("Active"),
+    // tree node string
+    "dev_names"	: _("Device Names"),
+    // tree node string (number of colors)
+    "color"	: _("Colors"),
+    // tree node string (harddisk parameter)
+    "disk_log_geo" : _("Logical Geometry"),
+    // tree node string
+    "count"	: _("Count"),
+    // tree node string
+    "mode"	: _("Mode"),
+    // tree node string (interrupt request)
+    "irq"	: _("IRQ"),
+    // tree node string
+    "io"	: _("IO Port"),
+    // tree node string
+    "mem"	: _("Memory"),
+    // tree node string (direct memory access)
+    "dma"	: _("DMA"),
+    // tree node string
+    "bus_hwcfg" : _("Hwcfg Bus"),
+    // tree node string
+    "sysfs_bus_id" : _("Sysfs ID"),
+    // tree node string
+    "parent_unique_key" : _("Parent Unique ID"),
+    // tree node string
+    "udi"	: _("UDI"),
+    // tree node string
+    "uniqueid"	: _("Unique ID"),
+    // tree node string (monitor parameter)
+    "vfreq"	: _("Vertical Frequency"),
+    // tree node string (monitor parameter)
+    "max_hsync"	: _("Max. Horizontal Frequency"),
+    // tree node string (monitor parameter)
+    "max_vsync"	: _("Max. Vertical Frequency"),
+    // tree node string (monitor parameter)
+    "min_hsync"	: _("Min. Horizontal Frequency"),
+    // tree node string (monitor parameter)
+    "min_vsync"	: _("Min. Vertical Frequency"),
+    // tree node string
+    "dvd"	: _("DVD"),
+    // tree node string
+    "driver_module"	: _("Kernel Driver"),
+    // tree node string
+    "hwaddr"	: _("HW Address"),
+    // tree node string
+    "bios_id"	: _("BIOS ID"),
+    // tree node string
+    "enabled"	: _("Enabled"),
+    // tree node string (monitor resolution e.g. 1280x1024)
+    "monitor_resol"	: _("Resolution"),
+    // tree node string
+    "size"	: _("Size"),
+    // tree node string
     "old_unique_key"	: _("Old Unique Key"),
     // tree node string
     "sub_class_id"	:   _("Class (spec)"),

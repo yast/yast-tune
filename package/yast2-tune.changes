@@ -2,6 +2,9 @@
 Wed Dec 13 15:27:51 CET 2006 - lslezak@suse.cz
 
 - append /dev name to device name (#164823)
+- translate more keys
+- display better progress popup when probing devices
+- 2.15.0
 
 -------------------------------------------------------------------
 Mon Nov 13 13:53:58 CET 2006 - lslezak@suse.cz

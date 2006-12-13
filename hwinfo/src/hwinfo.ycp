@@ -15,6 +15,7 @@ textdomain "tune";
 import "Wizard";
 import "Label";
 import "Arch";
+import "Directory";
 
 //include "hwinfo/classnames.ycp";
 include "hwinfo/routines.ycp";
@@ -24,6 +25,20 @@ include "hwinfo/routines.ycp";
  */
 boolean abortPressed = false;
 
+term Icon (string icon_name) {
+    map ui_info = UI::GetDisplayInfo();
+    if ((boolean) ui_info["HasLocalImageSupport"]:false == false) return `Empty();
+
+    return `Image (
+	sformat (
+	    "%1/current/icons/22x22/apps/%2.png",
+	    Directory::themedir,
+	    icon_name
+	),
+	"[x]"
+    );
+}
+
 /*
  * open progress bar window
  */
@@ -32,10 +47,10 @@ UI::OpenDialog(
 	`VSpacing(7),
 	`VBox(
 	    `HSpacing(40),
-	    // popup dialog header
-	    `Label(_("Probing")),
 	    `HBox(
-		`HWeight(1, `Label(`id(`initLab), ""))
+		`HSquash (`MarginBox (0.5, 0.2, Icon("yast-hwinfo"))),
+		// translators: popup heading
+		`Left (`Heading(`id(`heading), _("Probing Hardware...")))
 	    ),
 	    // progress bar label
 	    `ProgressBar(`id(`initProg), _("Progress"), 1000, 0),
@@ -142,7 +157,7 @@ define term buildHwTree(string p, integer progMin, integer progMax) ``{
     string node = afterLast(p);
     string node_translated = trans_str(node);
 
-    UI::ChangeWidget(`id(`initLab), `Value, node_translated);
+    UI::ChangeWidget(`id(`initProg), `Label, node_translated);
     y2milestone("Probing %1 (%2)...", node, node_translated);
     path pat = topath(p);
 
