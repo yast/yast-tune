@@ -434,6 +434,20 @@ define string get_representant(map<string,any> m) ``{
 	    {
 		out = classtostring("dummy", m);
 	    }
+	    else if (key_name == "device")
+	    {
+		out = m[key_name]:"";
+		if (haskey(m, "dev_name"))
+		{
+		    string device = m["dev_name"]:"";
+
+		    if (device != "")
+		    {
+			// tree node string - %1 is device name, %2 is /dev file
+			out = sformat(_("%1 (%2)"), out, device);
+		    }
+		}
+	    }
 	    else
 	    {
 		out = trans_str(sformat("%1", m[key_name]:nil));

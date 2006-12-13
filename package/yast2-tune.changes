@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Wed Dec 13 15:27:51 CET 2006 - lslezak@suse.cz
+
+- append /dev name to device name (#164823)
+- 2.13.10
+
+-------------------------------------------------------------------
 Fri Oct 20 15:00:35 CEST 2006 - lslezak@suse.cz
 
 - added missing system_settings_finish.ycp client - save settings
