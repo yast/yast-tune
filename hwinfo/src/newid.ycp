@@ -304,11 +304,24 @@ define map NewDeviceIDPopup(map<string,any> newid) {
     return ret;
 }
 
+// bugzilla #237339
+define void AdjustDialogButtons (integer count_of_items_in_table) {
+    // at least one PCIID defined
+    if (count_of_items_in_table > 0) {
+	UI::ChangeWidget (`id(`edit),   `Enabled, true);
+	UI::ChangeWidget (`id(`delete), `Enabled, true);
+    // nothing listed, disabling buttons
+    } else {
+	UI::ChangeWidget (`id(`edit),   `Enabled, false);
+	UI::ChangeWidget (`id(`delete), `Enabled, false);
+    }
+}
 
 define void RefreshTableContent() {
     list items = get_table_items();
 
     UI::ChangeWidget(`newid_table, `Items, items);
+    AdjustDialogButtons (size(items));
 }
 
 define term NewPCIIDDialogContent () {
@@ -355,7 +368,9 @@ define string NewPCIIDDialogCaption () {
 
 define void InitNewPCIIDDialog (string id) {
     y2milestone("Init: %1", id);
-    UI::ChangeWidget(`id(`newid_table), `Items, get_table_items());
+    list items = get_table_items();
+    UI::ChangeWidget(`id(`newid_table), `Items, items);
+    AdjustDialogButtons (size(items));
 }
 
 // FIXME: move to the NewID.ycp module
