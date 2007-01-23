@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Tue Jan 23 13:42:50 CET 2007 - locilka@suse.cz
+
+- PCI ID Setup uses [Cancel] / [Accept] buttons for the AutoYaST
+  and installation and [Abort] / [Finish] buttons for any other
+  case (#237379).
+
+-------------------------------------------------------------------
 Mon Jan 22 16:22:32 CET 2007 - locilka@suse.cz
 
 - Disabling [Edit] and [Delete] buttons in case there is nothing to

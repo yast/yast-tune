@@ -22,6 +22,7 @@ import "Report";
 
 import "Popup";
 import "Label";
+import "Mode";
 
 include "hwinfo/routines.ycp";
 
@@ -346,6 +347,10 @@ define term NewPCIIDDialogContent () {
 }
 
 define string NewPCIIDDialogHelp () {
+    // bugzilla #237379
+    string button_label = (Mode::installation() || Mode::config() ? Label::AcceptButton() : Label::FinishButton());
+    if (regexpmatch(button_label, "&")) button_label = regexpsub (button_label, "(.*)&(.*)", "\\1\\2");
+
     return
 	// help text header
 	_("<P><B>PCI ID Setup</B><BR></P>")
@@ -355,8 +360,11 @@ define string NewPCIIDDialogHelp () {
 	+ _("<P>PCI ID numbers are entered and displayed as hexadecimal numbers. <b>SysFS Dir.</b> is the directory name in the /sys/bus/pci/drivers directory. If it is empty, the driver name is used as the directory name.</P>")
 	// PCI ID help text
 	+ _("<P>If the driver is compiled into the kernel, leave the driver name empty and enter the SysFS directory name instead.</P>")
-	// PCI ID help text
-	+ _("<P>Use the buttons below the table to change the list of PCI IDs. Press <b>OK</b> to activate the settings.</P>")
+	+ sformat(
+	    // PCI ID help text, %1 stands for a button name (Accept or Finish -- depends on the situation)
+	    _("<P>Use the buttons below the table to change the list of PCI IDs. Press <b>%1</b> to activate the settings.</P>"),
+	    button_label
+	)
 	// PCI ID help text
 	+ _("<P><B>Warning:</B> This is an expert configuration. Only continue if you know what you are doing.</P>");
 }
