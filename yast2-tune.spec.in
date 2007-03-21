@@ -2,7 +2,9 @@
 
 @HEADER@
 BuildRequires:	perl-XML-Writer update-desktop-files yast2 yast2-devtools yast2-testsuite yast2-bootloader
-Requires:	yast2 hdparm yast2-bootloader
+# hwinfo/classnames.ycp
+Requires:	yast2>=2.15.20
+Requires:	hdparm yast2-bootloader
 
 Provides:	yast2-config-hwinfo yast2-tune-idedma yast2-trans-tune
 Obsoletes:	yast2-config-hwinfo yast2-tune-idedma yast2-trans-tune
@@ -29,7 +31,6 @@ Summary:	System configuration viewer and tuner
 @desktopdir@/idedma.desktop
 %endif
 
-%dir @yncludedir@/hwinfo
 %dir @yncludedir@/idedma
 @yncludedir@/hwinfo/*
 @yncludedir@/idedma/*

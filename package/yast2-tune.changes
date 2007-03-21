@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Wed Mar 21 08:04:41 CET 2007 - lslezak@suse.cz
+
+- moved hwinfo/classnames.ycp to yast2.rpm (#253486)
+- 2.15.2
+
+-------------------------------------------------------------------
 Tue Jan 23 13:42:50 CET 2007 - locilka@suse.cz
 
 - PCI ID Setup uses [Cancel] / [Accept] buttons for the AutoYaST
