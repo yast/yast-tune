@@ -3,7 +3,7 @@
 @HEADER@
 BuildRequires:	perl-XML-Writer update-desktop-files yast2 yast2-devtools yast2-testsuite yast2-bootloader
 # hwinfo/classnames.ycp
-Requires:	yast2>=2.15.20
+Requires:	yast2 >= 2.15.20
 Requires:	hdparm yast2-bootloader
 
 Provides:	yast2-config-hwinfo yast2-tune-idedma yast2-trans-tune

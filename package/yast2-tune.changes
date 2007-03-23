@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Fri Mar 23 13:27:04 CET 2007 - lslezak@suse.cz
+
+- fixed version dependency in .spec
+- 2.15.3
+
+-------------------------------------------------------------------
 Wed Mar 21 08:04:41 CET 2007 - lslezak@suse.cz
 
 - moved hwinfo/classnames.ycp to yast2.rpm (#253486)
