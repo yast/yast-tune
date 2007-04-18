@@ -1,4 +1,12 @@
 -------------------------------------------------------------------
+Wed Apr 18 17:14:37 CEST 2007 - lslezak@suse.cz
+
+- properly remove 'elevator' option from the bootloader config
+  when IO scheduler is set to 'not configured', do not write
+  bootloader config if there is no change (#261551)
+- 2.13.12
+
+-------------------------------------------------------------------
 Mon Jan 22 16:19:56 CET 2007 - locilka@suse.cz
 
 - Disabling [Edit] and [Delete] buttons in case there is nothing to
