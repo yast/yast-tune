@@ -91,11 +91,18 @@ Please wait...</p>")
 	Progress::NextStage();
 	progress_orig = Progress::set(false);
 
-	// activate the current configuration
-	SystemSettings::Activate();
+	if (SystemSettings::Modified())
+	{
+	    // activate the current configuration
+	    SystemSettings::Activate();
 
-	// save the configuration
-	SystemSettings::Write();
+	    // save the configuration
+	    SystemSettings::Write();
+	}
+	else
+	{
+	    y2milestone("SystemSettings:: have not been modified");
+	}
 
 	Progress::set(progress_orig);
 

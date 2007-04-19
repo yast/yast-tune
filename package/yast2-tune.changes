@@ -1,4 +1,12 @@
 -------------------------------------------------------------------
+Wed Apr 18 17:14:37 CEST 2007 - lslezak@suse.cz
+
+- properly remove 'elevator' option from the bootloader config
+  when IO scheduler is set to 'not configured', do not write
+  bootloader config if there is no change (#261551)
+- 2.15.4
+
+-------------------------------------------------------------------
 Fri Mar 23 13:27:04 CET 2007 - lslezak@suse.cz
 
 - fixed version dependency in .spec

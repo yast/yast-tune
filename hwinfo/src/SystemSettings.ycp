@@ -23,9 +23,17 @@
     string elevator = nil;
     /* Internal Data */
 
+    boolean modified = false;
+
     global list<string> GetPossibleElevatorValues () {
 	    // here are listed all known values of the 'elevator' variable
 	    return ["cfq","as","noop","deadline"];
+    }
+
+    global boolean Modified()
+    {
+	y2milestone("Modified: %1", modified);
+	return modified;
     }
 
     global define boolean Read () {
@@ -92,12 +100,11 @@
 	if (elevator != nil)
 	{
 	    import "Bootloader";
-//	    FIXME: setting nil value doesn't remove the option
-//	    string new_elevator = (elevator == "") ? nil : elevator;
+	    string new_elevator = (elevator == "") ? "false" : elevator;
 
-	    y2internal("Activating scheduler: %1", /*FIXME: new_*/elevator);
+	    y2milestone("Activating scheduler: %1", new_elevator);
 	    // set the scheduler
-	    Bootloader::setKernelParam(Bootloader::getDefaultSection(), "elevator", /*FIXME: new_*/elevator);
+	    Bootloader::setKernelParam(Bootloader::getDefaultSection(), "elevator", new_elevator);
 
 	    // TODO FIXME: set the scheduler for all disk devices,
 	    // reboot is required to activate the new scheduler now
@@ -137,6 +144,11 @@
 	// empty string = use the default scheduler
 	if (contains(GetPossibleElevatorValues(), io_scheduler) || io_scheduler == "")
 	{
+	    if (elevator != io_scheduler)
+	    {
+		modified = true;
+	    }
+
 	    elevator = io_scheduler;
 	}
 	else
@@ -154,7 +166,16 @@
 
     global define void SetSysRqKeysEnabled (boolean enable_sysrq) {
 	if (enable_sysrq != true && enable_sysrq != false)
+	{
 	    y2warning("enable_sysrq should be 'true' or 'false'");
+	    return;
+	}
+
+	if (ENABLE_SYSRQ != enable_sysrq)
+	{
+	    modified = true;
+	}
+
 	ENABLE_SYSRQ = enable_sysrq;
 	y2milestone("SysRq was set to %1", ENABLE_SYSRQ);
     }
