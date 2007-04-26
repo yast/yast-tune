@@ -15,11 +15,12 @@ ynclude_DATA =			\
 	cmdline.ycp		\
 	ui.ycp
 
-# exclude IDE DMA from Y2CC on s390
-if !ARCH_S390
-desktop_DATA =			\
-	idedma.desktop
-endif
+## don't install idedma.desktop (it doesn't work with libata, see bug #264681)
+## exclude IDE DMA from Y2CC on s390
+#if !ARCH_S390
+#desktop_DATA =			\
+#	idedma.desktop
+#endif
 
 module_DATA =			\
 	Idedma.ycp
@@ -31,6 +32,6 @@ idedma:
 ycpchook = idedma
 
 
-EXTRA_DIST = $(client_DATA) $(ynclude_DATA) $(module_DATA) $(desktop_DATA)
+EXTRA_DIST = $(client_DATA) $(ynclude_DATA) $(module_DATA) $(desktop_DATA) idedma.desktop
 
 include $(top_srcdir)/Makefile.am.common

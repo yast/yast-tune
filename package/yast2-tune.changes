@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Thu Apr 26 09:50:07 CEST 2007 - lslezak@suse.cz
+
+- disable the IDE DMA module for now - libata doesn't support DMA
+  mode changes (#264681)
+- 2.15.5
+
+-------------------------------------------------------------------
 Wed Apr 18 17:14:37 CEST 2007 - lslezak@suse.cz
 
 - properly remove 'elevator' option from the bootloader config
