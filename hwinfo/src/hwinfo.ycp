@@ -16,6 +16,7 @@ import "Wizard";
 import "Label";
 import "Arch";
 import "Directory";
+import "CommandLine";
 
 //include "hwinfo/classnames.ycp";
 include "hwinfo/routines.ycp";
@@ -39,26 +40,35 @@ term Icon (string icon_name) {
     );
 }
 
+
 /*
  * open progress bar window
  */
-UI::OpenDialog(
-    `HBox(
-	`VSpacing(7),
-	`VBox(
-	    `HSpacing(40),
-	    `HBox(
-		`HSquash (`MarginBox (0.5, 0.2, Icon("yast-hwinfo"))),
-		// translators: popup heading
-		`Left (`Heading(`id(`heading), _("Probing Hardware...")))
-	    ),
-	    // progress bar label
-	    `ProgressBar(`id(`initProg), _("Progress"), 1000, 0),
-	    `VSpacing(0.5),
-	    `PushButton(`id(`abort), `opt(`key_F9), Label::AbortButton())
+void OpenProbingPopup()
+{
+    UI::OpenDialog(
+	`HBox(
+	    `VSpacing(7),
+	    `VBox(
+		`HSpacing(40),
+		`HBox(
+		    `HSquash (`MarginBox (0.5, 0.2, Icon("yast-hwinfo"))),
+		    // translators: popup heading
+		    `Left (`Heading(`id(`heading), _("Probing Hardware...")))
+		),
+		// progress bar label
+		`ProgressBar(`id(`initProg), _("Progress"), 1000, 0),
+		`VSpacing(0.5),
+		`PushButton(`id(`abort), `opt(`key_F9), Label::AbortButton())
+	    )
 	)
-    )
-);
+    );
+}
+
+void CloseProbingPopup()
+{
+    UI::CloseDialog();
+}
 
 /*
  * these paths will be excluded from probing.
@@ -67,27 +77,30 @@ UI::OpenDialog(
  */
 list exclude_list = [.probe.byclass, .probe.bybus, .probe.ihw_data, .probe.system, .probe.status, .probe.cdb_isdn, .probe.boot_disk];
 
-if (Arch::is_uml())
+
+void InitProbeList()
 {
-    // exclude more path in UML system, UML supports/emulates only few devices
-    exclude_list = union(exclude_list, [ .probe.scsi, .probe.camera, .probe.pppoe, .probe.isapnp, .probe.tape, .probe.joystick,
-	.probe.usb, .probe.ieee1394ctrl, .probe.usbctrl, .probe.cdrom, .probe.floppy, .probe.chipcard, .probe.mouse
-    ]);
+    if (Arch::is_uml())
+    {
+	// exclude more path in UML system, UML supports/emulates only few devices
+	exclude_list = union(exclude_list, [ .probe.scsi, .probe.camera, .probe.pppoe, .probe.isapnp, .probe.tape, .probe.joystick,
+	    .probe.usb, .probe.ieee1394ctrl, .probe.usbctrl, .probe.cdrom, .probe.floppy, .probe.chipcard, .probe.mouse
+	]);
+    }
+
+    /*
+     * if xserver is running, don't probe for mouse and chipcard
+     * because it has bad side effect (moving cursor)
+     */
+    if (SCR::Execute(.target.bash, "/bin/ps -C X") == 0)
+    {
+	y2warning("X server is running - mouse and chipcard will not be probed");
+	exclude_list = add(exclude_list, .probe.mouse);
+
+	// .probe.chipcard has same effect as .probe.mouse
+	exclude_list = add(exclude_list, .probe.chipcard);
+    }
 }
-
-/*
- * if xserver is running, don't probe for mouse and chipcard
- * because it has bad side effect (moving cursor)
- */
-if (SCR::Execute(.target.bash, "/bin/ps -C X") == 0)
-{
-    y2warning("X server is running - mouse and chipcard will not be probed");
-    exclude_list = add(exclude_list, .probe.mouse);
-
-    // .probe.chipcard has same effect as .probe.mouse
-    exclude_list = add(exclude_list, .probe.chipcard);
-}
-
 
 /**
  * Add extra CPU info from .proc.cpuinfo to data read from .probe agent
@@ -240,74 +253,84 @@ define term buildHwTree(string p, integer progMin, integer progMax) ``{
 
 // Main
 
-// tree item list
-term items = nil;
-// default initial path
-path pat = .probe;
-if (size(WFM::Args()) > 0)
+
+symbol StartGUI()
 {
-    // initial path overriden by module argument
-    pat = topath(WFM::Args(0));
-}
+    // display progress popup
+    OpenProbingPopup();
 
-// build the tree
-items = buildHwTree(sformat("%1", pat), 0, 1000);
+    // set the paths to probe
+    InitProbeList();
 
-// interrupted
-if (abortPressed)
-{
-    UI::CloseDialog();
-    return `abort;
-}
+    // tree item list
+    term items = nil;
+    // default initial path
+    path pat = .probe;
 
-// title label
-string title = _("&All Entries"); //this wasn't marked for translation in 8.0
-if(pat != .probe)
-{
-    title = trans_str(afterLast(sformat("%1", pat)));
-}
+    // build the tree
+    items = buildHwTree(sformat("%1", pat), 0, 1000);
 
-UI::CloseDialog();
+    // close the popup
+    CloseProbingPopup();
 
-term con = `Tree(`id(`idTree), `opt(`vstretch, `hstretch), title, items[1]:nil);
-
-Wizard::CreateDialog();
-Wizard::SetDesktopIcon("hwinfo");
-
-
-Wizard::SetBackButton(`save, _("&Save to File...") );
-Wizard::SetNextButton(`next, Label::CloseButton() );
-
-// abort is not needed, module is read-only
-Wizard::HideAbortButton();
-
-
-// dialog header
-Wizard::SetContents (_("Hardware Information"), con,
-
-// help text
- _("<P>The <B>Hardware Information</B> module displays the hardware
-details of your computer. Click any node for more information.</p>\n")
-+ _("<P>You can save hardware information to a file. Click <B>Save to File</B> and enter the filename.</P>"),
-true, true);
-
-UI::SetFocus(`id(`idTree));
-
-any event = nil;
-
-// wait for finish
-while(event != `abort && event !=`next && event != `cancel)
-{
-    event = UI::UserInput();
-
-    if (event == `save)
+    // interrupted
+    if (abortPressed)
     {
-	// store hwinfo output to the file
-	save_hwinfo_to_file("/");
+	return `abort;
     }
+
+    // title label
+    string title = _("&All Entries");
+    term con = `Tree(`id(`idTree), `opt(`vstretch, `hstretch), title, items[1]:nil);
+
+    Wizard::CreateDialog();
+    Wizard::SetDesktopIcon("hwinfo");
+
+
+    Wizard::SetBackButton(`save, _("&Save to File...") );
+    Wizard::SetNextButton(`next, Label::CloseButton() );
+
+    // abort is not needed, module is read-only
+    Wizard::HideAbortButton();
+
+
+    // dialog header
+    Wizard::SetContents (_("Hardware Information"), con,
+
+    // help text
+     _("<P>The <B>Hardware Information</B> module displays the hardware
+    details of your computer. Click any node for more information.</p>\n")
+    + _("<P>You can save hardware information to a file. Click <B>Save to File</B> and enter the filename.</P>"),
+    true, true);
+
+    UI::SetFocus(`id(`idTree));
+
+    any event = nil;
+
+    // wait for finish
+    while(event != `abort && event !=`next && event != `cancel)
+    {
+	event = UI::UserInput();
+
+	if (event == `save)
+	{
+	    // store hwinfo output to the file
+	    save_hwinfo_to_file("/");
+	}
+    }
+    Wizard::CloseDialog();
+    return `next;
 }
-Wizard::CloseDialog();
-return `next;
+
+map cmdline_description = $[
+    "id"	: "hwinfo",
+    /* Command line help text for the hardware detection module, %1 is "hwinfo" */
+    "help"	: sformat(_("Hardware Detection - this module doesn't support command line interface, use '%1' instead."), "hwinfo"),
+    "guihandler": StartGUI,
+];
+
+return CommandLine::Run(cmdline_description);
+
 
 /* EOF */
 }

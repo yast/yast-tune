@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Thu May 24 09:42:49 CEST 2007 - lslezak@suse.cz
+
+- added minimal command line mode support to 'hwinfo' (#269892)
+- 2.15.6
+
+-------------------------------------------------------------------
 Thu Apr 26 09:50:07 CEST 2007 - lslezak@suse.cz
 
 - disable the IDE DMA module for now - libata doesn't support DMA
