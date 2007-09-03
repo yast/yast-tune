@@ -198,6 +198,7 @@ help for the Serial console settings</p>"),
 
 	Wizard::SetContentsButtons("", `VBox (), "",
 	    Label::BackButton(), Label::NextButton());
+	Wizard::DisableBackButton();
 	Wizard::SetDesktopIcon("powertweak");
 
 	// bugzilla #237379

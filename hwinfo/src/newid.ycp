@@ -375,6 +375,7 @@ define string NewPCIIDDialogCaption () {
 }
 
 define void InitNewPCIIDDialog (string id) {
+    Wizard::DisableBackButton();
     y2milestone("Init: %1", id);
     list items = get_table_items();
     UI::ChangeWidget(`id(`newid_table), `Items, items);
@@ -497,9 +498,7 @@ define any NewIDConfigDialog() ``{
 	NewPCIIDDialogHelp(),
 	true, true
     );
-
-    // remove Back button - workflow has only one dialog
-    Wizard::HideAbortButton();
+    Wizard::DisableBackButton();
     Wizard::SetNextButton(`next, Label::OKButton());
 
     InitNewPCIIDDialog("pci_id_table_and_buttons");
