@@ -12,6 +12,7 @@
 {
     import "Progress";
     import "SystemSettings";
+    import "Wizard";
 
     // ReadSettings()
     include "hwinfo/newid.ycp";
@@ -120,6 +121,7 @@ Please wait...</p>")
 
     void InitElevatorSettings(string value)
     {
+	Wizard::DisableBackButton();
 	UI::ChangeWidget(`id("elevator"), `Value, SystemSettings::GetIOScheduler());
     }
 
@@ -132,6 +134,7 @@ Please wait...</p>")
     }
 
     define void InitSysRqSettings (string key) {
+	Wizard::DisableBackButton();
 	UI::ChangeWidget(`id("sysrq"), `Value, SystemSettings::GetSysRqKeysEnabled());
     }
 

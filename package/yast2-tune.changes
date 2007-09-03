@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Mon Sep  3 14:12:43 CEST 2007 - locilka@suse.cz
+
+- Fixed "System Settings" buttons (#307148).
+- 2.15.7
+
+-------------------------------------------------------------------
 Fri May 25 13:30:04 CEST 2007 - jsrain@suse.cz
 
 - removed outdated translations from .desktop-files (#271209)

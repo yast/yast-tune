@@ -211,7 +211,7 @@ help for the Serial console settings</p>"),
 	    "widget_names" : widget_names,
 	    "contents" : contents,
 	    "caption" : caption,
-	    "back_button" : "",
+	    "back_button" : Label::BackButton(),
 	    "abort_button" : abort_button,
 	    "next_button" : next_button,
 	]);
