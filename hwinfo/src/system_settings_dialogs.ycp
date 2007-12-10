@@ -107,11 +107,12 @@
 	    "store" : StoreElevatorSettings,
 	    // help text for the scheduler widget, do not translate 'cfg'
 	    "help" : _("<p><b><big>Global I/O Scheduler</big></b><br>
-It's possible to select the algorithm which orders and sends commands to disk
+It is possible to select the algorithm which orders and sends commands to disk
 devices. This is a global option, it will be used for all disk devices in the
 system. If the option is not configured the default (usually 'cfq') scheduler
-will be used. See the documetation in /usr/src/linux/Documentation/block
-directory (package kernel-source) for more information.</p>"),
+will be used. See the documentation in the /usr/src/linux/Documentation/block
+directory (package kernel-source) for more information.</p>
+"),
 	],
 	// .sysconfig.sysctl
 	"sysrq" : $[
@@ -122,10 +123,11 @@ directory (package kernel-source) for more information.</p>"),
 	    // TRANSLATORS: Help text - over taken from /etc/sysconfig/sysctl file
 	    "help" : _("<p><b><big>Enable SysRq Keys</big></b><br>
 If you enable SysRq keys, you will have some control over the system even if it
-crashes (such as during kernel debugging). If it's enabled the key combination
+crashes (such as during kernel debugging). If it is enabled, the key combination
 Alt-SysRq-<command_key> will start the respective command (e.g. reboot the
 computer, dump kernel information). For further information, see
-<tt>/usr/src/linux/Documentation/sysrq.txt</tt> (package kernel-source).</p>")
+<tt>/usr/src/linux/Documentation/sysrq.txt</tt> (package kernel-source).</p>
+")
 	    ],
 	// http://www.vanemery.com/Linux/Serial/serial-console.html
 	// http://www.mikrotik.com/Documentation/manual_2.7/System/Serial.html

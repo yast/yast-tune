@@ -39,7 +39,7 @@ if (func == "Info")
 	ret = $[
 	    "steps" : 1,
 	    // progress step title
-	    "title" : _("Saving System Settings..."),
+	    "title" : _("Saving system settings..."),
 	    "when" : [ `installation, `update, `autoinst ],
 	];
 }

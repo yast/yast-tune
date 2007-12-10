@@ -325,7 +325,7 @@ symbol StartGUI()
 map cmdline_description = $[
     "id"	: "hwinfo",
     /* Command line help text for the hardware detection module, %1 is "hwinfo" */
-    "help"	: sformat(_("Hardware Detection - this module doesn't support command line interface, use '%1' instead."), "hwinfo"),
+    "help"	: sformat(_("Hardware Detection - this module does not support the command line interface, use '%1' instead."), "hwinfo"),
     "guihandler": StartGUI,
 ];
 
