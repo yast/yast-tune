@@ -22,3 +22,4 @@ Exec=/sbin/yast2 hwinfo
 Name=Hardware Information
 GenericName=View hardware information
 X-KDE-SubstituteUID=true
+StartupNotify=true

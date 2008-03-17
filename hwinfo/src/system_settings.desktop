@@ -21,3 +21,4 @@ Exec=/sbin/yast2 system_settings
 
 Name=System Settings
 GenericName=Configure Low-Level System Options
+StartupNotify=true

@@ -22,3 +22,4 @@ Exec=/sbin/yast2 idedma
 Name=IDE DMA Mode
 GenericName=Configure the DMA mode of IDE devices
 X-KDE-SubstituteUID=true
+StartupNotify=true
