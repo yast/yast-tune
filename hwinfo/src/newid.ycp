@@ -348,7 +348,7 @@ define term NewPCIIDDialogContent () {
 
 define string NewPCIIDDialogHelp () {
     // bugzilla #237379
-    string button_label = (Mode::installation() || Mode::config() ? Label::AcceptButton() : Label::FinishButton());
+    string button_label = (Mode::installation() || Mode::config() ? Label::OKButton() : Label::FinishButton());
     if (regexpmatch(button_label, "&")) button_label = regexpsub (button_label, "(.*)&(.*)", "\\1\\2");
 
     return
@@ -361,7 +361,7 @@ define string NewPCIIDDialogHelp () {
 	// PCI ID help text
 	+ _("<P>If the driver is compiled into the kernel, leave the driver name empty and enter the SysFS directory name instead.</P>")
 	+ sformat(
-	    // PCI ID help text, %1 stands for a button name (Accept or Finish -- depends on the situation)
+	    // PCI ID help text, %1 stands for a button name (OK or Finish -- depends on the situation)
 	    _("<P>Use the buttons below the table to change the list of PCI IDs. Press <b>%1</b> to activate the settings.</P>"),
 	    button_label
 	)

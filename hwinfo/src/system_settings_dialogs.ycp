@@ -205,9 +205,9 @@ help for the Serial console settings</p>"),
 
 	// bugzilla #237379
 	// [Abort] / [Finish]  for normal mode
-	// [Cancel] / [Accept] for installation mode
+	// [Cancel] / [OK] for installation mode
 	string abort_button = (Mode::installation() || Mode::config() ? Label::CancelButton()  : Label::AbortButton());
-	string next_button  = (Mode::installation() || Mode::config() ? Label::AcceptButton()  : Label::FinishButton());
+	string next_button  = (Mode::installation() || Mode::config() ? Label::OKButton()  : Label::FinishButton());
 
 	symbol ret = CWM::ShowAndRun ($[
 	    "widget_descr" : widget_descr,
