@@ -19,6 +19,6 @@ X-SuSE-YaST-AutoInstResource=
 Icon=yast-powertweak
 Exec=/sbin/yast2 system_settings
 
-Name=System Settings
+Name=Kernel Settings
 GenericName=Configure Low-Level System Options
 StartupNotify=true

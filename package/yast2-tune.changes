@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Thu Apr  3 09:03:53 CEST 2008 - lslezak@suse.cz
+
+- changed "System Settings" -> "Kernel Settings" (fate#303464)
+- 2.16.1
+
+-------------------------------------------------------------------
 Mon Mar 17 14:23:26 CET 2008 - lslezak@suse.cz
 
 - unified button labels (use "OK" instead of "Accept")
