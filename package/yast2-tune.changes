@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Thu Jun  5 14:47:21 CEST 2008 - lslezak@suse.cz
+
+- do not write ENABLE_SYSRQ 'nil' value (do not remove the
+  variable from sysconfig/sysctl file) (bnc#397101)
+- 2.16.2
+
+-------------------------------------------------------------------
 Fri May 16 16:40:22 CEST 2008 - jsrain@suse.cz
 
 - added categories Settings and System into desktop file

@@ -18,7 +18,7 @@
     import "Mode";
 
     /* Internal Data */
-    boolean ENABLE_SYSRQ = nil;
+    string ENABLE_SYSRQ = nil;
 
     string elevator = nil;
     /* Internal Data */
@@ -37,14 +37,17 @@
     }
 
     global define boolean Read () {
-	ENABLE_SYSRQ = ((string) SCR::Read(.sysconfig.sysctl.ENABLE_SYSRQ) == "yes");
+	ENABLE_SYSRQ = (string) SCR::Read(.sysconfig.sysctl.ENABLE_SYSRQ);
 	y2milestone("SysRq enabled: %1", ENABLE_SYSRQ);
 
-	boolean current_sysrq = (string)SCR::Read(.target.string, "/proc/sys/kernel/sysrq") == "1\n";
+	string current_sysrq = (string)SCR::Read(.target.string, "/proc/sys/kernel/sysrq");
+
+	// read just the first line
+	current_sysrq = splitstring(current_sysrq, "\n")[0]:"";
 
 	if (current_sysrq != ENABLE_SYSRQ)
 	{
-	    y2warning("SysRq mismatch: sysconfig value: %1, current: %2", ENABLE_SYSRQ, current_sysrq);
+	    y2warning("SysRq mismatch: sysconfig value: '%1', current: '%2'", ENABLE_SYSRQ, current_sysrq);
 	}
 
         /*
@@ -92,10 +95,30 @@
     global boolean Activate()
     {
 	// activate the SysRq setting
-	string proc_value = (ENABLE_SYSRQ) ? "1" : "0";
-	y2milestone("Activating SysRq config: %1", proc_value);
+	string proc_value = "";
 
-	SCR::Execute(.target.bash, sformat("echo '%1' > /proc/sys/kernel/sysrq", proc_value));
+	if (ENABLE_SYSRQ == "yes")
+	{
+	    proc_value = "1";
+	}
+	else if (ENABLE_SYSRQ == "no")
+	{
+	    proc_value = "0";
+	}
+	else if (regexpmatch(ENABLE_SYSRQ, "^[0-9]*$"))
+	{
+	    proc_value = ENABLE_SYSRQ;
+	}
+	else
+	{
+	    y2warning("Unknown ENABLE_SYSRQ value: %1, not activating", ENABLE_SYSRQ);
+	}
+
+	if (proc_value != "")
+	{
+	    y2milestone("Activating SysRq config: %1", proc_value);
+	    SCR::Execute(.target.bash, sformat("echo '%1' > /proc/sys/kernel/sysrq", proc_value));
+	}
 
 	if (elevator != nil)
 	{
@@ -116,9 +139,17 @@
 
     global define boolean Write () {
 	// writing SysRq settings
-	y2milestone("ENABLE_SYSRQ: %1", ENABLE_SYSRQ);
-	SCR::Write(.sysconfig.sysctl.ENABLE_SYSRQ, (ENABLE_SYSRQ ? "yes":"no"));
-	SCR::Write(.sysconfig.sysctl, nil);
+	if (ENABLE_SYSRQ == "yes" || ENABLE_SYSRQ == "no" || regexpmatch(ENABLE_SYSRQ, "^[0-9]*$"))
+	{
+	    // save the SysRq setting
+	    y2milestone("Saving ENABLE_SYSRQ: %1", ENABLE_SYSRQ);
+	    SCR::Write(.sysconfig.sysctl.ENABLE_SYSRQ, ENABLE_SYSRQ);
+	    SCR::Write(.sysconfig.sysctl, nil);
+	}
+	else
+	{
+	    y2warning("Not writing invalid ENABLE_SYSRQ value: %1", ENABLE_SYSRQ);
+	}
 
 	// enable boot.proc service which sets the value after boot
 	Service::Enable("boot.proc");
@@ -158,8 +189,8 @@
     }
 
     global define boolean GetSysRqKeysEnabled () {
-	if (ENABLE_SYSRQ == true || ENABLE_SYSRQ == false)
-	    return ENABLE_SYSRQ;
+	if (ENABLE_SYSRQ == "yes")
+	    return true;
 	else
 	    return false;
     }
@@ -171,12 +202,14 @@
 	    return;
 	}
 
-	if (ENABLE_SYSRQ != enable_sysrq)
+	string enable_sysrq_string = enable_sysrq ? "yes" : "no";
+
+	if (ENABLE_SYSRQ != enable_sysrq_string)
 	{
 	    modified = true;
 	}
 
-	ENABLE_SYSRQ = enable_sysrq;
+	ENABLE_SYSRQ = enable_sysrq_string;
 	y2milestone("SysRq was set to %1", ENABLE_SYSRQ);
     }
 
