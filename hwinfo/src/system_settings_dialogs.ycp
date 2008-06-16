@@ -203,20 +203,14 @@ help for the Serial console settings</p>"),
 	Wizard::DisableBackButton();
 	Wizard::SetDesktopIcon("powertweak");
 
-	// bugzilla #237379
-	// [Abort] / [Finish]  for normal mode
-	// [Cancel] / [OK] for installation mode
-	string abort_button = (Mode::installation() || Mode::config() ? Label::CancelButton()  : Label::AbortButton());
-	string next_button  = (Mode::installation() || Mode::config() ? Label::OKButton()  : Label::FinishButton());
-
 	symbol ret = CWM::ShowAndRun ($[
 	    "widget_descr" : widget_descr,
 	    "widget_names" : widget_names,
 	    "contents" : contents,
 	    "caption" : caption,
 	    "back_button" : Label::BackButton(),
-	    "abort_button" : abort_button,
-	    "next_button" : next_button,
+	    "abort_button" : Label::CancelButton(),
+	    "next_button" : Label::OKButton(),
 	]);
 
 	if (ret != `back && ret != `abort && ret != `cancel) {

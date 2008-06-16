@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Mon Jun 16 14:56:29 CEST 2008 - lslezak@suse.cz
+
+- OK/Cancel buttons in the main dialog (bnc#398496)
+- 2.17.0
+
+-------------------------------------------------------------------
 Thu Jun  5 14:47:21 CEST 2008 - lslezak@suse.cz
 
 - do not write ENABLE_SYSRQ 'nil' value (do not remove the
