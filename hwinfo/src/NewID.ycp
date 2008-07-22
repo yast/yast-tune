@@ -377,7 +377,7 @@
 		    if (filesize >= 0)
 		    {
 			// set the new value
-			boolean set = (integer) SCR::Execute(.target.bash, sformat("echo '%1' > %2", idstring, targetfile)) == 0;
+			boolean set = (integer) SCR::Execute(.target.bash, sformat("echo '%1' > '%2'", String::Quote(idstring), String::Quote(targetfile))) == 0;
 
 			if (!set)
 			{
@@ -522,7 +522,7 @@
 		    if (modulename != "")
 		    {
 			string targetfile = (sysdir != "") ? sysdir : modulename;
-			string install_string = sformat("echo '%1' > /sys/bus/pci/drivers/%2/new_id", idstring, targetfile);
+			string install_string = sformat("echo '%1' > '/sys/bus/pci/drivers/%2/new_id'", String::Quote(idstring), String::Quote(targetfile));
 
 			list<string> current = settings[modulename]:[];
 			current = add(current, install_string);

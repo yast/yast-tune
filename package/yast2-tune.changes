@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Tue Jul 22 11:09:03 CEST 2008 - lslezak@suse.cz
+
+- NewID.ycp - fixed activation of new device IDs for drivers
+  containing spaces (bnc#402572)
+- 2.17.1
+
+-------------------------------------------------------------------
 Mon Jun 16 14:56:29 CEST 2008 - lslezak@suse.cz
 
 - OK/Cancel buttons in the main dialog (bnc#398496)
