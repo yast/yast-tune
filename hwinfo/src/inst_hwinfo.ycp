@@ -214,7 +214,7 @@ define symbol detected_dialog() ``{
 	`VSpacing(0.4),
 	`HBox(
 	    // push button label
-	    `PushButton(`id(`newid), _("&System Settings...")),
+	    `PushButton(`id(`newid), _("&Kernel Settings...")),
 	    `HSpacing(4),
 	    // push button label
 	    `PushButton(`id(`details), _("&Details...")),

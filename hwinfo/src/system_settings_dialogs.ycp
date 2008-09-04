@@ -196,7 +196,7 @@ help for the Serial console settings</p>"),
 	// explicitly set no help (otherwise CWM logs an error)
 	widget_descr["tab","help"] = "";
 
-	string caption = _("System Settings");
+	string caption = _("Kernel Settings");
 
 	Wizard::SetContentsButtons("", `VBox (), "",
 	    Label::BackButton(), Label::NextButton());

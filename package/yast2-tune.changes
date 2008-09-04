@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Thu Sep  4 10:01:22 CEST 2008 - lslezak@suse.cz
+
+- use "Kernel Settings" label consistently (bnc#421029)
+- 2.17.2
+
+-------------------------------------------------------------------
 Tue Jul 22 11:09:03 CEST 2008 - lslezak@suse.cz
 
 - NewID.ycp - fixed activation of new device IDs for drivers
