@@ -139,7 +139,7 @@
 
     global define boolean Write () {
 	// writing SysRq settings
-	if (ENABLE_SYSRQ == "yes" || ENABLE_SYSRQ == "no" || regexpmatch(ENABLE_SYSRQ, "^[0-9]*$"))
+	if (ENABLE_SYSRQ != nil && (ENABLE_SYSRQ == "yes" || ENABLE_SYSRQ == "no" || regexpmatch(ENABLE_SYSRQ, "^[0-9]*$")))
 	{
 	    // save the SysRq setting
 	    y2milestone("Saving ENABLE_SYSRQ: %1", ENABLE_SYSRQ);
