@@ -340,7 +340,8 @@ define term NewPCIIDDialogContent () {
 			    `HSpacing(1),
 			    `PushButton(`id(`edit), Label::EditButton()),
 			    `HSpacing(1),
-			    `PushButton(`id(`delete), Label::DeleteButton())
+			    `PushButton(`id(`delete), Label::DeleteButton()),
+			    `HStretch()
 			),
 			`VSpacing(0.5)
 		);

@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Mon Oct  6 18:17:05 CEST 2008 - lslezak@suse.cz
+
+- 'Kernel Settings' - align the action buttons to the left
+  (bnc#419535)
+- 2.17.5
+
+-------------------------------------------------------------------
 Mon Oct  6 13:32:22 CEST 2008 - visnov@suse.cz
 
 - adapt to new Confirm::Detection API (bnc #431276) 
