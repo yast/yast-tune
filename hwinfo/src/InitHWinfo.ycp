@@ -281,7 +281,7 @@ global define list<map> DetectedHardware(boolean force, block<boolean> abort) ``
 		Progress::Title(sformat(_("%1..."), pathname));
 
 		// don't ask for probing CPU and memory, they were already probed and detection should be harmless
-		boolean detect = (subpath == "cpu" || subpath == "memory") ? true : Confirm::Detection(pathname);
+		boolean detect = (subpath == "cpu" || subpath == "memory") ? true : Confirm::Detection(pathname, nil);
 
 		// confirm hardware detection in the manual mode
 		if (detect == true)

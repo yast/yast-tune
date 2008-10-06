@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Mon Oct  6 13:32:22 CEST 2008 - visnov@suse.cz
+
+- adapt to new Confirm::Detection API (bnc #431276) 
+
+-------------------------------------------------------------------
 Fri Oct  3 13:03:03 CEST 2008 - lslezak@suse.cz
 
 - SystemSettings.ycp - check if ENABLE_SYSRQ is nil (bnc#431909)

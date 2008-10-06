@@ -22,297 +22,297 @@ include "hwinfo/classnames.ycp";
 map<string, string> trans_table = (map<string, string>) eval(
 $[
     // tree node string
-    "architecture"	:   _("Architecture"),
+    "architecture"	:  [  _("Architecture"), "yast-hardware" ],
     // tree node string - means "hardware bus"
-    "bus"		:   _("Bus"),
+    "bus"		:  [  _("Bus"), "yast-hardware" ],
     // tree node string - means "hardware bus ID"
-    "bus_id"		: _("Bus ID"),
+    "bus_id"		: [ _("Bus ID"), "yast-hardware"], 
     // tree node string
-    "cache"		:   _("Cache"),
+    "cache"		: [ _("Cache"), "yast-hardware"], 
     // tree node string
-    "card_type"	:   _("Card Type"),
+    "card_type"	: [   _("Card Type"), "yast-hardware"], 
     // tree node string
-    "cardtype"	:   _("Card Type"),
+    "cardtype"	: [   _("Card Type"), "yast-hardware"], 
     // tree node string - means "class of hardware"
-    "class_id"	:   _("Class"),
+    "class_id"	: [   _("Class"), "yast-hardware"], 
     // tree node string
-    "cdtype"	:   _("CD Type"),
+    "cdtype"	: [   _("CD Type"), "yast-cd"], 
     // tree node string
-    "dev_name"	:   _("Device Name"),
+    "dev_name"	: [   _("Device Name"), "yast-hardware"], 
     // tree node string
-    "dev_num"	:   _("Device Numbers"),
+    "dev_num"	: [   _("Device Numbers"), "yast-hardware"], 
     // tree node string
-    "sysfs_id"	:   _("Sysfs ID"),
+    "sysfs_id"	: [   _("Sysfs ID"), "yast-hardware"], 
     // tree node string
-    "device"	:   _("Device"),
+    "device"	: [   _("Device"), "yast-hardware"], 
     // tree node string
-    "device_id"	:   _("Device Identifier"),
+    "device_id"	: [   _("Device Identifier"), "yast-hardware"], 
     // tree node string - means "hardware drivers"
-    "drivers"	:   _("Drivers"),
+    "drivers"	: [   _("Drivers"), "yast-hardware"], 
     // tree node string - means "hardware driver"
-    "driver"	:   _("Driver"),
+    "driver"	: [   _("Driver"), "yast-hardware"], 
     // tree node string
-    "type"	: _("Type"),
+    "type"	: [ _("Type"), "yast-hardware"], 
     // tree node string
-    "major"	: _("Major"),
+    "major"	: [ _("Major"), "yast-partitioning"], 
     // tree node string
-    "minor"	: _("Minor"),
+    "minor"	: [ _("Minor"), "yast-partitioning"], 
     // tree node string
-    "range"	: _("Range"),
+    "range"	: [ _("Range"), "yast-hardware"], 
     // tree node string (System Management BIOS)
-    "smbios"	: _("SMBIOS"),
+    "smbios"	: [ _("SMBIOS"), "yast-hardware"], 
     // tree node string
-    "prog_if"	:   _("Interface"),
+    "prog_if"	: [   _("Interface"), "yast-hardware"], 
     // tree node string
-    "resource"	:   _("Resources"),
+    "resource"	: [   _("Resources"), "yast-hardware"], 
     // tree node string
-    "requires"	:   _("Requires"),
+    "requires"	: [   _("Requires"), "yast-hardware"], 
     // tree node string
-    "rev"		:   _("Revision"),
+    "rev"		: [  _("Revision"), "yast-hardware"], 
     // tree node string - location of hardware in the machine
-    "slot_id"	:	_("Slot ID"),
+    "slot_id"	: [ 	_("Slot ID"), "yast-hardware"], 
     // tree node string
-    "length"	: _("Length"),
+    "length"	: [ _("Length"), "yast-hardware"], 
     // tree node string
-    "width"	: _("Width"),
+    "width"	: [ _("Width"), "yast-hardware"], 
     // tree node string
-    "height"	: _("Height"),
+    "height"	: [ _("Height"), "yast-hardware"], 
     // tree node string
-    "active"	: _("Active"),
+    "active"	: [ _("Active"), "yast-hardware"], 
     // tree node string
-    "dev_names"	: _("Device Names"),
+    "dev_names"	: [ _("Device Names"), "yast-hardware"], 
     // tree node string (number of colors)
-    "color"	: _("Colors"),
+    "color"	: [ _("Colors"), "yast-hardware"], 
     // tree node string (harddisk parameter)
-    "disk_log_geo" : _("Logical Geometry"),
+    "disk_log_geo" : [ _("Logical Geometry"), "yast-hardware"], 
     // tree node string
-    "count"	: _("Count"),
+    "count"	: [ _("Count"),"yast-hardware"], 
     // tree node string
-    "mode"	: _("Mode"),
+    "mode"	: [ _("Mode"),"yast-hardware"], 
     // tree node string (interrupt request)
-    "irq"	: _("IRQ"),
+    "irq"	: [ _("IRQ"),"yast-hardware"], 
     // tree node string
-    "io"	: _("IO Port"),
+    "io"	: [ _("IO Port"),"yast-hardware"], 
     // tree node string
-    "mem"	: _("Memory"),
+    "mem"	: [ _("Memory"),"yast-hardware"], 
     // tree node string (direct memory access)
-    "dma"	: _("DMA"),
+    "dma"	: [ _("DMA"),"yast-hardware"], 
     // tree node string
-    "bus_hwcfg" : _("Hwcfg Bus"),
+    "bus_hwcfg" : [ _("Hwcfg Bus"),"yast-hardware"], 
     // tree node string
-    "sysfs_bus_id" : _("Sysfs ID"),
+    "sysfs_bus_id" : [ _("Sysfs ID"),"yast-hardware"], 
     // tree node string
-    "parent_unique_key" : _("Parent Unique ID"),
+    "parent_unique_key" : [ _("Parent Unique ID"),"yast-hardware"], 
     // tree node string
-    "udi"	: _("UDI"),
+    "udi"	: [ _("UDI"),"yast-hardware"], 
     // tree node string
-    "uniqueid"	: _("Unique ID"),
+    "uniqueid"	: [ _("Unique ID"), "yast-x11"], 
     // tree node string (monitor parameter)
-    "vfreq"	: _("Vertical Frequency"),
+    "vfreq"	: [ _("Vertical Frequency"), "yast-x11"], 
     // tree node string (monitor parameter)
-    "max_hsync"	: _("Max. Horizontal Frequency"),
+    "max_hsync"	: [ _("Max. Horizontal Frequency"), "yast-x11"], 
     // tree node string (monitor parameter)
-    "max_vsync"	: _("Max. Vertical Frequency"),
+    "max_vsync"	: [ _("Max. Vertical Frequency"), "yast-x11"], 
     // tree node string (monitor parameter)
-    "min_hsync"	: _("Min. Horizontal Frequency"),
+    "min_hsync"	: [ _("Min. Horizontal Frequency"), "yast-x11"], 
     // tree node string (monitor parameter)
-    "min_vsync"	: _("Min. Vertical Frequency"),
+    "min_vsync"	: [ _("Min. Vertical Frequency"), "yast-x11"], 
     // tree node string
-    "dvd"	: _("DVD"),
+    "dvd"	: [ _("DVD"), "yast-cdrom"], 
     // tree node string
-    "driver_module"	: _("Kernel Driver"),
+    "driver_module"	: [ _("Kernel Driver"), "yast-hardware"], 
     // tree node string
-    "hwaddr"	: _("HW Address"),
+    "hwaddr"	: [ _("HW Address"), "yast-hardware"], 
     // tree node string
-    "bios_id"	: _("BIOS ID"),
+    "bios_id"	: [ _("BIOS ID"), "yast-hardware"], 
     // tree node string
-    "enabled"	: _("Enabled"),
+    "enabled"	: [ _("Enabled"), "yast-hardware"], 
     // tree node string (monitor resolution e.g. 1280x1024)
-    "monitor_resol"	: _("Resolution"),
+    "monitor_resol"	: [ _("Resolution"), "yast-x11"], 
     // tree node string
-    "size"	: _("Size"),
+    "size"	: [ _("Size"), "yast-x11"], 
     // tree node string
-    "old_unique_key"	: _("Old Unique Key"),
+    "old_unique_key"	: [ _("Old Unique Key"), "yast-x11"], 
     // tree node string
-    "sub_class_id"	:   _("Class (spec)"),
+    "sub_class_id"	: [   _("Class (spec)"), "yast-x11"], 
     // tree node string
-    "sub_device"	:   _("Device (spec)"),
+    "sub_device"	: [   _("Device (spec)"), "yast-x11"], 
     // tree node string
-    "sub_device_id" :   _("Device Identifier (spec)"),
+    "sub_device_id" : [   _("Device Identifier (spec)"), "yast-x11"], 
     // tree node string
-    "sub_vendor"	:   _("Subvendor"),
+    "sub_vendor"	: [   _("Subvendor"), "yast-x11"], 
     // tree node string
-    "sub_vendor_id" :   _("Subvendor Identifier"),
+    "sub_vendor_id" :  [  _("Subvendor Identifier"), "yast-x11"], 
     // tree node string
-    "unique_key"	:   _("Unique Key"),
+    "unique_key"	:  [  _("Unique Key"), "yast-x11"], 
     // tree node string
-    "vendor"	:   _("Vendor"),
+    "vendor"	:   [ _("Vendor"), "yast-x11"], 
     // tree node string
-    "vendor_id"        :   _("Vendor Identifier"),
+    "vendor_id"        : [   _("Vendor Identifier"), "yast-x11"], 
     // tree node string
-    "bios_video"       :   _("BIOS Video"),
+    "bios_video"       : [   _("BIOS Video"), "yast-x11"], 
     // tree node string
-    "boot_arch"        :   _("Boot Architecture"),
+    "boot_arch"        : [   _("Boot Architecture"), "yast-bootloader"], 
     // tree node string
-    "boot_disk"        :   _("Boot Disk"),
+    "boot_disk"        : [   _("Boot Disk"), "yast-bootloader"], 
     // tree node string
-    "block"		: _("Block Devices"),
+    "block"		: [ _("Block Devices"), "yast-disk"], 
     // tree node string
-    "redasd"		: _("DASD Disks"),
+    "redasd"		: [  _("DASD Disks"), "yast-dasd"], 
     // tree node string
-    "cdrom"            :   _("CD-ROM"),
+    "cdrom"            : [   _("CD-ROM"), "yast-cdrom"], 
     // tree node string
-    "cpu"              :   _("CPU"),
+    "cpu"              : [   _("CPU"), "yast-hardware"], 
     // tree node string
-    "disk"             :   _("Disk"),
+    "disk"             : [   _("Disk"), "yast-disk"], 
     // tree node string
-    "display"  :   _("Display"),
+    "display"  : [   _("Display"), "yast-x11"], 
     // tree node string
-    "floppy"   :   _("Floppy Disk"),
+    "floppy"   : [   _("Floppy Disk"), "yast-floppy"], 
     // tree node string
-    "framebuffer"      :   _("Framebuffer"),
+    "framebuffer"      :  [  _("Framebuffer"), "yast-x11"], 
     // tree node string (powermanagement)
-    "has_apm"  :   _("Has APM"),
+    "has_apm"  :  [  _("Has APM"), "yast-power-management"], 
     // tree node string
-    "has_pcmcia"       :   _("Has PCMCIA"),
+    "has_pcmcia"  :  [  _("Has PCMCIA"), "yast-hardware"], 
     // tree node string (multiprocessing)
-    "has_smp"  :   _("Has SMP"),
+    "has_smp"  :  [  _("Has SMP"), "yast-hardware"], 
     // tree node string - UML = User Mode Linux
-    "is_uml"	:	_("UML System"),
+    "is_uml"	: [ 	_("UML System"), "yast-vm-management"], 
     // tree node string
-    "ihw_data" :   _("Hardware Data"),
+    "ihw_data" :  [  _("Hardware Data"), "yast-hardware"], 
     // tree node string
-    "isdn"             :   _("ISDN"),
+    "isdn"             : [   _("ISDN"), "yast-isdn"], 
     // tree node string
-    "keyboard" :   _("Keyboard"),
+    "keyboard" : [   _("Keyboard"), "yast-keyboard"], 
     // tree node string
-    "monitor"  :   _("Monitor"),
+    "monitor"  : [   _("Monitor"), "yast-x11"], 
     // tree node string
-    "netdev"   :   _("Network Devices"),
+    "netdev"   : [   _("Network Devices"), "yast-lan"], 
     // tree node string
-    "netif"            :   _("Network Interface"),
+    "netif"            : [   _("Network Interface"), "yast-lan"], 
     // tree node string
-    "printer"  :   _("Printer"),
+    "printer"  :  [  _("Printer"), "yast-printer"], 
     // tree node string
-    "modem"            :   _("Modem"),
+    "modem"            :   [ _("Modem"), "yast-modem"], 
     // tree node string
-    "sound"            :   _("Sound"),
+    "sound"            :   [ _("Sound"), "yast-sound"], 
     // tree node string
-    "storage"  :   _("Storage Media"),
+    "storage"  :   [ _("Storage Media"), "yast-disk"], 
     // tree node string
-    "system"   :   _("System"),
+    "system"   :   [ _("System"), "yast-hardware"], 
     // tree node string
-    "tv"               :   _("TV Card"),
+    "tv"               :   [ _("TV Card"), "yast-tv"], 
     // tree node string
-    "dvb"              :   _("DVB Card"),
+    "dvb"              :   [ _("DVB Card"), "yast-tv"], 
     // tree node string
-    "usb_type" :   _("USB Type"),
+    "usb_type" :   [ _("USB Type"), "yast-hardware"], 
     // tree node string
-    "version"  :   _("Version"),
+    "version"  :   [ _("Version"), "yast-hardware"], 
     // tree node string - memory (RAM) information
-    "memory"   :   _("Memory"),
+    "memory"   :   [ _("Memory"), "yast-hardware"], 
     // tree node string
-    "netcard"  :   _("Network Card"),
+    "netcard"  :   [ _("Network Card"), "yast-lan"], 
     // tree node string
-    "bios"     :   _("BIOS"),
+    "bios"     :   [ _("BIOS"), "yast-hardware"], 
     // tree node string
-    "fbdev"    :   _("Framebuffer Device"),
+    "fbdev"    :   [ _("Framebuffer Device"), "yast-x11"], 
     // tree node string - bus type
-    "ide"      :   _("IDE"),
+    "ide"      :   [ _("IDE"), "yast-disk"], 
     // tree node string - bus type
-    "pci"      :   _("PCI"),
+    "pci"      :   [ _("PCI"), "yast-hardware"], 
     // tree node string - bus type
-    "usb"      :   _("USB"),
+    "usb"      :   [ _("USB"), "yast-hardware"], 
     // tree node string - bus type
-    "isapnp"   :   _("ISA PnP"),
+    "isapnp"   :   [ _("ISA PnP"), "yast-hardware"], 
     // tree node
-    "usbctrl"  :   _("USB Controller"),
+    "usbctrl"  :   [ _("USB Controller"), "yast-hardware"], 
     // tree node
-    "hub"      :   _("USB Hub"),
+    "hub"      :   [ _("USB Hub"), "yast-hardware"], 
     // tree node
-    "ieee1394ctrl"     :  _("IEEE1394 Controller"),
+    "ieee1394ctrl"     :  [ _("IEEE1394 Controller"), "yast-hardware"], 
     // tree node
-    "scsi"     :   _("SCSI"),
+    "scsi"     :   [ _("SCSI"), "yast-hardware"], 
     // tree node
-    "scanner"  :   _("Scanner"),
+    "scanner"  :   [ _("Scanner"), "yast-scanner"], 
     // tree node
-    "mouse"    :   _("Mouse"),
+    "mouse"    :   [ _("Mouse"), "yast-mouse"], 
     // tree node
-    "joystick" :   _("Joystick"),
+    "joystick" :   [ _("Joystick"), "yast-joystick"], 
     // tree node
-    "braille"  :   _("Braille Display"),
+    "braille"  :   [ _("Braille Display"), "yast-hardware"], 
     // tree node
-    "chipcard" :   _("Chipcard Reader"),
+    "chipcard" :   [ _("Chipcard Reader"), "yast-hardware"], 
     // tree node - Digital camera or WebCam
-    "camera"   :   _("Camera"),
+    "camera"   :   [ _("Camera"), "yast-hardware"], 
     // Point-to-Point Protocol Over Ethernet
-    "pppoe"    :   _("PPP over Ethernet"),
+    "pppoe"    :   [ _("PPP over Ethernet"), "yast-dsl"], 
 
     // tree node string - CPU information
-    "bogomips" :   _("Bogus Millions of Instructions Per Second"),
+    "bogomips" :   [ _("Bogus Millions of Instructions Per Second"), "yast-hardware"], 
     // tree node string - CPU information
-    "cache"            :   _("Cache"),
+    "cache"            :   [ _("Cache"), "yast-hardware"], 
     // tree node string - CPU information
-    "coma_bug" :   _("Coma Bug"),
+    "coma_bug" :   [ _("Coma Bug"), "yast-hardware"], 
     // tree node string - CPU information
-    "f00f_bug" :   _("f00f Bug"),
+    "f00f_bug" :   [ _("f00f Bug"), "yast-hardware"], 
     // tree node string - CPU information
-    "cpuid_level"      :   _("CPU ID Level"),
+    "cpuid_level"      :   [ _("CPU ID Level"), "yast-hardware"], 
     // tree node string - CPU information
-    "mhz"              :   _("Frequency"),
+    "mhz"              :   [ _("Frequency"), "yast-hardware"], 
     // tree node string - CPU information
-    "fdiv_bug" :   "Floating point division bug",
+    "fdiv_bug" : [ _(  "Floating point division bug"), "yast-hardware"], 
     // tree node string - CPU information
-    "flags"            :   _("Flags"),
+    "flags"            :   [ _("Flags"), "yast-hardware"], 
     // tree node string - CPU information
-    "fpu"              :   _("Floating Point Unit"),
+    "fpu"              :   [ _("Floating Point Unit"), "yast-hardware"], 
     // tree node string - CPU information
-    "fpu_exception"    :   _("Floating Point Unit Exception"),
+    "fpu_exception"    :   [ _("Floating Point Unit Exception"), "yast-hardware"], 
     // tree node string - CPU information
-    "hlt_bug"  :   _("Halt Bug"),
+    "hlt_bug"  :   [ _("Halt Bug"), "yast-hardware"], 
     // tree node string - CPU information
-    "processor"        :   _("Processor"),
+    "processor"        :   [ _("Processor"), "yast-hardware"], 
     // tree node string - CPU information
-    "stepping" :   _("Stepping"),
+    "stepping" :  [  _("Stepping"), "yast-hardware"], 
     // tree node string - CPU information
-    "vendor_id"        :   _("Vendor Identifier"),
+    "vendor_id"        :   [ _("Vendor Identifier"), "yast-hardware"], 
     // tree node string - CPU information
-    "family"   :   _("Family"),
+    "family"   :   [ _("Family"), "yast-hardware"], 
     // tree node string - CPU information
-    "model"            :   _("Model"),
+    "model"            :   [ _("Model"), "yast-hardware"], 
     // tree node string - CPU information
-    "wp"               :   _("WP"),
+    "wp"               :   [ _("WP"), "yast-hardware"], 
     // tree node string - wireless network adapters
-    "wlan"             :   _("Wireless LAN"),
+    "wlan"             :   [ _("Wireless LAN"), "yast-wifi"], 
     // tree node string - tape devices
-    "tape"             :   _("Tape"),
+    "tape"             :   [ _("Tape"), "yast-hardware"], 
     // tree node string - Bluetooth devices
-    "bluetooth"        :   _("Bluetooth"),
+    "bluetooth"        :   [ _("Bluetooth"), "yast-bluetooth"], 
     // tree node string - DSL devices
-    "dsl"              :   _("DSL"),
+    "dsl"              :   [ _("DSL"), "yast-dsl"], 
 
     // tree node string - generic device name
-    "Ethernet network interface"	: _("Ethernet Network Interface"),
+    "Ethernet network interface"	: [ _("Ethernet Network Interface"), "yast-lan"], 
     // tree node string - generic device name
-    "Network Interface"		: _("Network Interface"),
+    "Network Interface"		: [ _("Network Interface"), "yast-lan"], 
     // tree node string - generic device name
-    "Loopback network interface"		: _("Loopback Network Interface"),
+    "Loopback network interface"	: [ _("Loopback Network Interface"), "yast-lan"], 
     // tree node string - generic device name
-    "Partition"		: _("Partition"),
+    "Partition"				: [ _("Partition"), "yast-disk"], 
     // tree node string - generic device name
-    "Floppy Disk"	: _("Floppy Disk"),
+    "Floppy Disk"			: [ _("Floppy Disk"), "yast-floppy"], 
     // tree node string - generic device name
-    "Floppy disk controller"	: _("Floppy Disk Controller"),
+    "Floppy disk controller"		: [ _("Floppy Disk Controller"), "yast-floppy"], 
     // tree node string - generic device name
-    "PnP Unclassified device"		: _("PnP Unclassified Device"),
+    "PnP Unclassified device"		: [ _("PnP Unclassified Device"), "yast-hardware"], 
     // tree node string - generic device name
-    "Main Memory"	: _("Main Memory"),
+    "Main Memory"			: [ _("Main Memory"), "yast-hardware"], 
     // tree node string - generic device name
-    "UHCI Host Controller"		: _("UHCI Host Controller"),
+    "UHCI Host Controller"		: [ _("UHCI Host Controller"), "yast-hardware"], 
     // tree node string - generic device name
-    "EHCI Host Controller"		: _("EHCI Host Controller"),
+    "EHCI Host Controller"		: [ _("EHCI Host Controller"), "yast-hardware"], 
     // tree node string - generic device name
-    "OHCI Host Controller"		: _("OHCI Host Controller"),
+    "OHCI Host Controller"		: [ _("OHCI Host Controller"), "yast-hardware"], 
 
     // translate "probe" to empty string
     // search starts from .probe node which doesn't
@@ -423,7 +423,21 @@ define string trans_str(string str) ``{
 	{
 	    y2warning("Cannot translate string '%1'", str);
 	}
-	return (string) (trans_table[str]:str);
+	return (string) (trans_table[str,0]:str);
+}
+
+/**
+ * icon for path - looks to the translation table and returns value
+ * @param str string of the path
+ * @return string icon name or nil if not found
+ */
+string icon(string str) {
+	if (!haskey(trans_table, str))
+	{
+	    y2warning("Cannot find icon for string '%1'", str);
+	    return nil;
+	}
+	return (string) (trans_table[str,1]:nil);
 }
 
 /**
