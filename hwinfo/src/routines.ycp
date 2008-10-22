@@ -19,7 +19,7 @@ include "hwinfo/classnames.ycp";
  * translation table- key is replaced by value on it's way to ui
  * must be done this way, because keys are machine-generated
  */
-map<string, string> trans_table = (map<string, string>) eval(
+map<string, list<string> > trans_table = (map<string, list<string> >) eval(
 $[
     // tree node string
     "architecture"	:  [  _("Architecture"), "yast-hardware" ],
