@@ -317,7 +317,7 @@ $[
     // translate "probe" to empty string
     // search starts from .probe node which doesn't
     // contain any hardware information
-    "probe"		: ""
+    "probe"		: ["", "yast-hardware"],
 ]);
 
 /**
