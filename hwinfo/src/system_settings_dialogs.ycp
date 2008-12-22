@@ -208,7 +208,8 @@ help for the Serial console settings</p>"),
 	    "widget_names" : widget_names,
 	    "contents" : contents,
 	    "caption" : caption,
-	    "back_button" : Label::BackButton(),
+	    // hide back button
+	    "back_button" : nil,
 	    "abort_button" : Label::CancelButton(),
 	    "next_button" : Label::OKButton(),
 	]);

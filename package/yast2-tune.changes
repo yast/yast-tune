@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Mon Dec 22 13:54:12 CET 2008 - lslezak@suse.cz
+
+- Kernel Setings - hide [Back] button in the main dialog
+  (bnc#440555)
+
+-------------------------------------------------------------------
 Fri Oct 24 09:46:10 CEST 2008 - visnov@suse.cz
 
 - fix type error in accessing icons
