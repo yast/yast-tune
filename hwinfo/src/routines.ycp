@@ -306,6 +306,8 @@ $[
     // tree node string - generic device name
     "PnP Unclassified device"		: [ _("PnP Unclassified Device"), "yast-hardware"], 
     // tree node string - generic device name
+    "Unclassified device"		: [ _("PnP Unclassified Device"), "yast-hardware"], 
+    // tree node string - generic device name
     "Main Memory"			: [ _("Main Memory"), "yast-hardware"], 
     // tree node string - generic device name
     "UHCI Host Controller"		: [ _("UHCI Host Controller"), "yast-hardware"], 

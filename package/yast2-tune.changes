@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Tue Jan 27 18:07:21 CET 2009 - lslezak@suse.cz
+
+- hwinfo - translate "Unclassified device" string (bnc#448532)
+- 2.17.7
+
+-------------------------------------------------------------------
 Fri Oct 24 09:46:10 CEST 2008 - visnov@suse.cz
 
 - fix type error in accessing icons
