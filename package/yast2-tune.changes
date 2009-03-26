@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Thu Mar 26 08:33:55 CET 2009 - lslezak@suse.cz
+
+- Use /etc/modprobe.d/50-newid.conf config file instead of
+  /etc/modprobe.d/newid (bnc#485942)
+- 2.18.1
+
+-------------------------------------------------------------------
 Tue Jan 27 17:55:58 CET 2009 - lslezak@suse.cz
 
 - hwinfo - translate "Unclassified device" string (bnc#448532)

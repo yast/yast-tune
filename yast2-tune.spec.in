@@ -24,6 +24,12 @@ Summary:	System configuration viewer and tuner
 
 @CLEAN@
 
+%post
+# rename the config file to the new modprobe schema
+if test -e /etc/modprobe.d/newid; then
+    mv -f /etc/modprobe.d/newid /etc/modprobe.d/50-newid.conf
+fi
+
 %files
 %defattr(-,root,root)
 

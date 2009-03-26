@@ -8,5 +8,5 @@
 .modprobe_newid
 
 `ag_modules(
-    `ModulesConf("/etc/modprobe.d/newid")
+    `ModulesConf("/etc/modprobe.d/50-newid.conf")
 )

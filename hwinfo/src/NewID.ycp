@@ -517,7 +517,7 @@
 		    string sysdir = newid["sysdir"]:"";
 		    string idstring = FormatActivationString(newid);
 
-		    // write settings to /etc/modprobe.d/newid if the module is known
+		    // write settings to /etc/modprobe.d/50-newid.conf if the module is known
 		    // (the module is not compiled into the kernel)
 		    if (modulename != "")
 		    {
