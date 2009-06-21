@@ -14,7 +14,7 @@ Obsoletes:	yast2-trans-hwinfo yast2-trans-idedma y2c_tune y2t_tune yast2-config-
 Summary:	YaST2 - Hardware Tuning
 
 %description
--
+This package contains the YaST2 component for hardware configuration.
 
 @PREP@
 
