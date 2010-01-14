@@ -17,9 +17,8 @@ X-SuSE-YaST-SortKey=
 X-SuSE-YaST-AutoInstResource=
 
 Icon=yast-hwinfo
-Exec=/sbin/yast2 hwinfo 
+Exec=xdg-su -c "/sbin/yast2 hwinfo"
 
 Name=Hardware Information
 GenericName=View hardware information
-X-KDE-SubstituteUID=true
 StartupNotify=true

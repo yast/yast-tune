@@ -17,9 +17,8 @@ X-SuSE-YaST-SortKey=
 X-SuSE-YaST-AutoInstResource=
 
 Icon=yast-idedma
-Exec=/sbin/yast2 idedma 
+Exec=xdg-su -c "/sbin/yast2 idedma"
 
 Name=IDE DMA Mode
 GenericName=Configure the DMA mode of IDE devices
-X-KDE-SubstituteUID=true
 StartupNotify=true

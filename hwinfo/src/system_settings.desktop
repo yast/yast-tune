@@ -17,7 +17,7 @@ X-SuSE-YaST-SortKey=
 X-SuSE-YaST-AutoInstResource=
 
 Icon=yast-powertweak
-Exec=/sbin/yast2 system_settings
+Exec=xdg-su -c "/sbin/yast2 system_settings"
 
 Name=Kernel Settings
 GenericName=Configure Low-Level System Options
