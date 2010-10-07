@@ -17,6 +17,7 @@ import "Label";
 import "Arch";
 import "Directory";
 import "CommandLine";
+import "Icon";
 
 //include "hwinfo/classnames.ycp";
 include "hwinfo/routines.ycp";
@@ -25,21 +26,6 @@ include "hwinfo/routines.ycp";
  * this global variable is needed for skipping out from recursed function
  */
 boolean abortPressed = false;
-
-term Icon (string icon_name) {
-    map ui_info = UI::GetDisplayInfo();
-    if ((boolean) ui_info["HasLocalImageSupport"]:false == false) return `Empty();
-
-    return `Image (
-	sformat (
-	    "%1/current/icons/22x22/apps/%2.png",
-	    Directory::themedir,
-	    icon_name
-	),
-	"[x]"
-    );
-}
-
 
 /*
  * open progress bar window
@@ -52,7 +38,7 @@ void OpenProbingPopup()
 	    `VBox(
 		`HSpacing(40),
 		`HBox(
-		    `HSquash (`MarginBox (0.5, 0.2, Icon("yast-hwinfo"))),
+		    `HSquash (`MarginBox (0.5, 0.2, Icon::Image("yast-hwinfo", $[]))),
 		    // translators: popup heading
 		    `Left (`Heading(`id(`heading), _("Probing Hardware...")))
 		),
