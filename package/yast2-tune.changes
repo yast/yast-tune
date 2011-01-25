@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Tue Jan 25 09:09:13 UTC 2011 - lslezak@suse.cz
+
+- kernel settings - 'anticipatory' scheduler option is no longer
+  available (bnc#666768)
+- 2.20.1
+
+-------------------------------------------------------------------
 Thu Oct  7 07:01:30 UTC 2010 - lslezak@suse.cz
 
 - use Icon.ycp module for displaying icon

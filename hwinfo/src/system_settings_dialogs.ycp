@@ -76,16 +76,15 @@
 	 * http://www.redhat.com/magazine/008jun05/features/schedulers/
 	 *
 	 * elevator=    [IOSCHED]
-	 *		Format: {"as"|"cfq"|"deadline"|"noop"}
+	 *		Format: {"cfq"|"deadline"|"noop"}
 	 *		See Documentation/block/as-iosched.txt
 	 *		and Documentation/block/deadline-iosched.txt for details.
 	 *
-	 *	*'deadline' =>	Deadline. Database servers, especially those using "TCQ" disks should
+	 *	'deadline' =>	Deadline. Database servers, especially those using "TCQ" disks should
 	 *			investigate performance with the 'deadline' IO scheduler. Any system with high
 	 *			disk performance requirements should do so, in fact.
-	 *	*'as' => Anticipatory (the default one)
-	 *	*'noop' => NOOP
-	 *	'cfq' => Completely Fair Queuing
+	 *	'noop' => NOOP
+	 *	'cfq' => Completely Fair Queuing (the default)
 	 */
 	"elevator" : $[
 	    "widget" : `custom,
@@ -93,8 +92,6 @@
 	    "custom_widget" : `ComboBox (`id("elevator"), _("Global &I/O Scheduler"), [
 		// combo box item - I/O scheduler
 		`item( `id(""),	_("Not Configured")),
-		// combo box item - I/O scheduler, do not translate the abbreviation in brackets
-		`item( `id("as"),	_("Anticipatory [as]")),
 		// combo box item - I/O scheduler, do not translate the abbreviation in brackets
 		`item( `id("cfq"),	_("Completely Fair Queuing [cfq]")),
 		// combo box item - I/O scheduler, do not translate the abbreviation in brackets
