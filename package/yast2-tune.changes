@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Fri Aug  5 12:35:39 CEST 2011 - tgoettlicher@suse.de
+
+- fixed .desktop file (bnc #681249)
+
+-------------------------------------------------------------------
 Tue Jan 25 09:09:13 UTC 2011 - lslezak@suse.cz
 
 - kernel settings - 'anticipatory' scheduler option is no longer
