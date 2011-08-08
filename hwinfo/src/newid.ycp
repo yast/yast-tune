@@ -128,12 +128,9 @@ define map NewIDPopup(map<string,any> newid) {
 	),
 
 	`VSpacing(1),
-	`HBox(
-	    `HStretch(),
-	    `HWeight(1, `PushButton(`id(`ok), `opt(`default), Label::OKButton())),
-	    `HSpacing(3),
-	    `HWeight(1, `PushButton(`id(`cancel), Label::CancelButton())),
-	    `HStretch()
+	`ButtonBox(
+	    `PushButton(`id(`ok), `opt(`default), Label::OKButton()),
+	    `PushButton(`id(`cancel), Label::CancelButton())
 	),
 	`VSpacing(0.4)
     );
@@ -252,12 +249,9 @@ define map NewDeviceIDPopup(map<string,any> newid) {
 	),
 
 	`VSpacing(1),
-	`HBox(
-	    `HStretch(),
-	    `HWeight(1, `PushButton(`id(`ok), `opt(`default), Label::OKButton())),
-	    `HSpacing(3),
-	    `HWeight(1, `PushButton(`id(`cancel), Label::CancelButton())),
-	    `HStretch()
+	`ButtonBox(
+	    `PushButton(`id(`ok), `opt(`default), Label::OKButton()),
+	    `PushButton(`id(`cancel), Label::CancelButton())
 	),
 	`VSpacing(0.4)
     );
