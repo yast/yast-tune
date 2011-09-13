@@ -3,6 +3,7 @@ Tue Sep 13 11:27:41 UTC 2011 - lslezak@suse.cz
 
 - read SYSRQ setting from /etc/sysctl.conf instead of obsoleted
   /etc/sysconfig/sysctl file (bnc#714406)
+- 2.21.1
 
 -------------------------------------------------------------------
 Mon Aug  8 12:01:01 UTC 2011 - lslezak@suse.cz
