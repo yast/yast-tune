@@ -7,7 +7,7 @@
  *
  * $Id$
  *
- * System Settings for PCI ID, I/O Scheduler, Serial Console, etc.
+ * System Settings for PCI ID, I/O Scheduler, etc.
  */
 
 {

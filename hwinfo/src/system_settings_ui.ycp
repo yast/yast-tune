@@ -6,7 +6,7 @@
  *
  * $Id$
  *
- * System Settings for PCI ID, I/O Scheduler, Serial Console, etc.
+ * System Settings for PCI ID, I/O Scheduler, etc.
  */
 
 {
@@ -145,11 +145,6 @@ Please wait...</p>")
 	if (SystemSettings::GetSysRqKeysEnabled() != sysrq_new) {
 	    SystemSettings::SetSysRqKeysEnabled(sysrq_new);
 	}
-    }
-
-    define symbol HandleSerialConsoleSettings (string key, map event) {
-	y2milestone("Key: %1, Event: %2", key, event);
-	return nil;
     }
 
 }

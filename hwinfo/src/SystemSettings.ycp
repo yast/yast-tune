@@ -7,7 +7,7 @@
  * $Id$
  *
  * This module manages the System and Kernel settings such as I/O Scheduler type,
- * Serial Console, SysRq Keys...
+ * SysRq Keys...
  */
 
 {
@@ -93,8 +93,6 @@
 
 	y2milestone("Global IO scheduler: %1", elevator);
 
-	// FIXME: probe available serial line devices
-
 	return true;
     }
 
@@ -152,7 +150,6 @@
 	    Bootloader::Write();
 	}
 
-	// FIXME: write serial console...
 	return true;
     }
 
@@ -200,24 +197,4 @@
 	y2milestone("SysRq was set to %1", ENABLE_SYSRQ);
     }
 
-    /**
-     * Default settings for serial console
-     */
-    map <string, any> default_sc_settings = $[
-	"enabled" : false,
-	"baud_rate" : 9600,
-	"serial_device" : "/dev/ttyS0",
-    ];
-
-    global define map <string, any> GetSerialConsoleSettings () {
-	return $[
-	    "enabled" : true,
-	    "baud_rate" : 9600,
-	    "serial_device" : "/dev/ttyS0",
-	];
-    }
-
-    global define void SetSerialDeviceConsoleSettings (map <string, any> settings) {
-	return nil;
-    }
 }
