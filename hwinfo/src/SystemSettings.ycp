@@ -27,7 +27,7 @@
 
     global list<string> GetPossibleElevatorValues () {
 	    // here are listed all known values of the 'elevator' variable
-	    return ["cfq","as","noop","deadline"];
+	    return ["cfq","noop","deadline"];
     }
 
     global boolean Modified()
@@ -37,7 +37,7 @@
     }
 
     global define boolean Read () {
-	ENABLE_SYSRQ = (string) SCR::Read(.sysconfig.sysctl.ENABLE_SYSRQ);
+	ENABLE_SYSRQ = (string) SCR::Read(.etc.sysctl_conf."kernel.sysrq");
 	y2milestone("SysRq enabled: %1", ENABLE_SYSRQ);
 
 	string current_sysrq = (string)SCR::Read(.target.string, "/proc/sys/kernel/sysrq");
@@ -45,9 +45,15 @@
 	// read just the first line
 	current_sysrq = splitstring(current_sysrq, "\n")[0]:"";
 
-	if (current_sysrq != ENABLE_SYSRQ)
+	if (ENABLE_SYSRQ != nil && current_sysrq != ENABLE_SYSRQ)
 	{
 	    y2warning("SysRq mismatch: sysconfig value: '%1', current: '%2'", ENABLE_SYSRQ, current_sysrq);
+	}
+
+	// display the current value if it not configured
+	if (ENABLE_SYSRQ == nil)
+	{
+	    ENABLE_SYSRQ = current_sysrq;
 	}
 
         /*
@@ -94,30 +100,14 @@
 
     global boolean Activate()
     {
-	// activate the SysRq setting
-	string proc_value = "";
-
-	if (ENABLE_SYSRQ == "yes")
+	if (ENABLE_SYSRQ != nil && regexpmatch(ENABLE_SYSRQ, "^[0-9]+$"))
 	{
-	    proc_value = "1";
-	}
-	else if (ENABLE_SYSRQ == "no")
-	{
-	    proc_value = "0";
-	}
-	else if (regexpmatch(ENABLE_SYSRQ, "^[0-9]*$"))
-	{
-	    proc_value = ENABLE_SYSRQ;
+	    y2milestone("Activating SysRq config: %1", ENABLE_SYSRQ);
+	    SCR::Execute(.target.bash, sformat("echo '%1' > /proc/sys/kernel/sysrq", ENABLE_SYSRQ));
 	}
 	else
 	{
-	    y2warning("Unknown ENABLE_SYSRQ value: %1, not activating", ENABLE_SYSRQ);
-	}
-
-	if (proc_value != "")
-	{
-	    y2milestone("Activating SysRq config: %1", proc_value);
-	    SCR::Execute(.target.bash, sformat("echo '%1' > /proc/sys/kernel/sysrq", proc_value));
+	    y2warning("Not activating invalid ENABLE_SYSRQ value: %1", ENABLE_SYSRQ);
 	}
 
 	if (elevator != nil)
@@ -139,20 +129,20 @@
 
     global define boolean Write () {
 	// writing SysRq settings
-	if (ENABLE_SYSRQ != nil && (ENABLE_SYSRQ == "yes" || ENABLE_SYSRQ == "no" || regexpmatch(ENABLE_SYSRQ, "^[0-9]*$")))
+	if (ENABLE_SYSRQ != nil && regexpmatch(ENABLE_SYSRQ, "^[0-9]+$"))
 	{
 	    // save the SysRq setting
 	    y2milestone("Saving ENABLE_SYSRQ: %1", ENABLE_SYSRQ);
-	    SCR::Write(.sysconfig.sysctl.ENABLE_SYSRQ, ENABLE_SYSRQ);
-	    SCR::Write(.sysconfig.sysctl, nil);
+	    SCR::Write(.etc.sysctl_conf."kernel.sysrq", ENABLE_SYSRQ);
+	    SCR::Write(.etc.sysctl_conf, nil);
 	}
 	else
 	{
 	    y2warning("Not writing invalid ENABLE_SYSRQ value: %1", ENABLE_SYSRQ);
 	}
 
-	// enable boot.proc service which sets the value after boot
-	Service::Enable("boot.proc");
+	// enable boot.sysctl service which sets the value after boot
+	Service::Enable("boot.sysctl");
 
 	// the bootloader configuration is written at the end of the first stage
 	if (Mode::normal())
@@ -189,20 +179,17 @@
     }
 
     global define boolean GetSysRqKeysEnabled () {
-	if (ENABLE_SYSRQ == "yes")
-	    return true;
-	else
-	    return false;
+	return (ENABLE_SYSRQ != nil && ENABLE_SYSRQ != "0");
     }
 
     global define void SetSysRqKeysEnabled (boolean enable_sysrq) {
-	if (enable_sysrq != true && enable_sysrq != false)
+	if (enable_sysrq == nil)
 	{
 	    y2warning("enable_sysrq should be 'true' or 'false'");
 	    return;
 	}
 
-	string enable_sysrq_string = enable_sysrq ? "yes" : "no";
+	string enable_sysrq_string = enable_sysrq ? "1" : "0";
 
 	if (ENABLE_SYSRQ != enable_sysrq_string)
 	{
