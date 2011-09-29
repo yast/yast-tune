@@ -62,7 +62,7 @@ map sequence = $[
 define any GUIhandler()
 {
     Wizard::CreateDialog();
-    Wizard::SetDesktopIcon("powertweak");
+    Wizard::SetDesktopTitleAndIcon("system_settings");
 
     // start workflow
     any ret = Sequencer::Run(aliases, sequence);

@@ -270,7 +270,7 @@ symbol StartGUI()
     term con = `Tree(`id(`idTree), `opt(`vstretch, `hstretch), title, items[1]:nil);
 
     Wizard::CreateDialog();
-    Wizard::SetDesktopIcon("hwinfo");
+    Wizard::SetDesktopTitleAndIcon("hwinfo");
 
 
     Wizard::SetBackButton(`save, _("&Save to File...") );

@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Thu Sep 29 14:18:15 CEST 2011 - visnov@suse.cz
+
+- set dialog title
+- 2.21.2
+
+-------------------------------------------------------------------
 Tue Sep 13 11:27:41 UTC 2011 - lslezak@suse.cz
 
 - read SYSRQ setting from /etc/sysctl.conf instead of obsoleted
