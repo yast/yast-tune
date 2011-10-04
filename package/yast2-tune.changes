@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Tue Oct  4 07:57:10 UTC 2011 - lslezak@suse.cz
+
+- removed obsoleted idedma module (doesn't work with new libata
+  kernel drivers and the old supported drivers have been removed)
+- 2.21.3
+
+-------------------------------------------------------------------
 Thu Sep 29 14:18:15 CEST 2011 - visnov@suse.cz
 
 - set dialog title
