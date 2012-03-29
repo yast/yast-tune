@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Thu Mar 29 16:43:33 CEST 2012 - jsuchome@suse.cz
+
+- merged proofread texts 
+
+-------------------------------------------------------------------
 Tue Oct  4 07:57:10 UTC 2011 - lslezak@suse.cz
 
 - removed obsoleted idedma module (doesn't work with new libata

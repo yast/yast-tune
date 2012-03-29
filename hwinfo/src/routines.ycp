@@ -261,7 +261,7 @@ $[
     // tree node string - CPU information
     "mhz"              :   [ _("Frequency"), "yast-hardware"], 
     // tree node string - CPU information
-    "fdiv_bug" : [ _(  "Floating point division bug"), "yast-hardware"], 
+    "fdiv_bug" : [ _("Floating point division bug"), "yast-hardware"], 
     // tree node string - CPU information
     "flags"            :   [ _("Flags"), "yast-hardware"], 
     // tree node string - CPU information

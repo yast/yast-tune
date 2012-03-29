@@ -100,9 +100,9 @@
 	    "store" : StoreElevatorSettings,
 	    // help text for the scheduler widget, do not translate 'cfg'
 	    "help" : _("<p><b><big>Global I/O Scheduler</big></b><br>
-It is possible to select the algorithm which orders and sends commands to disk
+Select the algorithm which orders and sends commands to disk
 devices. This is a global option, it will be used for all disk devices in the
-system. If the option is not configured the default (usually 'cfq') scheduler
+system. If the option is not configured, the default scheduler (usually 'cfq')
 will be used. See the documentation in the /usr/src/linux/Documentation/block
 directory (package kernel-source) for more information.</p>
 "),
