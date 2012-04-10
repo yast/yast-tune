@@ -98,7 +98,7 @@
 	    "handle" : HandleElevatorSettings,
 	    "init" : InitElevatorSettings,
 	    "store" : StoreElevatorSettings,
-	    // help text for the scheduler widget, do not translate 'cfg'
+	    // help text for the scheduler widget, do not translate 'cfq'
 	    "help" : _("<p><b><big>Global I/O Scheduler</big></b><br>
 Select the algorithm which orders and sends commands to disk
 devices. This is a global option, it will be used for all disk devices in the
