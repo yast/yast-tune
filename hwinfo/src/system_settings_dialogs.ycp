@@ -24,6 +24,9 @@
 
     textdomain "tune";
 
+    include "hwinfo/newid.ycp";
+    include "hwinfo/system_settings_ui.ycp";
+
     term contents = `VBox ( "tab" );
 
     map tabs_descr = $[

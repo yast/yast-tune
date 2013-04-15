@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Mon Apr 15 09:28:49 UTC 2013 - lslezak@suse.cz
+
+- added missing includes in system_settings_dialogs.ycp
+  (found by YCP -> Ruby translation)
+- 2.24.0
+
+-------------------------------------------------------------------
 Tue Apr 10 08:39:17 UTC 2012 - lslezak@suse.cz
 
 - fixed comment for translators (bnc#756202)
