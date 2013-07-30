@@ -14,6 +14,8 @@ Obsoletes:	yast2-config-hwinfo yast2-tune-idedma yast2-trans-tune
 Provides:	yast2-trans-hwinfo yast2-trans-idedma y2c_tune y2t_tune yast2-config-tune
 Obsoletes:	yast2-trans-hwinfo yast2-trans-idedma y2c_tune y2t_tune yast2-config-tune
 
+Requires:       yast2-ruby-bindings >= 1.0.0
+
 Summary:	YaST2 - Hardware Tuning
 
 %description
@@ -37,10 +39,9 @@ fi
 %defattr(-,root,root)
 
 @yncludedir@/hwinfo/*
-@clientdir@/*.ycp
+@clientdir@/*.rb
 @desktopdir@/hwinfo.desktop
 @desktopdir@/system_settings.desktop
-@moduledir@/*.ycp
-@moduledir@/*.ybc
+@moduledir@/*.rb
 @scrconfdir@/*.scr
 %doc @docdir@
