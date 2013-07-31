@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Wed Jul 31 08:43:38 UTC 2013 - yast-devel@opensuse.org
+
+- converted from YCP to Ruby by YCP Killer
+  (https://github.com/yast/ycp-killer)
+- version 3.0.0
+
+-------------------------------------------------------------------
 Mon Apr 15 09:28:49 UTC 2013 - lslezak@suse.cz
 
 - added missing includes in system_settings_dialogs.ycp
