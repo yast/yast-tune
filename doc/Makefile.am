@@ -1,5 +1,5 @@
 #
-# Makefile.am for hwinfo/doc
+# Makefile.am for tune/doc
 #
 
 SUBDIRS = autodocs
