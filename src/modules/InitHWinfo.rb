@@ -53,37 +53,28 @@ module Yast
         :from => "any",
         :to   => "list <map>"
       )
-      cpus = {}
 
-      Builtins.foreach(cpu_result) do |info|
-        str = Ops.get_locale(info, "name", _("Unknown processor"))
-        counter = Ops.get(cpus, str, 0)
-        Ops.set(cpus, str, Ops.add(counter, 1))
-      end 
+      # group by CPU names, strip possible white space (see bnc#803000)
+      cpu_names = cpu_result.group_by do |cpu|
+        cpu_name = cpu["name"] || _("Unknown processor")
+        cpu_name.strip
+      end
 
+      Builtins.y2milestone("Found CPU names: %1", cpu_names)
 
-      first = true
-      @cpu_string = ""
-
-      Builtins.foreach(cpus) do |cpu, count|
-        if !first
-          @cpu_string = Ops.add(@cpu_string, ", ")
-        else
-          first = false
-        end
-        if Ops.greater_than(count, 1)
+      cpu_summary_list = cpu_names.map do |name, list|
+        if list.size > 1
           # create processor count string
-          # %1 is integer number (greater than 1)
-          # %2 is processor model name
-          @cpu_string = Ops.add(
-            @cpu_string,
-            Builtins.sformat(_("%1x %2"), count, cpu)
-          )
+          # the first %s is integer number (greater than 1)
+          # the second %s is processor model name
+          (_("%sx %s") % [ list.size, name ])
         else
-          @cpu_string = Ops.add(@cpu_string, cpu)
+          name
         end
-      end 
+      end
 
+      # list separator (placed between items)
+      @cpu_string = cpu_summary_list.join(_(", "))
 
       memory = Convert.convert(
         SCR.Read(path(".probe.memory")),
