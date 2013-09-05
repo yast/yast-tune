@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Thu Sep  5 12:19:16 UTC 2013 - lslezak@suse.cz
+
+- installation summary - remove beginning/trailing spaces from CPU
+  name (bnc#803000)
+- 3.0.2
+
+-------------------------------------------------------------------
 Thu Aug  1 16:04:56 UTC 2013 - lslezak@suse.cz
 
 - move the development documentation to devel-doc subpackage
