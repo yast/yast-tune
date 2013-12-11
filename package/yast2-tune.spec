@@ -25,7 +25,7 @@ Source0:        %{name}-%{version}.tar.bz2
 
 BuildRequires:  update-desktop-files
 BuildRequires:  yast2
-BuildRequires:  yast2-devtools >= 3.0.6
+BuildRequires:  yast2-devtools >= 3.1.10
 # hwinfo/classnames.ycp
 # Wizard::SetDesktopTitleAndIcon
 Requires:       yast2 >= 2.21.22
