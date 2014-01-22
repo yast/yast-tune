@@ -26,7 +26,7 @@ module Yast
         InitHWinfo.MakeProposal(force_reset)
 
         @ret = {
-          "preformatted_proposal" => "<ul><li><a href=\"hwinfo_proposal\">Show and Edit Hardware Details</a></li></ul>",
+          "preformatted_proposal" => "<ul><li><a href=\"hwinfo_proposal\">System and Hardware Settings</a></li></ul>",
           "links" => ["hwinfo_proposal"]
         }
       # start configuration workflow
