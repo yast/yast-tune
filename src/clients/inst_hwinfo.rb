@@ -72,65 +72,6 @@ module Yast
       deep_copy(@ret)
     end
 
-    # Show floppy selection dialog.
-    # @param [Hash{String => String}] devices map with pairs $["device name" : "model (description)"]
-    # @return [String] selected floppy device name or nil when canceled
-    def floppy_selection(devices)
-      devices = deep_copy(devices)
-      devs = Builtins.maplist(devices) do |d, m|
-        Item(Id(d), Builtins.sformat("%1 (%2)", m, d))
-      end
-
-      dialog = VBox(
-        # combo box label
-        ComboBox(Id(:device), _("&Floppy Disk Device"), devs),
-        VSpacing(1),
-        ButtonBox(
-          PushButton(Id(:ok), Label.OKButton),
-          PushButton(Id(:cancel), Label.CancelButton)
-        )
-      )
-
-      ui = nil
-
-      UI.OpenDialog(dialog)
-
-      while ui != :ok && ui != :cancel && ui != :close
-        ui = Convert.to_symbol(UI.UserInput)
-      end
-
-      # get selected device
-      selected = Convert.to_string(UI.QueryWidget(:device, :Value))
-
-      UI.CloseDialog
-
-      # return nil if [OK] wasn't pressed
-      ui == :ok ? selected : nil
-    end
-
-    # Select floppy device where hwifo will be stored.
-    # If more than one floppy device was found display
-    # selection dialog
-    # @return [String] floppy device name (e.g. /dev/fd0) or nil when no floppy was found
-    def selected_floppy
-      floppy_size = Builtins.size(InitHWinfo.floppy)
-
-      if floppy_size == 0
-        return nil
-      elsif floppy_size == 1
-        device = ""
-
-        # get device name
-        Builtins.foreach(InitHWinfo.floppy) { |dev, m| device = dev } 
-
-        return device
-      else
-        # there is more than 2 floppies in the system
-        # ask user which should be used
-        return floppy_selection(InitHWinfo.floppy)
-      end
-    end
-
     # Show detail dialog for selected device
     # @param [String] model hardware description (used in the tree widget
     # as a root node)
@@ -230,20 +171,7 @@ module Yast
           HSpacing(4),
           # push button label
           PushButton(Id(:details), _("&Details...")),
-          # FIXME: there should be only "Save to file" in Xen and UML system
-          !Arch.is_uml ?
-            # menu button label
-            MenuButton(
-              Id(:savemenu),
-              _("&Save to File"),
-              [
-                # menu item
-                Item(Id(:file), _("Save to &File...")),
-                # menu item
-                Item(Id(:floppy), _("Save to F&loppy..."))
-              ]
-            ) :
-            Empty()
+          PushButton(Id(:file), _("Save to &File..."))
         ),
         VSpacing(1)
       )
@@ -257,11 +185,9 @@ module Yast
           "<P><B>Details</B><BR>Select a component and press <B>Details</B> to see a more detailed description of the component.</P>"
         ) +
         # help text - part 3/3
-        (Arch.is_uml ?
-          "" :
           _(
-            "<P><B>Save to File</B><BR>You can save\n    hardware information (<I>hwinfo</I> output) to a file or floppy disk. Select the target type in <B>Save to File</B>.</P>"
-          ))
+            "<P><B>Save to File</B><BR>You can save\n    hardware information (<I>hwinfo</I> output) to a file.</P>"
+          )
 
       Wizard.HideBackButton
       Wizard.HideAbortButton
@@ -306,30 +232,6 @@ module Yast
             end
           else
             ret = :dummy
-          end
-        elsif ret == :floppy
-          save_device = selected_floppy
-
-          if save_device != nil
-            Builtins.y2debug("Selected floppy: %1", save_device)
-
-            # mount floppy
-            mpoint = mount_device(save_device)
-
-            if mpoint != nil
-              save_hwinfo_to_file(Ops.add(mpoint, "/hwinfo.out"))
-
-              # unmount floppy
-              umount_device(mpoint)
-            else
-              # error popup - mount failed, %1 is device file name (e.g. /dev/fd0)
-              Report.Error(
-                Builtins.sformat(
-                  _("Floppy device '%1' cannot be mounted."),
-                  save_device
-                )
-              )
-            end
           end
         elsif ret == :file
           # save to file

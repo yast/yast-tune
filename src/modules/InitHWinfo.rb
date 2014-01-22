@@ -36,9 +36,6 @@ module Yast
 
       # list of detected devices
       @detectedHW = nil
-
-      # default is "/dev/fd0" floppy device (used when floppy detection is skipped as a fallback)
-      @floppy = { "/dev/fd0" => _("Floppy disk") }
     end
 
     # Start hardware detection (only CPU and main memory)
@@ -276,24 +273,6 @@ module Yast
               :to   => "list <map <string, any>>"
             )
 
-            # store floppy devices, used in hwinfo output saving
-            if subpath == "floppy"
-              # reset list of floppies
-              @floppy = {}
-
-              if result != nil && Ops.greater_than(Builtins.size(result), 0)
-                Builtins.foreach(result) do |f|
-                  device = Ops.get_string(f, "dev_name")
-                  model = Ops.get_string(f, "model")
-                  if device != nil && model != nil
-                    Ops.set(@floppy, device, model)
-                  end
-                end
-              end
-
-              Builtins.y2milestone("Detected floppy devices: %1", @floppy)
-            end
-
             if Ops.greater_than(Builtins.size(result), 0)
               Builtins.foreach(result) do |info|
                 # device name (CPU model name string has key "name" instead of "model")
@@ -325,7 +304,6 @@ module Yast
       deep_copy(@detectedHW)
     end
 
-    publish :variable => :floppy, :type => "map <string, string>"
     publish :function => :Initialize, :type => "boolean (boolean)"
     publish :function => :MakeProposal, :type => "boolean (boolean)"
     publish :function => :DetectedHardware, :type => "list <map> (boolean, block <boolean>)"
