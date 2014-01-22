@@ -22,8 +22,13 @@ module Yast
 
       # make proposal
       if @func == "MakeProposal"
-        @force_reset = Ops.get_boolean(@param, "force_reset", false)
-        @ret = { "raw_proposal" => InitHWinfo.MakeProposal(@force_reset) }
+        force_reset = Ops.get_boolean(@param, "force_reset", false)
+        InitHWinfo.MakeProposal(force_reset)
+
+        @ret = {
+          "preformatted_proposal" => "<ul><li><a href=\"hwinfo_proposal\">System and Hardware Settings</a></li></ul>",
+          "links" => ["hwinfo_proposal"]
+        }
       # start configuration workflow
       elsif @func == "AskUser"
         @has_next = Ops.get_boolean(@param, "has_next", false)

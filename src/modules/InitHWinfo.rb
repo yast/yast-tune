@@ -171,41 +171,9 @@ module Yast
 
     # Return short system description
     # @param [Boolean] reset If reset is true then always do hardware detection
-    # @return [Array](string) list of hardware desciptions
+    # @return [Boolean] if proposal succeed
     def MakeProposal(reset)
       Initialize(reset)
-
-      # the installation proposal item
-      # %1 is processor name
-      ret = [
-        Builtins.sformat(_("Processor: %1"), @cpu_string),
-        # the installation proposal item
-        # %1 is memory size string
-        Builtins.sformat(
-          _("Main Memory: %1"),
-          String.FormatSizeWithPrecision(@memory_size, 2, true)
-        )
-      ]
-
-      # add system string
-      if Ops.greater_than(Builtins.size(@system_string), 0)
-        # the installation proposal item
-        # %1 is system name
-        ret = Builtins.prepend(
-          ret,
-          Builtins.sformat(_("System: %1"), @system_string)
-        )
-      end
-
-      # add SysRq status line
-      if SystemSettings.GetSysRqKeysEnabled
-        # item in the installation proposal (displayed only when SysRq key is enabled
-        ret = Builtins.add(ret, _("SysRq Key: Enabled"))
-      end
-
-      Builtins.y2milestone("proposal: %1", ret)
-
-      deep_copy(ret)
     end
 
     # Detect all hardware present in the system
@@ -359,7 +327,7 @@ module Yast
 
     publish :variable => :floppy, :type => "map <string, string>"
     publish :function => :Initialize, :type => "boolean (boolean)"
-    publish :function => :MakeProposal, :type => "list <string> (boolean)"
+    publish :function => :MakeProposal, :type => "boolean (boolean)"
     publish :function => :DetectedHardware, :type => "list <map> (boolean, block <boolean>)"
   end
 
