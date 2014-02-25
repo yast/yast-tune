@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Tue Feb 25 10:17:36 CET 2014 - locilka@suse.com
+
+- Fixed "Kernel Settings" tab layout (bnc#865366)
+- 3.1.2
+
+-------------------------------------------------------------------
 Wed Jan 22 09:46:23 UTC 2014 - lslezak@suse.cz
 
 - removed "Save to Floppy" option (nobody uses floppies anymore...)
