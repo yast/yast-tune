@@ -43,10 +43,13 @@ module Yast
         },
         "kernel_settings" => {
           "header"       => _("Kernel Settings"),
-          "contents"     => HBox(
-            HSpacing(1),
-            VBox(VSpacing(0.3), Left("elevator"), VSpacing(1), Left("sysrq")),
-            HSpacing(1)
+          "contents"     => VBox(
+            HBox(
+              HSpacing(1),
+              VBox(VSpacing(0.3), Left("elevator"), VSpacing(1), Left("sysrq")),
+              HSpacing(1)
+            ),
+            VStretch()
           ),
           "widget_names" => ["elevator", "sysrq"]
         }
