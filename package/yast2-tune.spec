@@ -17,7 +17,7 @@
 
 
 Name:           yast2-tune
-Version:        3.1.2
+Version:        3.1.3
 Release:        0
 
 BuildRoot:      %{_tmppath}/%{name}-%{version}-build
@@ -94,6 +94,7 @@ fi
 %doc %{yast_docdir}/COPYING
 
 %files devel-doc
+%defattr(-,root,root)
 %doc %{yast_docdir}/autodocs
 
 %changelog
