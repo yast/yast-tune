@@ -74,20 +74,17 @@ module Yast
       end
 
       # get 'elevator' option from the default section
-      elevator_parameter = Bootloader.getKernelParam(
-        Bootloader.getDefaultSection,
-        "elevator"
-      )
+      elevator_parameter = Bootloader.kernel_param(:common, "elevator")
 
       Builtins.y2milestone("elevator_parameter: %1", elevator_parameter)
 
       # Variable is not set
-      if elevator_parameter == false || elevator_parameter == "false"
-        @elevator = "" 
+      if elevator_parameter == :missing
+        @elevator = ""
         # Variable is set but has not parameter
-      elsif elevator_parameter == true || elevator_parameter == "true"
+      elsif elevator_parameter == :present
         Builtins.y2warning("'elevator' variable has to have some value")
-        @elevator = "" 
+        @elevator = ""
         # Variable is set but hasn't any known value
       elsif !Builtins.contains(
           GetPossibleElevatorValues(),
@@ -98,7 +95,7 @@ module Yast
           GetPossibleElevatorValues(),
           elevator_parameter
         )
-        @elevator = "" 
+        @elevator = ""
         # Variable is OK
       else
         @elevator = Convert.to_string(elevator_parameter)
@@ -125,15 +122,11 @@ module Yast
 
       if @elevator != nil
         Yast.import "Bootloader"
-        new_elevator = @elevator == "" ? "false" : @elevator
+        new_elevator = @elevator == "" ? :missing : @elevator
 
         Builtins.y2milestone("Activating scheduler: %1", new_elevator)
         # set the scheduler
-        Bootloader.setKernelParam(
-          Bootloader.getDefaultSection,
-          "elevator",
-          new_elevator
-        ) 
+        Bootloader.modify_kernel_params("elevator" => new_elevator)
 
         # TODO FIXME: set the scheduler for all disk devices,
         # reboot is required to activate the new scheduler now
