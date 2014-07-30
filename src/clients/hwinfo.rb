@@ -267,18 +267,20 @@ module Yast
     end
 
     # remove empty nodes with type "unknown" from BIOS detection
+    # the removed items are Hashes like this:
+    # {"type" =>"unknown", "type_id" => 217}
     def clean_bios_tree(bios_tree)
-      if bios_tree.is_a?(Array)
-        bios_tree.each do |v|
-          if v.is_a?(Hash) && v.has_key?("smbios")
-            smbios = v["smbios"]
-            if smbios.is_a?(Array)
-              log.info "smbios items: #{smbios.size}"
-              smbios.reject!{|node| node.is_a?(Hash) && node.size == 2 && node["type"] == "unknown" }
-              log.info "smbios items after cleanup: #{smbios.size}"
-            end
-          end
-        end
+      return unless bios_tree.is_a?(Array)
+
+      bios_tree.each do |v|
+        next unless v.is_a?(Hash) && v.has_key?("smbios")
+        smbios = v["smbios"]
+        next unless smbios.is_a?(Array)
+
+        log.info "smbios items: #{smbios.size}"
+        # do not remove the "unknown" items if there are some more data (size > 2)
+        smbios.reject!{ |node| node.is_a?(Hash) && node.size <= 2 && node["type"] == "unknown" }
+        log.info "smbios items after cleanup: #{smbios.size}"
       end
     end
 
