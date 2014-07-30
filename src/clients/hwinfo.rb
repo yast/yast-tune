@@ -10,6 +10,8 @@
 # $Id$
 module Yast
   class HwinfoClient < Client
+    include Yast::Logger
+
     def main
       Yast.import "UI"
 
@@ -113,14 +115,12 @@ module Yast
 
       # if xserver is running, don't probe for mouse and chipcard
       # because it has bad side effect (moving cursor)
-      if SCR.Execute(path(".target.bash"), "/bin/ps -C X") == 0
-        Builtins.y2warning(
-          "X server is running - mouse and chipcard will not be probed"
-        )
-        @exclude_list = Builtins.add(@exclude_list, path(".probe.mouse"))
+      if SCR.Execute(path(".target.bash"), "/bin/ps -C Xorg") == 0
+        log.warn "X server is running - mouse and chipcard will not be probed"
+        @exclude_list << path(".probe.mouse")
 
         # .probe.chipcard has same effect as .probe.mouse
-        @exclude_list = Builtins.add(@exclude_list, path(".probe.chipcard"))
+        @exclude_list << path(".probe.chipcard")
       end
 
       nil
@@ -212,6 +212,9 @@ module Yast
       if dir == nil
         val = SCR.Read(pat)
 
+        # SMBIOS entries cleanup
+        clean_bios_tree(val) if pat == path(".probe.bios")
+
         if scalar(val)
           return Item(
             Builtins.sformat("%1: %2", trans_str(afterLast(p)), trans_bool(val))
@@ -263,10 +266,26 @@ module Yast
       nil
     end
 
+    # remove empty nodes with type "unknown" from BIOS detection
+    # the removed items are Hashes like this:
+    # {"type" =>"unknown", "type_id" => 217}
+    def clean_bios_tree(bios_tree)
+      return unless bios_tree.is_a?(Array)
+
+      bios_tree.each do |v|
+        next unless v.is_a?(Hash)
+        smbios = v["smbios"]
+        next unless smbios.is_a?(Array)
+
+        log.info "smbios items: #{smbios.size}"
+        # do not remove the "unknown" items if there are some more data (size > 2)
+        smbios.reject!{ |node| node.is_a?(Hash) && node.size <= 2 && node["type"] == "unknown" }
+        log.info "smbios items after cleanup: #{smbios.size}"
+      end
+    end
+
 
     # Main
-
-
     def StartGUI
       # display progress popup
       OpenProbingPopup()
