@@ -273,7 +273,7 @@ module Yast
       return unless bios_tree.is_a?(Array)
 
       bios_tree.each do |v|
-        next unless v.is_a?(Hash) && v.has_key?("smbios")
+        next unless v.is_a?(Hash)
         smbios = v["smbios"]
         next unless smbios.is_a?(Array)
 
