@@ -157,9 +157,6 @@ module Yast
         )
       end
 
-      # enable boot.sysctl service which sets the value after boot
-      Service.Enable("boot.sysctl")
-
       # the bootloader configuration is written at the end of the first stage
       if Mode.normal
         # write the elevator setting
