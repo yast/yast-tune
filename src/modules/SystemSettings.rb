@@ -13,6 +13,8 @@ require "yast"
 
 module Yast
   class SystemSettingsClass < Module
+    include Yast::Logger
+
     def main
       textdomain "tune"
 
@@ -128,8 +130,13 @@ module Yast
         # set the scheduler
         Bootloader.modify_kernel_params("elevator" => new_elevator)
 
-        # TODO FIXME: set the scheduler for all disk devices,
-        # reboot is required to activate the new scheduler now
+        # activate the scheduler for all disk devices
+        if new_elevator != :missing
+          Dir["/sys/block/*/queue/scheduler"].each do |f|
+            log.info "Activating scheduler '#{new_elevator}' for device #{f}"
+            File.write(f, new_elevator)
+          end
+        end
       end
 
       true
@@ -149,9 +156,6 @@ module Yast
           @ENABLE_SYSRQ
         )
       end
-
-      # enable boot.sysctl service which sets the value after boot
-      Service.Enable("boot.sysctl")
 
       # the bootloader configuration is written at the end of the first stage
       if Mode.normal

@@ -192,7 +192,7 @@ module Yast
           "contents"     => @contents,
           "caption"      => caption,
           # hide back button
-          "back_button"  => nil,
+          "back_button"  => "",
           "abort_button" => Label.CancelButton,
           "next_button"  => Label.OKButton
         }
