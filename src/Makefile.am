@@ -26,6 +26,10 @@ desktop_DATA = \
   desktop/system_settings.desktop \
   desktop/hwinfo.desktop
 
-EXTRA_DIST = $(module_DATA) $(client_DATA) $(ynclude_DATA) $(scrconf_DATA) $(desktop_DATA)
+metainfodir = $(datadir)/appdata
+metainfo_DATA = \
+  metainfo/yast2-tune.metainfo.xml
+
+EXTRA_DIST = $(module_DATA) $(client_DATA) $(ynclude_DATA) $(scrconf_DATA) $(desktop_DATA) $(metainfo_DATA)
 
 include $(top_srcdir)/Makefile.am.common
