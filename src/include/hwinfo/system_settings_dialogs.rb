@@ -183,7 +183,7 @@ module Yast
         Label.NextButton
       )
       Wizard.DisableBackButton
-      Wizard.SetDesktopIcon("powertweak")
+      Wizard.SetDesktopIcon("system_settings")
 
       ret = CWM.ShowAndRun(
         {
