@@ -17,7 +17,7 @@
 
 
 Name:           yast2-tune
-Version:        3.1.7
+Version:        3.1.8
 Release:        0
 
 BuildRoot:      %{_tmppath}/%{name}-%{version}-build
@@ -57,15 +57,6 @@ Group:          System/YaST
 %description
 This package contains the YaST2 component for hardware configuration.
 
-%package devel-doc
-Requires:       yast2-tune = %version
-Summary:        YaST2 - Hardware Tuning - Development Documentation
-Group:          System/YaST
-
-%description devel-doc
-This package contains development documentation for using the API
-provided by yast2-tune package.
-
 %prep
 %setup -n %{name}-%{version}
 
@@ -92,9 +83,5 @@ fi
 %{yast_scrconfdir}/*.scr
 %dir %{yast_docdir}
 %doc %{yast_docdir}/COPYING
-
-%files devel-doc
-%defattr(-,root,root)
-%doc %{yast_docdir}/autodocs
 
 %changelog
