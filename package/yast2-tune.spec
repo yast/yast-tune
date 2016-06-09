@@ -47,6 +47,7 @@ Obsoletes:      y2t_tune
 Obsoletes:      yast2-config-tune
 Obsoletes:      yast2-trans-hwinfo
 Obsoletes:      yast2-trans-idedma
+Obsoletes:      yast2-tune-devel-doc
 
 Requires:       yast2-ruby-bindings >= 1.0.0
 
