@@ -129,6 +129,8 @@ module Yast
         Builtins.y2milestone("Activating scheduler: %1", new_elevator)
         # set the scheduler
         Bootloader.modify_kernel_params("elevator" => new_elevator)
+        # set bootloader configuration as 'changed' (bsc#968192)
+        Bootloader.proposed_cfg_changed = true
 
         # activate the scheduler for all disk devices
         if new_elevator != :missing
