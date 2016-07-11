@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Mon Jul 11 12:24:21 UTC 2016 - igonzalezsosa@suse.com
+
+- Prevent scheduler settings to be removed during installation
+  (bsc#968192)
+- 3.1.7.1
+
+-------------------------------------------------------------------
 Thu Jul  9 15:52:45 UTC 2015 - jreidinger@suse.com
 
 - use proper desktop file name to show proper icon (bnc#937549)
