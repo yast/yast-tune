@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Mon Jul 11 12:24:21 UTC 2016 - igonzalezsosa@suse.com
+
+- Prevent scheduler settings to be removed during installation
+  (bsc#968192)
+- 3.1.9
+
+-------------------------------------------------------------------
 Wed Jun  1 17:28:56 UTC 2016 - cwh@suse.com
 
 - Removed devel-doc package (fate#320356)
