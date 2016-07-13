@@ -19,6 +19,7 @@ module Yast
     def main
       textdomain "tune"
 
+      Yast.import "Bootloader"
       Yast.import "Mode"
 
       # Internal Data
@@ -170,16 +171,16 @@ module Yast
     #
     # @return [String] Configuration value; returns an empty string if it's not set.
     def kernel_sysrq
-      return @kernel_sysrq unless @kernel_sysrq.nil?
+      return @kernel_sysrq if @kernel_sysrq
       content = SCR.Read(path(".target.string"), KERNEL_SYSRQ_FILE).to_s
-      @kernel_sysrq ||= content.split("\n")[0] || ""
+      @kernel_sysrq = content.split("\n")[0] || ""
     end
 
     # Return sysctl configuration value for SysRq keys
     #
     # @return [String] Configuration value; returns an empty string if it's not set.
     def sysctl_sysrq
-      return @sysctl_sysrq unless @sysctl_sysrq.nil?
+      return @sysctl_sysrq if @sysctl_sysrq
       @sysctl_sysrq = SCR.Read(path(".etc.sysctl_conf.\"kernel.sysrq\""))
       log.info("SysRq enabled: #{@sysctl_sysrq}")
       @sysctl_sysrq
@@ -237,9 +238,7 @@ module Yast
     def activate_scheduler
       return if GetIOScheduler().nil?
 
-      Yast.import "Bootloader"
       new_elevator = GetIOScheduler() == "" ? :missing : GetIOScheduler()
-
       log.info("Activating scheduler: #{new_elevator}")
       # set the scheduler
       Bootloader.modify_kernel_params("elevator" => new_elevator)
@@ -262,7 +261,6 @@ module Yast
       # very long starting time of the yast module because the Storage module
       # (which is imported by the Bootloader (imported by the SystemSettings
       # module)) has a Read() function call in its constructor.
-      Yast.import "Bootloader"
 
       # Read bootloader settings in normal mode
       Bootloader.Read if Mode.normal
@@ -309,7 +307,6 @@ module Yast
     # @see Write
     def write_scheduler
       return true unless Mode.normal
-      Yast.import "Bootloader"
       Bootloader.Write
       true
     end
