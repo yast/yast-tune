@@ -3,17 +3,21 @@
 require_relative "test_helper"
 
 Yast.import "SystemSettings"
+Yast.import "Bootloader"
 
 describe "Yast::SystemSettings" do
-  Yast.import "Bootloader"
+  KERNEL_SYSRQ_FILE = "/proc/sys/kernel/sysrq"
 
   subject(:settings) { Yast::SystemSettings }
 
-  before { settings.main }
+  before do
+    allow(File).to receive(:exist?).and_return(true)
+    settings.main
+  end
 
   describe "#GetPossibleElevatorValues" do
     it "returns an array with possible schedulers" do
-      expect(settings.GetPossibleElevatorValues).to eq(["cfq", "noop", "deadline"])
+      expect(settings.GetPossibleElevatorValues).to match_array(["cfq", "noop", "deadline"])
     end
   end
 
@@ -27,8 +31,7 @@ describe "Yast::SystemSettings" do
       allow(Yast::SCR).to receive(:Read)
         .with(Yast::Path.new(".etc.sysctl_conf.\"kernel.sysrq\""))
         .and_return(sysctl_sysrq)
-      allow(Yast::SCR).to receive(:Read)
-        .with(Yast::Path.new(".target.string"), "/proc/sys/kernel/sysrq")
+      allow(File).to receive(:read).with(KERNEL_SYSRQ_FILE)
         .and_return(kernel_sysrq)
       allow(Yast::Bootloader).to receive(:kernel_param)
         .with(:common, "elevator").and_return(scheduler)
@@ -127,35 +130,36 @@ describe "Yast::SystemSettings" do
       allow(Dir).to receive(:[]).with(/scheduler/).and_return([disk])
     end
 
-    context "given that SysRq keys status is unknown" do
+    context "when SysRq keys status is unknown" do
       it "does not update /proc/sys/kernel/sysrq" do
         settings.main
-        expect(Yast::SCR).to_not receive(:Execute)
-          .with(Yast::Path.new(".target.bash"), /sysrq/)
+        expect(File).to_not receive(:write).with(/sysrq/, anything)
         settings.Activate
       end
     end
 
-    context "given that SysRq keys are enabled" do
+    context "when SysRq keys are enabled" do
       let(:sysrq_keys) { true }
 
       it "writes '1' to /proc/sys/kernel/sysrq" do
-        expect(Yast::SCR).to receive(:Execute)
-          .with(Yast::Path.new(".target.bash"), "echo '1' > /proc/sys/kernel/sysrq")
+        expect(File).to receive(:write).with(KERNEL_SYSRQ_FILE, "1\n")
         settings.Activate
       end
     end
 
-    context "given that SysRq keys is disabled" do
+    context "when SysRq keys is disabled" do
       it "writes '0' to /proc/sys/kernel/sysrq" do
-        expect(Yast::SCR).to receive(:Execute)
-          .with(Yast::Path.new(".target.bash"), "echo '0' > /proc/sys/kernel/sysrq")
+        expect(::File).to receive(:write).with(KERNEL_SYSRQ_FILE, "0\n")
         settings.Activate
       end
     end
 
-    context "given that a scheduler is set" do
+    context "when a scheduler is set" do
       let(:scheduler) { "cfq" }
+
+      before do
+        allow(File).to receive(:write).with(KERNEL_SYSRQ_FILE, anything)
+      end
 
       it "updates bootloader configuration" do
         expect(Yast::Bootloader).to receive(:modify_kernel_params)
@@ -171,8 +175,12 @@ describe "Yast::SystemSettings" do
       end
     end
 
-    context "given that no scheduler is set" do
+    context "when no scheduler is set" do
       let(:scheduler) { "" }
+
+      before do
+        allow(File).to receive(:write).with(KERNEL_SYSRQ_FILE, anything)
+      end
 
       it "removes parameter from bootloader configuration" do
         expect(Yast::Bootloader).to receive(:modify_kernel_params)
@@ -182,7 +190,7 @@ describe "Yast::SystemSettings" do
       end
 
       it "does not activate scheduler" do
-        expect(File).to_not receive(:write)
+        expect(File).to_not receive(:write).with(disk, anything)
         settings.Activate
       end
     end
@@ -194,8 +202,8 @@ describe "Yast::SystemSettings" do
 
     before do
       allow(Yast::Mode).to receive(:mode).and_return(mode)
-      allow(Yast::SCR).to receive(:Read).and_call_original
       allow(Yast::Bootloader).to receive(:Write)
+      allow(Yast::SCR).to receive(:Read).and_call_original
       allow(Yast::SCR).to receive(:Read)
         .with(Yast::Path.new(".etc.sysctl_conf.\"kernel.sysrq\""))
         .and_return(sysctl_sysrq)
@@ -258,7 +266,7 @@ describe "Yast::SystemSettings" do
       end
     end
 
-    context "when scheduler is an unknown one" do
+    context "when scheduler is unknown" do
       before do
         settings.SetIOScheduler("cfq")
       end
