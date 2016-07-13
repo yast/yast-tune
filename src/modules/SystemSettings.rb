@@ -257,11 +257,6 @@ module Yast
     #
     # @see Read
     def read_scheduler
-      # I have to admit that this is very ugly but it is here to avoid of the
-      # very long starting time of the yast module because the Storage module
-      # (which is imported by the Bootloader (imported by the SystemSettings
-      # module)) has a Read() function call in its constructor.
-
       # Read bootloader settings in normal mode
       Bootloader.Read if Mode.normal
 
