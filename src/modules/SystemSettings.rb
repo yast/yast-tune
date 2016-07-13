@@ -44,7 +44,7 @@ module Yast
 
     # Determine if the module was modified
     def Modified
-      Builtins.y2milestone("Modified: %1", @modified)
+      log.info("Modified: #{@modified}")
       @modified
     end
 
@@ -172,7 +172,7 @@ module Yast
     # @return [String] Configuration value; returns an empty string if it's not set.
     def kernel_sysrq
       return @kernel_sysrq if @kernel_sysrq
-      content = SCR.Read(path(".target.string"), KERNEL_SYSRQ_FILE).to_s
+      content = File.exist?(KERNEL_SYSRQ_FILE) ? File.read(KERNEL_SYSRQ_FILE) : ""
       @kernel_sysrq = content.split("\n")[0] || ""
     end
 
@@ -229,14 +229,14 @@ module Yast
       end
 
       log.info("Activating SysRq config: #{enable_sysrq}")
-      SCR.Execute(path(".target.bash"), "echo '#{enable_sysrq}' > /proc/sys/kernel/sysrq")
+      File.write(KERNEL_SYSRQ_FILE, "#{enable_sysrq}\n")
     end
 
     # Activate IO scheduler
     #
     # @see activate_scheduler
     def activate_scheduler
-      return if GetIOScheduler().nil?
+      return unless GetIOScheduler()
 
       new_elevator = GetIOScheduler() == "" ? :missing : GetIOScheduler()
       log.info("Activating scheduler: #{new_elevator}")
@@ -248,7 +248,7 @@ module Yast
       # activate the scheduler for all disk devices
       return if new_elevator == :missing
       Dir["/sys/block/*/queue/scheduler"].each do |f|
-        log.info "Activating scheduler '#{new_elevator}' for device #{f}"
+        log.info("Activating scheduler '#{new_elevator}' for device #{f}")
         File.write(f, new_elevator)
       end
     end
@@ -262,7 +262,7 @@ module Yast
 
       # Set IO scheduler
       SetIOScheduler(current_elevator)
-      Builtins.y2milestone("Global IO scheduler: %1", GetIOScheduler())
+      log.info("Global IO scheduler: #{GetIOScheduler()}")
     end
 
     # Read SysRq keys configuration updating the module's value
@@ -301,8 +301,7 @@ module Yast
     # @see Bootloader#Write
     # @see Write
     def write_scheduler
-      return true unless Mode.normal
-      Bootloader.Write
+      Bootloader.Write if Mode.normal
       true
     end
   end
