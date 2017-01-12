@@ -81,6 +81,8 @@ fi
 %{yast_desktopdir}/hwinfo.desktop
 %{yast_desktopdir}/system_settings.desktop
 %{yast_moduledir}/*.rb
+%dir %{yast_libdir}/tune
+%{yast_libdir}/tune/*.rb
 %{yast_scrconfdir}/*.scr
 %dir %{yast_docdir}
 %doc %{yast_docdir}/COPYING
