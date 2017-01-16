@@ -12,6 +12,7 @@ describe "Yast::SystemSettings" do
 
   before do
     allow(File).to receive(:exist?).and_return(true)
+    allow(Yast::Bootloader).to receive(:Read)
     settings.main
   end
 
@@ -27,7 +28,6 @@ describe "Yast::SystemSettings" do
     let(:scheduler)     { "cfq" }
 
     before do
-      allow(Yast::SCR).to receive(:Read).and_call_original
       allow(Yast::SCR).to receive(:Read)
         .with(Yast::Path.new(".etc.sysctl_conf.\"kernel.sysrq\""))
         .and_return(sysctl_sysrq)
