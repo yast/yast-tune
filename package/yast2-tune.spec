@@ -75,7 +75,8 @@ fi
 
 %files
 %defattr(-,root,root)
-
+%dir %{_datadir}/appdata
+%{_datadir}/appdata/%{name}.metainfo.xml
 %{yast_yncludedir}/hwinfo/*
 %{yast_clientdir}/*.rb
 %{yast_desktopdir}/hwinfo.desktop
