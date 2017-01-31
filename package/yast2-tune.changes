@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Fri Jan 20 16:21:30 UTC 2017 - mvidner@suse.com
+
+- Added Tune::Widgets::SystemInformation (FATE#322328).
+- 3.2.0
+
+-------------------------------------------------------------------
 Mon Jul 11 12:24:21 UTC 2016 - igonzalezsosa@suse.com
 
 - Prevent scheduler settings to be removed during installation
