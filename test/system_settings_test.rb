@@ -9,10 +9,13 @@ describe "Yast::SystemSettings" do
   KERNEL_SYSRQ_FILE = "/proc/sys/kernel/sysrq"
 
   subject(:settings) { Yast::SystemSettings }
+  let(:scheduler)     { "cfq" }
 
   before do
     allow(File).to receive(:exist?).and_return(true)
     allow(Yast::Bootloader).to receive(:Read)
+    allow(Yast::Bootloader).to receive(:kernel_param)
+      .with(:common, "elevator").and_return(scheduler)
     settings.main
   end
 
@@ -25,7 +28,6 @@ describe "Yast::SystemSettings" do
   describe "#Read" do
     let(:kernel_sysrq)  { "1" }
     let(:sysctl_sysrq)  { "1" }
-    let(:scheduler)     { "cfq" }
 
     before do
       allow(Yast::SCR).to receive(:Read)
