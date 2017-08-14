@@ -123,13 +123,14 @@ describe "Yast::SystemSettings" do
     let(:sysrq_keys) { false }
     let(:scheduler)  { "" }
     let(:disk)       { "/sys/block/sda/queue/scheduler" }
+    let(:disk2)      { "/sys/block/sdb/queue/scheduler" }
 
     before do
       settings.SetSysRqKeysEnabled(sysrq_keys)
       settings.SetIOScheduler(scheduler)
       allow(Yast::Bootloader).to receive(:modify_kernel_params)
       allow(Yast::Bootloader).to receive(:proposed_cfg_changed=)
-      allow(Dir).to receive(:[]).with(/scheduler/).and_return([disk])
+      allow(Dir).to receive(:[]).with(/scheduler/).and_return([disk, disk2])
     end
 
     context "when SysRq keys status is unknown" do
@@ -161,6 +162,8 @@ describe "Yast::SystemSettings" do
 
       before do
         allow(File).to receive(:write).with(KERNEL_SYSRQ_FILE, anything)
+        allow(File).to receive(:read).with(disk).and_return("noop deadline [cfq]")
+        allow(File).to receive(:read).with(disk2).and_return("noop deadline [cfq]")
       end
 
       it "updates bootloader configuration" do
@@ -173,6 +176,16 @@ describe "Yast::SystemSettings" do
 
       it "activates scheduler for all disk devices" do
         expect(File).to receive(:write).with(disk, scheduler)
+        expect(File).to receive(:write).with(disk2, scheduler)
+        settings.Activate
+      end
+
+      it "does not activate the scheduler if the device does not support it" do
+        # make the "cfq" scheduler unsupported
+        expect(File).to receive(:read).with(disk2).and_return("[mq-deadline] none")
+        expect(File).to receive(:write).with(disk, scheduler)
+        # ensure it is not changed
+        expect(File).to_not receive(:write).with(disk2, scheduler)
         settings.Activate
       end
     end

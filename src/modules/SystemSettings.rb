@@ -248,9 +248,36 @@ module Yast
       # activate the scheduler for all disk devices
       return if new_elevator == :missing
       Dir["/sys/block/*/queue/scheduler"].each do |f|
+        # skip devices which do not support the selected scheduler,
+        # keep the original scheduler
+        next unless device_supports_scheduler(f, new_elevator)
+
         log.info("Activating scheduler '#{new_elevator}' for device #{f}")
         File.write(f, new_elevator)
       end
+    end
+
+    # read available schedulers for the device
+    # @param device [String] path to device scheduler file
+    # @return [Array<String>] read schedulers from the file
+    def read_device_schedulers(device)
+      schedulers = File.read(device).split(/\s+/).map do |sched|
+        # remove the current scheduler marks [] around the name
+        sched[0] == "[" && sched [-1] == "]" ? sched[1..-2] : sched
+      end
+
+      log.info("Available schedulers for #{device}: #{schedulers}")
+
+      schedulers
+    end
+
+    # does the device support support the scheduler?
+    # @param device [String] path to device scheduler file
+    # @param scheduler [String] name of the requested scheduler
+    # @return [Boolean] true if supported
+    def device_supports_scheduler(device, scheduler)
+      schedulers = read_device_schedulers(device)
+      schedulers.include?(scheduler)
     end
 
     # Read IO scheduler configuration updating the module's value
