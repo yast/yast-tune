@@ -37,11 +37,6 @@ module Yast
             "yast-hardware"
           ],
           # tree node string
-          "cache"                      => [
-            _("Cache"),
-            "yast-hardware"
-          ],
-          # tree node string
           "card_type"                  => [
             _("Card Type"),
             "yast-hardware"
@@ -334,11 +329,6 @@ module Yast
           # tree node string
           "vendor"                     => [
             _("Vendor"),
-            "yast-x11"
-          ],
-          # tree node string
-          "vendor_id"                  => [
-            _("Vendor Identifier"),
             "yast-x11"
           ],
           # tree node string
@@ -970,7 +960,6 @@ module Yast
       if Ops.is_list?(node)
         # if node is list ...
         lout = []
-        q = Builtins.size(Convert.to_list(node))
         pos = 0
         Builtins.foreach(Convert.to_list(node)) do |e|
           if scalar(e)

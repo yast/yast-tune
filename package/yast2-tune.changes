@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Tue Sep  5 14:19:50 UTC 2017 - lslezak@suse.cz
+
+- Removed duplicate keys (bsc#1054898)
+- 4.0.0
+
+-------------------------------------------------------------------
 Mon Aug 14 18:19:47 UTC 2017 - lslezak@suse.cz
 
 - Fixed scheduler activation: do not activate the new scheduler
