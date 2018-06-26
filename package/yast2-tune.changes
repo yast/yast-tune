@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Tue Jun 26 17:32:11 CEST 2018 - schubi@suse.de
+
+- Added additional searchkeys to desktop file (fate#321043). 
+- 4.0.1
+
+-------------------------------------------------------------------
 Tue Sep  5 14:19:50 UTC 2017 - lslezak@suse.cz
 
 - Removed duplicate keys (bsc#1054898)
