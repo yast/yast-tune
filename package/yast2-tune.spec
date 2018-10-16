@@ -85,6 +85,6 @@ fi
 %{yast_libdir}/tune/*.rb
 %{yast_scrconfdir}/*.scr
 %dir %{yast_docdir}
-%license %{yast_docdir}/COPYING
+%license COPYING
 
 %changelog
