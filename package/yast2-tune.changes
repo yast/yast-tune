@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Mon Nov 26 05:33:50 UTC 2018 - Noah Davis <noahadvs@gmail.com>
+
+- Provide icon with module (boo#1109310)
+
+-------------------------------------------------------------------
 Wed Aug 22 14:16:15 CEST 2018 - schubi@suse.de
 
 - Switched license in spec file from SPDX2 to SPDX3 format.

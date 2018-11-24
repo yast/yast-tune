@@ -10,5 +10,8 @@ AM_CONDITIONAL(ARCH_S390, test "$target_cpu" == "s390x" -o "$target_cpu" == "s39
 @YAST2-CHECKS-COMMON@
 @YAST2-CHECKS-YCP@
 
+icondir=/usr/share/icons
+AC_SUBST(icondir)
+
 ## and generate the output...
 @YAST2-OUTPUT@

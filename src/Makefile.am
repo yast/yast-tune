@@ -30,6 +30,11 @@ desktop_DATA = \
   desktop/system_settings.desktop \
   desktop/hwinfo.desktop
 
-EXTRA_DIST = $(module_DATA) $(client_DATA) $(ylib_DATA) $(ynclude_DATA) $(scrconf_DATA) $(desktop_DATA)
+scalabledir = @icondir@/hicolor/scalable/apps
+scalable_DATA = \
+  icons/hicolor/scalable/apps/yast-hwinfo.svg \
+  icons/hicolor/scalable/apps/yast-kernel.svg
+
+EXTRA_DIST = $(module_DATA) $(client_DATA) $(ylib_DATA) $(ynclude_DATA) $(scrconf_DATA) $(desktop_DATA) $(scalable_DATA)
 
 include $(top_srcdir)/Makefile.am.common
