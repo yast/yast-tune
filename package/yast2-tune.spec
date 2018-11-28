@@ -84,7 +84,7 @@ fi
 %dir %{yast_libdir}/tune
 %{yast_libdir}/tune/*.rb
 %{yast_scrconfdir}/*.scr
-%{_datadir}/icons/*
+%{yast_icondir}
 %dir %{yast_docdir}
 %license %{yast_docdir}/COPYING
 
