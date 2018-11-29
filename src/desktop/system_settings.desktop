@@ -15,7 +15,7 @@ X-SuSE-YaST-SortKey=
 X-SuSE-YaST-AutoInstResource=
 X-SuSE-YaST-Keywords=hardware,system
 
-Icon=yast-powertweak
+Icon=yast-kernel
 Exec=xdg-su -c "/sbin/yast2 system_settings"
 
 Name=Kernel Settings

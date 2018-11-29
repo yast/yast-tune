@@ -104,7 +104,7 @@ module Yast
         true,
         true
       )
-      Wizard.SetTitleIcon("hardware_info") if Stage.initial
+      Wizard.SetDesktopIcon("hwinfo") if Stage.initial
 
       Builtins.y2debug("tree content: %1", l)
 

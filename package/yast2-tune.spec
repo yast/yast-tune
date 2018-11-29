@@ -17,7 +17,7 @@
 
 
 Name:           yast2-tune
-Version:        4.0.1
+Version:        4.0.2
 Release:        0
 
 BuildRoot:      %{_tmppath}/%{name}-%{version}-build
@@ -84,6 +84,7 @@ fi
 %dir %{yast_libdir}/tune
 %{yast_libdir}/tune/*.rb
 %{yast_scrconfdir}/*.scr
+%{yast_icondir}
 %dir %{yast_docdir}
 %license %{yast_docdir}/COPYING
 
