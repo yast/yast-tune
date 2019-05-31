@@ -18,6 +18,7 @@ X-SuSE-YaST-Keywords=hardware,scan,system,information
 Icon=yast-hwinfo
 Exec=xdg-su -c "/sbin/yast2 hwinfo"
 
-Name=Hardware Information
-GenericName=View hardware information
+Name=YaST Hardware Information
+GenericName=Hardware Information
+Comment=View hardware information
 StartupNotify=true
