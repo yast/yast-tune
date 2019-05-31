@@ -78,14 +78,12 @@ fi
 %{yast_yncludedir}
 %{yast_clientdir}
 %{yast_desktopdir}
-%{yast_desktopdir}
 %{yast_metainfodir}
 %{yast_moduledir}
-%dir %{yast_libdir}
 %{yast_libdir}
 %{yast_scrconfdir}
 %{yast_icondir}
-%dir %{yast_docdir}
+%doc %{yast_docdir}
 %license COPYING
 
 %changelog
