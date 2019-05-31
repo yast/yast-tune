@@ -60,7 +60,7 @@ module Yast
 
     def GUIhandler
       Wizard.CreateDialog
-      Wizard.SetDesktopTitleAndIcon("system_settings")
+      Wizard.SetDesktopTitleAndIcon("org.openSUSE.YaST.SystemSettings")
 
       # start workflow
       ret = Sequencer.Run(@aliases, @sequence)

@@ -62,7 +62,7 @@ module Yast
       }
 
       Wizard.CreateDialog
-      Wizard.SetDesktopIcon("hwinfo")
+      Wizard.SetDesktopIcon("org.openSUSE.YaST.HWInfo")
 
       # start workflow
       @ret = Sequencer.Run(@aliases, @sequence)
@@ -104,7 +104,7 @@ module Yast
         true,
         true
       )
-      Wizard.SetDesktopIcon("hwinfo") if Stage.initial
+      Wizard.SetDesktopIcon("org.openSUSE.YaST.HWInfo") if Stage.initial
 
       Builtins.y2debug("tree content: %1", l)
 
