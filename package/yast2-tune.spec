@@ -12,36 +12,33 @@
 # license that conforms to the Open Source Definition (Version 1.9)
 # published by the Open Source Initiative.
 
-# Please submit bugfixes or comments via http://bugs.opensuse.org/
+# Please submit bugfixes or comments via https://bugs.opensuse.org/
 #
 
 
 Name:           yast2-tune
 Version:        4.1.0
 Release:        0
+Summary:        YaST2 - Hardware Tuning
+License:        GPL-2.0-or-later
+Group:          System/YaST
+Url:            https://github.com/yast/yast-tune
 
-BuildRoot:      %{_tmppath}/%{name}-%{version}-build
 Source0:        %{name}-%{version}.tar.bz2
 
 BuildRequires:  update-desktop-files
 BuildRequires:  yast2
 BuildRequires:  yast2-devtools >= 3.1.10
+
 # hwinfo/classnames.ycp
 # Wizard::SetDesktopTitleAndIcon
 Requires:       yast2 >= 2.21.22
 Requires:       yast2-bootloader
+Requires:       yast2-ruby-bindings >= 1.0.0
 
-Provides:       yast2-config-hwinfo
-Provides:       yast2-trans-tune
-Provides:       yast2-tune-idedma
 Obsoletes:      yast2-config-hwinfo
 Obsoletes:      yast2-trans-tune
 Obsoletes:      yast2-tune-idedma
-Provides:       y2c_tune
-Provides:       y2t_tune
-Provides:       yast2-config-tune
-Provides:       yast2-trans-hwinfo
-Provides:       yast2-trans-idedma
 Obsoletes:      y2c_tune
 Obsoletes:      y2t_tune
 Obsoletes:      yast2-config-tune
@@ -49,23 +46,27 @@ Obsoletes:      yast2-trans-hwinfo
 Obsoletes:      yast2-trans-idedma
 Obsoletes:      yast2-tune-devel-doc
 
-Requires:       yast2-ruby-bindings >= 1.0.0
-
-Summary:        YaST2 - Hardware Tuning
-License:        GPL-2.0-or-later
-Group:          System/YaST
+Provides:       yast2-config-hwinfo
+Provides:       yast2-trans-tune
+Provides:       yast2-tune-idedma
+Provides:       y2c_tune
+Provides:       y2t_tune
+Provides:       yast2-config-tune
+Provides:       yast2-trans-hwinfo
+Provides:       yast2-trans-idedma
 
 %description
 This package contains the YaST2 component for hardware configuration.
 
 %prep
-%setup -n %{name}-%{version}
+%setup -q
 
 %build
 %yast_build
 
 %install
 %yast_install
+%yast_metainfo
 
 %post
 # rename the config file to the new modprobe schema
@@ -74,18 +75,17 @@ if test -e /etc/modprobe.d/newid; then
 fi
 
 %files
-%defattr(-,root,root)
-
-%{yast_yncludedir}/hwinfo/*
-%{yast_clientdir}/*.rb
-%{yast_desktopdir}/hwinfo.desktop
-%{yast_desktopdir}/system_settings.desktop
-%{yast_moduledir}/*.rb
-%dir %{yast_libdir}/tune
-%{yast_libdir}/tune/*.rb
-%{yast_scrconfdir}/*.scr
+%{yast_yncludedir}
+%{yast_clientdir}
+%{yast_desktopdir}
+%{yast_desktopdir}
+%{yast_metainfodir}
+%{yast_moduledir}
+%dir %{yast_libdir}
+%{yast_libdir}
+%{yast_scrconfdir}
 %{yast_icondir}
 %dir %{yast_docdir}
-%license %{yast_docdir}/COPYING
+%license COPYING
 
 %changelog
