@@ -317,7 +317,7 @@ module Yast
       )
 
       Wizard.CreateDialog
-      Wizard.SetDesktopTitleAndIcon("org.openSUSE.YaST.HWInfo")
+      Wizard.SetDesktopTitleAndIcon("org.opensuse.yast.HWInfo")
 
 
       Wizard.SetBackButton(:save, _("&Save to File..."))

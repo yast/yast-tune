@@ -27,8 +27,8 @@ scrconf_DATA = \
   scrconf/modprobe_newid.scr
 
 desktop_DATA = \
-  desktop/org.openSUSE.YaST.SystemSettings.desktop \
-  desktop/org.openSUSE.YaST.HWInfo.desktop
+  desktop/org.opensuse.yast.SystemSettings.desktop \
+  desktop/org.opensuse.yast.HWInfo.desktop
 
 scalabledir = @icondir@/hicolor/scalable/apps
 scalable_DATA = \
