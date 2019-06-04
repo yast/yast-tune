@@ -36,25 +36,6 @@ Requires:       yast2 >= 2.21.22
 Requires:       yast2-bootloader
 Requires:       yast2-ruby-bindings >= 1.0.0
 
-Obsoletes:      yast2-config-hwinfo
-Obsoletes:      yast2-trans-tune
-Obsoletes:      yast2-tune-idedma
-Obsoletes:      y2c_tune
-Obsoletes:      y2t_tune
-Obsoletes:      yast2-config-tune
-Obsoletes:      yast2-trans-hwinfo
-Obsoletes:      yast2-trans-idedma
-Obsoletes:      yast2-tune-devel-doc
-
-Provides:       yast2-config-hwinfo
-Provides:       yast2-trans-tune
-Provides:       yast2-tune-idedma
-Provides:       y2c_tune
-Provides:       y2t_tune
-Provides:       yast2-config-tune
-Provides:       yast2-trans-hwinfo
-Provides:       yast2-trans-idedma
-
 %description
 This package contains the YaST2 component for hardware configuration.
 
