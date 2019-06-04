@@ -183,7 +183,7 @@ module Yast
         Label.NextButton
       )
       Wizard.DisableBackButton
-      Wizard.SetDesktopIcon("system_settings")
+      Wizard.SetDesktopIcon("org.opensuse.yast.SystemSettings")
 
       ret = CWM.ShowAndRun(
         {

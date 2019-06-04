@@ -18,6 +18,7 @@ X-SuSE-YaST-Keywords=hardware,system
 Icon=yast-kernel
 Exec=xdg-su -c "/sbin/yast2 system_settings"
 
-Name=Kernel Settings
-GenericName=Configure Low-Level System Options
+Name=YaST Kernel Settings
+GenericName=Kernel Settings
+Comment=Configure Low-Level System Options
 StartupNotify=true
