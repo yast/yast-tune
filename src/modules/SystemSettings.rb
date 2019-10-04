@@ -10,6 +10,7 @@
 # This module manages the System and Kernel settings such as I/O Scheduler type,
 # SysRq Keys...
 require "yast"
+require "cfa/sysctl"
 
 module Yast
   class SystemSettingsClass < Module
@@ -23,10 +24,11 @@ module Yast
       Yast.import "Mode"
 
       # Internal Data
+      @elevator     = nil
       @enable_sysrq = nil
       @kernel_sysrq = nil
+      @sysctl_file  = nil
       @sysctl_sysrq = nil
-      @elevator     = nil
       @modified     = false
     end
 
@@ -118,7 +120,7 @@ module Yast
         return
       end
 
-      value_string = value ? "1" : "0"
+    value_string = value ? "1" : "0"
       if value_string != enable_sysrq
         @modified = true
         self.enable_sysrq = value_string
@@ -181,7 +183,7 @@ module Yast
     # @return [String] Configuration value; returns an empty string if it's not set.
     def sysctl_sysrq
       return @sysctl_sysrq if @sysctl_sysrq
-      @sysctl_sysrq = SCR.Read(path(".etc.sysctl_conf.\"kernel.sysrq\""))
+      @sysctl_sysrq = sysctl_file.kernel_sysrq
       log.info("SysRq enabled: #{@sysctl_sysrq}")
       @sysctl_sysrq
     end
@@ -316,8 +318,8 @@ module Yast
       end
 
       log.info("Saving ENABLE_SYSRQ: #{enable_sysrq}")
-      SCR.Write(path(".etc.sysctl_conf.\"kernel.sysrq\""), enable_sysrq)
-      SCR.Write(path(".etc.sysctl_conf"), nil)
+      sysctl_file.kernel_sysrq = enable_sysrq
+      sysctl_file.save
     end
 
     # Write IO Scheduler settings
@@ -330,6 +332,20 @@ module Yast
     def write_scheduler
       Bootloader.Write if Mode.normal
       true
+    end
+
+  private
+
+    # Returns the sysctl configuration
+    #
+    # @note It memoizes the value until {#main} is called.
+    #
+    # @return [Yast2::CFA::Sysctl]
+    def sysctl_file
+      return @sysctl_file if @sysctl_file
+      @sysctl_file = CFA::Sysctl.new
+      @sysctl_file.load
+      @sysctl_file
     end
   end
 
