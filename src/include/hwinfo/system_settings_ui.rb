@@ -58,7 +58,9 @@ module Yast
       # to avoid of the very long starting time of the yast module
       # because the Storage module (which is imported by the Bootloader (imported by the SystemSettings module))
       # has a Read() function call in its constructor.
-      SystemSettings.Read
+      system_settings = SystemSettings.Read
+      return :abort unless system_settings
+
       Progress.set(progress_orig)
 
       Progress.NextStage
