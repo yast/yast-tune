@@ -56,7 +56,9 @@ module Yast
     # @see #read_scheduler
     def Read
       read_sysrq
-      read_scheduler
+      ret = read_scheduler
+
+      return false unless ret
       @modified = false
       true
     end
@@ -285,13 +287,22 @@ module Yast
     # Read IO scheduler configuration updating the module's value
     #
     # @see Read
+    #
+    # @return [Boolean] false if there is a problem reading the bootloader; true otherwise
     def read_scheduler
-      # Read bootloader settings in normal mode
-      Bootloader.Read if Mode.normal
+      # Try to read the bootloader settings in normal mode.
+      # If there is a problem, the user will be warned directly by the bootloader module.
+      if Mode.normal
+        bootloader_read = Bootloader.Read
+
+        return false unless bootloader_read
+      end
 
       # Set IO scheduler
       SetIOScheduler(current_elevator)
       log.info("Global IO scheduler: #{GetIOScheduler()}")
+
+      true
     end
 
     # Read SysRq keys configuration updating the module's value

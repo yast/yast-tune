@@ -32,6 +32,7 @@ describe "Yast::SystemSettings" do
   describe "#Read" do
     let(:kernel_sysrq)  { "1" }
     let(:sysctl_sysrq)  { "1" }
+    let(:mode) { "normal" }
 
     before do
       allow(sysctl_file).to receive(:kernel_sysrq).and_return(sysctl_sysrq)
@@ -39,6 +40,7 @@ describe "Yast::SystemSettings" do
         .and_return(kernel_sysrq)
       allow(Yast::Bootloader).to receive(:kernel_param)
         .with(:common, "elevator").and_return(scheduler)
+      allow(Yast::Mode).to receive(:mode).and_return(mode)
     end
 
     context "when SysRq keys are enabled via sysctl" do
@@ -69,55 +71,78 @@ describe "Yast::SystemSettings" do
       end
     end
 
-    context "when scheduler parameter is missing" do
-      let(:scheduler) { :missing }
-
-      it "unsets IO scheduler" do
-        settings.Read
-        expect(settings.GetIOScheduler).to eq("")
+    context "when is in normal mode" do
+      before do
+        allow(Yast::Bootloader).to receive(:Read).and_return(bootloader_read)
       end
-    end
 
-    context "when scheduler parameter is present but does not have a value" do
-      let(:scheduler) { :present }
+      context "and the bootloader can be read" do
+        let(:bootloader_read) { true }
 
-      it "unsets IO scheduler" do
-        settings.Read
-        expect(settings.GetIOScheduler).to eq("")
+        it "returns true" do
+          expect(settings.Read).to eq(true)
+        end
+
+        context "when scheduler parameter is missing" do
+          let(:scheduler) { :missing }
+
+          it "unsets IO scheduler" do
+            settings.Read
+            expect(settings.GetIOScheduler).to eq("")
+          end
+        end
+
+        context "when scheduler parameter is present but does not have a value" do
+          let(:scheduler) { :present }
+
+          it "unsets IO scheduler" do
+            settings.Read
+            expect(settings.GetIOScheduler).to eq("")
+          end
+        end
+
+        context "when scheduler parameter has a valid value" do
+          it "sets IO scheduler to that value" do
+            settings.Read
+            expect(settings.GetIOScheduler).to eq(scheduler)
+          end
+        end
+
+        context "when scheduler parameter has an invalid value" do
+          let(:scheduler) { "some-scheduler" }
+
+          it "unsets IO scheduler" do
+            settings.Read
+            expect(settings.GetIOScheduler).to eq("")
+          end
+        end
+
+        it "reads bootloader configuration" do
+          expect(Yast::Bootloader).to receive(:Read)
+          settings.Read
+        end
       end
-    end
 
-    context "when scheduler parameter has a valid value" do
-      it "sets IO scheduler to that value" do
-        settings.Read
-        expect(settings.GetIOScheduler).to eq(scheduler)
+      context "but the bootloader cannot be read" do
+        let(:bootloader_read) { false }
+
+        it "returns false" do
+          expect(settings.Read).to eq(false)
+        end
+
+        it "does not set the scheduler" do
+          expect(subject).to_not receive(:SetIOScheduler)
+        end
       end
-    end
-
-    context "when scheduler parameter has an invalid value" do
-      let(:scheduler) { "some-scheduler" }
-
-      it "unsets IO scheduler" do
-        settings.Read
-        expect(settings.GetIOScheduler).to eq("")
-      end
-    end
-
-    it "reads bootloader configuration" do
-      expect(Yast::Bootloader).to receive(:Read)
-      settings.Read
     end
 
     context "is not in normal mode" do
-      before do
-        allow(Yast::Mode).to receive(:mode).and_return("installation")
-      end
+      let(:mode) { "installation" }
 
       it "does not read bootloader configuration" do
         expect(Yast::Bootloader).to_not receive(:Read)
         settings.Read
       end
-
     end
   end
 
