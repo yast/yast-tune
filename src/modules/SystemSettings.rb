@@ -287,8 +287,11 @@ module Yast
     # Read IO scheduler configuration updating the module's value
     #
     # @see Read
+    #
+    # @return [Boolean] false if there is a problem reading the bootloader; true otherwise
     def read_scheduler
-      # Read bootloader settings in normal mode
+      # Try to read the bootloader settings in normal mode.
+      # If there is a problem, the user will be warned directly by the bootloader module.
       if Mode.normal
         bootloader_read = Bootloader.Read
 
