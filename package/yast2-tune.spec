@@ -27,12 +27,12 @@ Url:            https://github.com/yast/yast-tune
 Source0:        %{name}-%{version}.tar.bz2
 
 BuildRequires:  update-desktop-files
-# CFA::Sysctl
-BuildRequires:  yast2 >= 4.2.25
+# CFA::SysctlConfig
+BuildRequires:  yast2 >= 4.2.67
 BuildRequires:  yast2-devtools >= 4.2.2
 
-# CFA::Sysctl
-Requires:       yast2 >= 4.2.25
+# # CFA::SysctlConfig
+Requires:       yast2 >= 4.2.67
 Requires:       yast2-bootloader
 Requires:       yast2-ruby-bindings >= 1.0.0
 
