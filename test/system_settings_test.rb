@@ -10,16 +10,16 @@ describe "Yast::SystemSettings" do
 
   subject(:settings) { Yast::SystemSettings }
   let(:scheduler)     { "cfq" }
-  let(:sysctl_file) { CFA::Sysctl.new }
+  let(:sysctl_config) { CFA::SysctlConfig.new }
 
   before do
     allow(File).to receive(:exist?).and_return(true)
     allow(Yast::Bootloader).to receive(:Read)
     allow(Yast::Bootloader).to receive(:kernel_param)
       .with(:common, "elevator").and_return(scheduler)
-    allow(CFA::Sysctl).to receive(:new).and_return(sysctl_file)
-    allow(sysctl_file).to receive(:load)
-    allow(sysctl_file).to receive(:save)
+    allow(CFA::SysctlConfig).to receive(:new).and_return(sysctl_config)
+    allow(sysctl_config).to receive(:load)
+    allow(sysctl_config).to receive(:save)
     settings.main
   end
 
@@ -35,7 +35,7 @@ describe "Yast::SystemSettings" do
     let(:mode) { "normal" }
 
     before do
-      allow(sysctl_file).to receive(:kernel_sysrq).and_return(sysctl_sysrq)
+      allow(sysctl_config).to receive(:kernel_sysrq).and_return(sysctl_sysrq)
       allow(File).to receive(:read).with(KERNEL_SYSRQ_FILE)
         .and_return(kernel_sysrq)
       allow(Yast::Bootloader).to receive(:kernel_param)
@@ -246,7 +246,7 @@ describe "Yast::SystemSettings" do
       allow(Yast::Mode).to receive(:mode).and_return(mode)
       allow(Yast::Bootloader).to receive(:Write)
       allow(Yast::SCR).to receive(:Read).and_call_original
-      allow(sysctl_file).to receive(:kernel_sysrq).and_return(sysctl_sysrq)
+      allow(sysctl_config).to receive(:kernel_sysrq).and_return(sysctl_sysrq)
     end
 
     context "when system settings has been read" do
@@ -256,7 +256,7 @@ describe "Yast::SystemSettings" do
         let(:sysctl_sysrq) { "0" }
 
         it "updates sysctl configuration" do
-          expect(sysctl_file).to receive(:kernel_sysrq=).with(sysctl_sysrq)
+          expect(sysctl_config).to receive(:kernel_sysrq=).with(sysctl_sysrq)
           settings.Write
         end
       end
@@ -265,7 +265,7 @@ describe "Yast::SystemSettings" do
         let(:sysctl_sysrq) { "-1" }
 
         it "does not update sysctl configuration" do
-          expect(sysctl_file).to_not receive(:kernel_sysrq=)
+          expect(sysctl_config).to_not receive(:kernel_sysrq=)
           settings.Write
         end
       end
@@ -287,7 +287,7 @@ describe "Yast::SystemSettings" do
 
     context "when system settings hadn't been read" do
       it "does not update sysctl configuration" do
-        expect(sysctl_file).to_not receive(:kernel_sysrq=)
+        expect(sysctl_config).to_not receive(:kernel_sysrq=)
         settings.Write
       end
     end
@@ -329,7 +329,7 @@ describe "Yast::SystemSettings" do
   describe "#SetSysRqKeysEnabled" do
     before do
       allow(Yast::SCR).to receive(:Read).and_call_original
-      allow(sysctl_file).to receive(:kernel_sysrq).and_return(sysctl_sysrq)
+      allow(sysctl_config).to receive(:kernel_sysrq).and_return(sysctl_sysrq)
       settings.Read
     end
 
