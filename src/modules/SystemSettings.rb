@@ -10,7 +10,7 @@
 # This module manages the System and Kernel settings such as I/O Scheduler type,
 # SysRq Keys...
 require "yast"
-require "cfa/sysctl"
+require "cfa/sysctl_config"
 
 module Yast
   class SystemSettingsClass < Module
@@ -24,12 +24,12 @@ module Yast
       Yast.import "Mode"
 
       # Internal Data
-      @elevator     = nil
-      @enable_sysrq = nil
-      @kernel_sysrq = nil
-      @sysctl_file  = nil
-      @sysctl_sysrq = nil
-      @modified     = false
+      @elevator      = nil
+      @enable_sysrq  = nil
+      @kernel_sysrq  = nil
+      @sysctl_config = nil
+      @sysctl_sysrq  = nil
+      @modified      = false
     end
 
     # Known values of the 'elevator' variable
@@ -185,7 +185,7 @@ module Yast
     # @return [String] Configuration value; returns an empty string if it's not set.
     def sysctl_sysrq
       return @sysctl_sysrq if @sysctl_sysrq
-      @sysctl_sysrq = sysctl_file.kernel_sysrq
+      @sysctl_sysrq = sysctl_config.kernel_sysrq
       log.info("SysRq enabled: #{@sysctl_sysrq}")
       @sysctl_sysrq
     end
@@ -329,8 +329,8 @@ module Yast
       end
 
       log.info("Saving ENABLE_SYSRQ: #{enable_sysrq}")
-      sysctl_file.kernel_sysrq = enable_sysrq
-      sysctl_file.save
+      sysctl_config.kernel_sysrq = enable_sysrq
+      sysctl_config.save unless sysctl_config.conflict?
     end
 
     # Write IO Scheduler settings
@@ -351,12 +351,12 @@ module Yast
     #
     # @note It memoizes the value until {#main} is called.
     #
-    # @return [Yast2::CFA::Sysctl]
-    def sysctl_file
-      return @sysctl_file if @sysctl_file
-      @sysctl_file = CFA::Sysctl.new
-      @sysctl_file.load
-      @sysctl_file
+    # @return [Yast2::CFA::SysctlConfig]
+    def sysctl_config
+      return @sysctl_config if @sysctl_config
+      @sysctl_config = CFA::SysctlConfig.new
+      @sysctl_config.load
+      @sysctl_config
     end
   end
 
