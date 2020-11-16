@@ -17,7 +17,7 @@
 
 
 Name:           yast2-tune
-Version:        3.3.0
+Version:        3.2.1
 Release:        0
 
 BuildRoot:      %{_tmppath}/%{name}-%{version}-build
