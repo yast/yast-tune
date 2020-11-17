@@ -1,4 +1,12 @@
 -------------------------------------------------------------------
+Mon Aug 14 18:19:47 UTC 2017 - lslezak@suse.cz
+
+- Backport: Fixed scheduler activation: do not activate the new
+  scheduler for devices which do not support it (bsc#1052770)
+  (backport request at bsc#1177035)
+- 3.2.1
+
+-------------------------------------------------------------------
 Fri Jan 20 16:21:30 UTC 2017 - mvidner@suse.com
 
 - Added Tune::Widgets::SystemInformation (FATE#322328).
