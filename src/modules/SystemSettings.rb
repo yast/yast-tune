@@ -24,25 +24,12 @@ module Yast
       Yast.import "Mode"
 
       # Internal Data
-      @elevator      = nil
       @enable_sysrq  = nil
       @kernel_sysrq  = nil
       @sysctl_config = nil
       @sysctl_sysrq  = nil
       @autoconf      = true
       @modified      = false
-    end
-
-    # Known values of the 'elevator' variable
-    ELEVATORS = ["cfq", "noop", "deadline"].freeze
-
-    # Return the possible values to be used as elevators/schedulers
-    #
-    # @return [Array<String>] Know elevators/schedulers
-    #
-    # @see ELEVATORS
-    def GetPossibleElevatorValues
-      ELEVATORS
     end
 
     # Determine if the module was modified
@@ -54,13 +41,11 @@ module Yast
     # Read system settings
     #
     # @see #read_sysrq
-    # @see #read_scheduler
+    # @see #read_autoconf
     def Read
       read_sysrq
       read_autoconf
-      ret = read_scheduler
 
-      return false unless ret
       @modified = false
       true
     end
@@ -68,12 +53,11 @@ module Yast
     # Activate settings
     #
     # @see #activate_sysrq
-    # @see #activate_scheduler
     # @see #activate_autoconf
     def Activate
       activate_sysrq
       activate_autoconf
-      activate_scheduler
+
       true
     end
 
@@ -81,34 +65,6 @@ module Yast
     def Write
       write_sysrq
       write_autoconf
-      write_scheduler
-    end
-
-    # Return the kernel IO scheduler
-    #
-    # The scheduler is specified as the 'elevator' kernel parameter.
-    # If not scheduler is set, it will return an empty string.
-    #
-    # @return [String] IO scheduler name or empty string if not set
-    def GetIOScheduler
-      @elevator
-    end
-
-    # Set IO scheduler
-    #
-    # @param scheduler [String] IO scheduler
-    def SetIOScheduler(scheduler)
-      # empty string = use the default scheduler
-      if valid_scheduler?(scheduler) || scheduler == ""
-        if GetIOScheduler() != scheduler
-          @modified = true
-          @elevator = scheduler
-        end
-      else
-        log.error("unknown IO scheduler '#{scheduler}', use: #{GetPossibleElevatorValues()}")
-      end
-
-      nil
     end
 
     # Determine if SysRq keys are enabled
@@ -156,17 +112,14 @@ module Yast
       nil
     end
 
-    publish function: :GetPossibleElevatorValues, type: "list <string> ()"
     publish function: :Modified, type: "boolean ()"
     publish function: :Read, type: "boolean ()"
     publish function: :Activate, type: "boolean ()"
     publish function: :Write, type: "boolean ()"
-    publish function: :GetIOScheduler, type: "string ()"
-    publish function: :SetIOScheduler, type: "void (string)"
     publish function: :GetSysRqKeysEnabled, type: "boolean ()"
     publish function: :SetSysRqKeysEnabled, type: "void (boolean)"
-    publish function: :GetAutoConfEnabled, type: "boolean ()"
-    publish function: :SetAutoConfEnabled, type: "void (boolean)"
+    publish function: :GetAutoConf, type: "boolean ()"
+    publish function: :SetAutoConf, type: "void (boolean)"
 
   protected
 
@@ -217,39 +170,6 @@ module Yast
       @sysctl_sysrq
     end
 
-    # Determine if a string is a valid scheduler name
-    #
-    # @return [Boolean] true if it's valid; false otherwise.
-    def valid_scheduler?(elevator)
-      GetPossibleElevatorValues().include?(elevator)
-    end
-
-    # Determine the current scheduler from the system
-    #
-    # @return [String] IO Scheduler name; if it's not valid/set, it will return an empty string
-    def current_elevator
-      # get 'elevator' option from the default section
-      elevator_parameter = Bootloader.kernel_param(:common, "elevator")
-      log.info("elevator_parameter: #{elevator_parameter}")
-
-      if elevator_parameter == :missing    # Variable is not set
-        ""
-      elsif elevator_parameter == :present # Variable is set but has not parameter
-        log.info("'elevator' variable has to have some value")
-        ""
-      elsif !valid_scheduler?(elevator_parameter.to_s) # Variable is set but hasn't any known value
-        log.warn(
-          format("'elevator' variable has to have a value from %s instead of being set to %s",
-            GetPossibleElevatorValues(),
-            elevator_parameter
-          )
-        )
-        ""
-      else
-        elevator_parameter.to_s
-      end
-    end
-
     # Activate SysRq keys configuration
     #
     # @see enable_sysrq
@@ -263,31 +183,6 @@ module Yast
       File.write(KERNEL_SYSRQ_FILE, "#{enable_sysrq}\n")
     end
 
-    # Activate IO scheduler
-    #
-    # @see activate_scheduler
-    def activate_scheduler
-      return unless GetIOScheduler()
-
-      new_elevator = GetIOScheduler() == "" ? :missing : GetIOScheduler()
-      log.info("Activating scheduler: #{new_elevator}")
-      # set the scheduler
-      Bootloader.modify_kernel_params("elevator" => new_elevator)
-      # set bootloader configuration as 'changed' (bsc#968192)
-      Bootloader.proposed_cfg_changed = true
-
-      # activate the scheduler for all disk devices
-      return if new_elevator == :missing
-      Dir["/sys/block/*/queue/scheduler"].each do |f|
-        # skip devices which do not support the selected scheduler,
-        # keep the original scheduler
-        next unless device_supports_scheduler(f, new_elevator)
-
-        log.info("Activating scheduler '#{new_elevator}' for device #{f}")
-        File.write(f, new_elevator)
-      end
-    end
-
     # Activate I/O device autoconf setting
     def activate_autoconf
       if @autoconf
@@ -297,50 +192,6 @@ module Yast
         log.info("adding rd.zdev=no-auto kernel parameter")
         Bootloader.modify_kernel_params("rd.zdev" => "no-auto")
       end
-    end
-
-    # read available schedulers for the device
-    # @param device [String] path to device scheduler file
-    # @return [Array<String>] read schedulers from the file
-    def read_device_schedulers(device)
-      schedulers = File.read(device).split(/\s+/).map do |sched|
-        # remove the current scheduler marks [] around the name
-        sched[0] == "[" && sched [-1] == "]" ? sched[1..-2] : sched
-      end
-
-      log.info("Available schedulers for #{device}: #{schedulers}")
-
-      schedulers
-    end
-
-    # does the device support support the scheduler?
-    # @param device [String] path to device scheduler file
-    # @param scheduler [String] name of the requested scheduler
-    # @return [Boolean] true if supported
-    def device_supports_scheduler(device, scheduler)
-      schedulers = read_device_schedulers(device)
-      schedulers.include?(scheduler)
-    end
-
-    # Read IO scheduler configuration updating the module's value
-    #
-    # @see Read
-    #
-    # @return [Boolean] false if there is a problem reading the bootloader; true otherwise
-    def read_scheduler
-      # Try to read the bootloader settings in normal mode.
-      # If there is a problem, the user will be warned directly by the bootloader module.
-      if Mode.normal
-        bootloader_read = Bootloader.Read
-
-        return false unless bootloader_read
-      end
-
-      # Set IO scheduler
-      SetIOScheduler(current_elevator)
-      log.info("Global IO scheduler: #{GetIOScheduler()}")
-
-      true
     end
 
     # Read SysRq keys configuration updating the module's value
@@ -388,18 +239,6 @@ module Yast
     # @see Write
     def write_autoconf
       Bootloader.Write if Mode.normal
-    end
-
-    # Write IO Scheduler settings
-    #
-    # This method only has effect during normal mode. During installation,
-    # bootloader configuration is written at the end of the first stage.
-    #
-    # @see Bootloader#Write
-    # @see Write
-    def write_scheduler
-      Bootloader.Write if Mode.normal
-      true
     end
 
   private
