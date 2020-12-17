@@ -10,6 +10,7 @@ describe "Yast::SystemSettings" do
 
   subject(:settings) { Yast::SystemSettings }
   let(:scheduler)     { "cfq" }
+  let(:rd_zdev)       { "no-auto" }
   let(:sysctl_config) { CFA::SysctlConfig.new }
 
   before do
@@ -17,6 +18,8 @@ describe "Yast::SystemSettings" do
     allow(Yast::Bootloader).to receive(:Read)
     allow(Yast::Bootloader).to receive(:kernel_param)
       .with(:common, "elevator").and_return(scheduler)
+    allow(Yast::Bootloader).to receive(:kernel_param)
+      .with(:common, "rd.zdev").and_return(rd_zdev)
     allow(CFA::SysctlConfig).to receive(:new).and_return(sysctl_config)
     allow(sysctl_config).to receive(:load)
     allow(sysctl_config).to receive(:save)
@@ -40,6 +43,8 @@ describe "Yast::SystemSettings" do
         .and_return(kernel_sysrq)
       allow(Yast::Bootloader).to receive(:kernel_param)
         .with(:common, "elevator").and_return(scheduler)
+      allow(Yast::Bootloader).to receive(:kernel_param)
+        .with(:common, "rd.zdev").and_return(rd_zdev)
       allow(Yast::Mode).to receive(:mode).and_return(mode)
     end
 
@@ -158,6 +163,7 @@ describe "Yast::SystemSettings" do
       allow(Yast::Bootloader).to receive(:modify_kernel_params)
       allow(Yast::Bootloader).to receive(:proposed_cfg_changed=)
       allow(Dir).to receive(:[]).with(/scheduler/).and_return([disk, disk2])
+      allow(Dir).to receive(:[]).with("/usr/share/YaST2/locale/*").and_return([])
     end
 
     context "when SysRq keys status is unknown" do
