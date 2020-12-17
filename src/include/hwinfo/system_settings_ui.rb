@@ -119,30 +119,6 @@ module Yast
       :next
     end
 
-
-    def HandleElevatorSettings(key, event)
-      event = deep_copy(event)
-      Builtins.y2milestone("Key: %1, Event: %2", key, event)
-      nil
-    end
-
-    def InitElevatorSettings(value)
-      Wizard.DisableBackButton
-      UI.ChangeWidget(Id("elevator"), :Value, SystemSettings.GetIOScheduler)
-
-      nil
-    end
-
-    def StoreElevatorSettings(key, event)
-      event = deep_copy(event)
-      Builtins.y2milestone("Key: %1, Event: %2", key, event)
-      elevator_new = Convert.to_string(UI.QueryWidget(Id("elevator"), :Value))
-
-      SystemSettings.SetIOScheduler(elevator_new)
-
-      nil
-    end
-
     def InitSysRqSettings(key)
       Wizard.DisableBackButton
       UI.ChangeWidget(Id("sysrq"), :Value, SystemSettings.GetSysRqKeysEnabled)
