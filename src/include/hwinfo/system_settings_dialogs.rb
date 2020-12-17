@@ -34,8 +34,8 @@ module Yast
       # whether to show I/O device autoconfig checkbox
       has_autoconf = Arch.s390
 
-      kernel_widget_names = ["elevator", "sysrq"]
-      kernel_widgets = [VSpacing(0.3), Left("elevator"), VSpacing(1), Left("sysrq")]
+      kernel_widget_names = ["sysrq"]
+      kernel_widgets = [VSpacing(1), Left("sysrq")]
 
       if has_autoconf
         kernel_widget_names << "autoconf"
@@ -81,58 +81,6 @@ module Yast
           "handle"        => fun_ref(
             method(:HandleNewPCIIDDialog),
             "symbol (string, map)"
-          )
-        },
-        # /usr/src/linux/Documentation/kernel-parameters.txt
-        # http://www.redhat.com/magazine/008jun05/features/schedulers/
-        #
-        # elevator=    [IOSCHED]
-        #		Format: {"cfq"|"deadline"|"noop"}
-        #		See Documentation/block/as-iosched.txt
-        #		and Documentation/block/deadline-iosched.txt for details.
-        #
-        #	'deadline' =>	Deadline. Database servers, especially those using "TCQ" disks should
-        #			investigate performance with the 'deadline' IO scheduler. Any system with high
-        #			disk performance requirements should do so, in fact.
-        #	'noop' => NOOP
-        #	'cfq' => Completely Fair Queuing (the default)
-        "elevator"                 => {
-          "widget"        => :custom,
-          # combo box label
-          "custom_widget" => ComboBox(
-            Id("elevator"),
-            _("Global &I/O Scheduler"),
-            [
-              # combo box item - I/O scheduler
-              Item(Id(""), _("Not Configured")),
-              # combo box item - I/O scheduler, do not translate the abbreviation in brackets
-              Item(Id("cfq"), _("Completely Fair Queuing [cfq]")),
-              # combo box item - I/O scheduler, do not translate the abbreviation in brackets
-              Item(Id("noop"), _("NOOP [noop]")),
-              # combo box item - I/O scheduler, do not translate the abbreviation in brackets
-              Item(Id("deadline"), _("Deadline [deadline]"))
-            ]
-          ),
-          "handle"        => fun_ref(
-            method(:HandleElevatorSettings),
-            "symbol (string, map)"
-          ),
-          "init"          => fun_ref(
-            method(:InitElevatorSettings),
-            "void (string)"
-          ),
-          "store"         => fun_ref(
-            method(:StoreElevatorSettings),
-            "void (string, map)"
-          ),
-          # help text for the scheduler widget, do not translate 'cfq'
-          "help"          => _(
-            "<p><b><big>Global I/O Scheduler</big></b><br>\n" +
-              "Select the algorithm which orders and sends commands to disk\n" +
-              "devices. This is a global option, it will be used for all disk devices in the\n" +
-              "system. If the option is not configured, the default scheduler (usually 'cfq')\n" +
-              "will be used. See the documentation in the /usr/src/linux/Documentation/block\n" +
-              "directory (package kernel-source) for more information.</p>\n"
           )
         },
         # .sysconfig.sysctl
