@@ -31,6 +31,17 @@ module Yast
 
       @contents = VBox("tab")
 
+      # whether to show I/O device autoconfig checkbox
+      has_autoconf = Arch.s390
+
+      kernel_widget_names = ["elevator", "sysrq"]
+      kernel_widgets = [VSpacing(0.3), Left("elevator"), VSpacing(1), Left("sysrq")]
+
+      if has_autoconf
+        kernel_widget_names << "autoconf"
+        kernel_widgets << VSpacing(1) << Left("autoconf")
+      end
+
       @tabs_descr = {
         "pci_id"          => {
           "header"       => NewPCIIDDialogCaption(),
@@ -46,12 +57,12 @@ module Yast
           "contents"     => VBox(
             HBox(
               HSpacing(1),
-              VBox(VSpacing(0.3), Left("elevator"), VSpacing(1), Left("sysrq")),
+              VBox(*kernel_widgets),
               HSpacing(1)
             ),
             VStretch()
           ),
-          "widget_names" => ["elevator", "sysrq"]
+          "widget_names" => kernel_widget_names
         }
       }
 
@@ -138,6 +149,17 @@ module Yast
               "Alt-SysRq-<command_key> will start the respective command (e.g. reboot the\n" +
               "computer, dump kernel information). For further information, see\n" +
               "<tt>/usr/src/linux/Documentation/sysrq.txt</tt> (package kernel-source).</p>\n"
+          )
+        },
+        "autoconf"                    => {
+          "widget" => :checkbox,
+          "label"  => _("Enable I/O device auto-configuration"),
+          "store"  => fun_ref(method(:StoreAutoConfSettings), "void (string, map)"),
+          "init"   => fun_ref(method(:InitAutoConfSettings), "void (string)"),
+          "help"   => _(
+            "<p><b><big>Enable I/O device auto-configuration</big></b><br>\n" +
+            "Disable <b>I/O device auto-configuration</b>\n" +
+            "if you don't want any existing I/O auto-configuration data to be applied.</p>\n"
           )
         }
       }

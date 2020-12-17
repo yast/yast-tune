@@ -10,6 +10,7 @@ describe "Yast::SystemSettings" do
 
   subject(:settings) { Yast::SystemSettings }
   let(:scheduler)     { "cfq" }
+  let(:rd_zdev)       { "no-auto" }
   let(:sysctl_config) { CFA::SysctlConfig.new }
 
   before do
@@ -17,6 +18,8 @@ describe "Yast::SystemSettings" do
     allow(Yast::Bootloader).to receive(:Read)
     allow(Yast::Bootloader).to receive(:kernel_param)
       .with(:common, "elevator").and_return(scheduler)
+    allow(Yast::Bootloader).to receive(:kernel_param)
+      .with(:common, "rd.zdev").and_return(rd_zdev)
     allow(CFA::SysctlConfig).to receive(:new).and_return(sysctl_config)
     allow(sysctl_config).to receive(:load)
     allow(sysctl_config).to receive(:save)
@@ -40,6 +43,8 @@ describe "Yast::SystemSettings" do
         .and_return(kernel_sysrq)
       allow(Yast::Bootloader).to receive(:kernel_param)
         .with(:common, "elevator").and_return(scheduler)
+      allow(Yast::Bootloader).to receive(:kernel_param)
+        .with(:common, "rd.zdev").and_return(rd_zdev)
       allow(Yast::Mode).to receive(:mode).and_return(mode)
     end
 
@@ -68,6 +73,24 @@ describe "Yast::SystemSettings" do
       it "uses kernel value" do
         settings.Read
         expect(settings.GetSysRqKeysEnabled).to eq(false)
+      end
+    end
+
+    context "when rd.zdev kernel option is set" do
+      let(:rd_zdev) { "no-auto" }
+
+      it "I/O autoconfig is disabled" do
+        settings.Read
+        expect(settings.GetAutoConf).to eq(false)
+      end
+    end
+
+    context "when rd.zdev kernel option is not set" do
+      let(:rd_zdev) { :missing }
+
+      it "I/O autoconfig is enabled" do
+        settings.Read
+        expect(settings.GetAutoConf).to eq(true)
       end
     end
 
@@ -155,9 +178,11 @@ describe "Yast::SystemSettings" do
     before do
       settings.SetSysRqKeysEnabled(sysrq_keys)
       settings.SetIOScheduler(scheduler)
+      allow(File).to receive(:write).with(KERNEL_SYSRQ_FILE, anything)
       allow(Yast::Bootloader).to receive(:modify_kernel_params)
       allow(Yast::Bootloader).to receive(:proposed_cfg_changed=)
       allow(Dir).to receive(:[]).with(/scheduler/).and_return([disk, disk2])
+      allow(Dir).to receive(:[]).with("/usr/share/YaST2/locale/*").and_return([])
     end
 
     context "when SysRq keys status is unknown" do
@@ -180,6 +205,24 @@ describe "Yast::SystemSettings" do
     context "when SysRq keys is disabled" do
       it "writes '0' to /proc/sys/kernel/sysrq" do
         expect(::File).to receive(:write).with(KERNEL_SYSRQ_FILE, "0\n")
+        settings.Activate
+      end
+    end
+
+    context "when I/O device autoconfig is enabled" do
+      it "removes rd.zdev kernel option" do
+        expect(Yast::Bootloader).to receive(:modify_kernel_params)
+          .with("rd.zdev" => :missing)
+        settings.SetAutoConf(true)
+        settings.Activate
+      end
+    end
+
+    context "when I/O device autoconfig is disabled" do
+      it "sets rd.zdev kernel option to no-auto" do
+        expect(Yast::Bootloader).to receive(:modify_kernel_params)
+          .with("rd.zdev" => "no-auto")
+        settings.SetAutoConf(false)
         settings.Activate
       end
     end
