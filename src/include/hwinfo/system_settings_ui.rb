@@ -161,5 +161,24 @@ module Yast
 
       nil
     end
+
+    def InitAutoConfSettings(key)
+      Wizard.DisableBackButton
+      UI.ChangeWidget(Id("autoconf"), :Value, SystemSettings.GetAutoConf)
+
+      nil
+    end
+
+    def StoreAutoConfSettings(key, event)
+      event = deep_copy(event)
+      Builtins.y2milestone("Key: %1, Event: %2", key, event)
+
+      autoconf_new = Convert.to_boolean(UI.QueryWidget(Id("autoconf"), :Value))
+      if SystemSettings.GetAutoConf != autoconf_new
+        SystemSettings.SetAutoConf(autoconf_new)
+      end
+
+      nil
+    end
   end
 end
