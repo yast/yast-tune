@@ -29,6 +29,7 @@ module Yast
       @kernel_sysrq  = nil
       @sysctl_config = nil
       @sysctl_sysrq  = nil
+      @autoconf      = true
       @modified      = false
     end
 
@@ -56,6 +57,7 @@ module Yast
     # @see #read_scheduler
     def Read
       read_sysrq
+      read_autoconf
       ret = read_scheduler
 
       return false unless ret
@@ -67,8 +69,10 @@ module Yast
     #
     # @see #activate_sysrq
     # @see #activate_scheduler
+    # @see #activate_autoconf
     def Activate
       activate_sysrq
+      activate_autoconf
       activate_scheduler
       true
     end
@@ -76,6 +80,7 @@ module Yast
     # Write settings to system configuration
     def Write
       write_sysrq
+      write_autoconf
       write_scheduler
     end
 
@@ -131,6 +136,26 @@ module Yast
       nil
     end
 
+    # Determine current I/O device autoconf setting
+    #
+    # @return [Boolean] true if enabled; false otherwise.
+    def GetAutoConf
+      log.info "GetAutoConf = #{@autoconf}"
+      @autoconf
+    end
+
+    # Set I/O device autoconf status
+    #
+    # @param value [Boolean] true to enable; false to disable
+    def SetAutoConf(value)
+      if value != @autoconf
+        @modified = true
+        @autoconf = value
+      end
+
+      nil
+    end
+
     publish function: :GetPossibleElevatorValues, type: "list <string> ()"
     publish function: :Modified, type: "boolean ()"
     publish function: :Read, type: "boolean ()"
@@ -140,6 +165,8 @@ module Yast
     publish function: :SetIOScheduler, type: "void (string)"
     publish function: :GetSysRqKeysEnabled, type: "boolean ()"
     publish function: :SetSysRqKeysEnabled, type: "void (boolean)"
+    publish function: :GetAutoConfEnabled, type: "boolean ()"
+    publish function: :SetAutoConfEnabled, type: "void (boolean)"
 
   protected
 
@@ -261,6 +288,17 @@ module Yast
       end
     end
 
+    # Activate I/O device autoconf setting
+    def activate_autoconf
+      if @autoconf
+        log.info("removing rd.zdev kernel parameter")
+        Bootloader.modify_kernel_params("rd.zdev" => :missing)
+      else
+        log.info("adding rd.zdev=no-auto kernel parameter")
+        Bootloader.modify_kernel_params("rd.zdev" => "no-auto")
+      end
+    end
+
     # read available schedulers for the device
     # @param device [String] path to device scheduler file
     # @return [Array<String>] read schedulers from the file
@@ -331,6 +369,25 @@ module Yast
       log.info("Saving ENABLE_SYSRQ: #{enable_sysrq}")
       sysctl_config.kernel_sysrq = enable_sysrq
       sysctl_config.save unless sysctl_config.conflict?
+    end
+
+    # Read I/O device autoconfig settings
+    def read_autoconf
+      rd_zdev = Bootloader.kernel_param(:common, "rd.zdev")
+      log.info "current rd.zdev setting: rd.zdev=#{rd_zdev.inspect}"
+
+      @autoconf = rd_zdev != "no-auto"
+    end
+
+    # Write I/O device autoconfig settings
+    #
+    # This method only has effect during normal mode. During installation,
+    # bootloader configuration is written at the end of the first stage.
+    #
+    # @see Bootloader#Write
+    # @see Write
+    def write_autoconf
+      Bootloader.Write if Mode.normal
     end
 
     # Write IO Scheduler settings
