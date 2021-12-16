@@ -121,7 +121,7 @@ module Yast
         ret = Convert.to_symbol(UI.UserInput)
       end
 
-      ret = :bort if ret == :close
+      ret = :abort if ret == :close
 
       Wizard.RestoreNextButton
       Wizard.RestoreAbortButton
