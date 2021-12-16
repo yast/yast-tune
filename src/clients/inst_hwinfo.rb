@@ -39,7 +39,7 @@ module Yast
       #
       #************************************
 
-      # aliases for wizard sequncer
+      # aliases for wizard sequencer
       @aliases = {
         "detected" => lambda { detected_dialog },
         "details"  => [lambda { details_dialog(@selected_model, @selected_info) }, true],
