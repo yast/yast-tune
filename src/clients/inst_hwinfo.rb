@@ -96,9 +96,17 @@ module Yast
         "<P><B>Details</B></P><P>The details of the selected hardware component are displayed here.</P>"
       )
 
-      # heading text, %1 is component name (e.g. "USB UHCI Root Hub")
+      heading =
+        if model.nil? || model.empty?
+          # heading text
+          _("Component Details")
+        else
+          # heading text, %1 is component name (e.g. "USB UHCI Root Hub")
+          Builtins.sformat(_("Component '%1'"), model)
+        end
+
       Wizard.SetContents(
-        Builtins.sformat(_("Component '%1'"), model),
+        heading,
         content,
         help_text,
         true,
