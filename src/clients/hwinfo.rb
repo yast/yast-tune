@@ -22,6 +22,9 @@ module Yast
       Yast.import "Directory"
       Yast.import "CommandLine"
       Yast.import "Icon"
+      Yast.import "Package"
+      Yast.import "Mode"
+      Yast.import "Report"
 
       #include "hwinfo/classnames.ycp";
       Yast.include self, "hwinfo/routines.rb"
@@ -54,7 +57,7 @@ module Yast
         "guihandler" => fun_ref(method(:StartGUI), "symbol ()")
       }
 
-      CommandLine.Run(@cmdline_description) 
+      CommandLine.Run(@cmdline_description)
 
 
       # EOF
@@ -159,7 +162,7 @@ module Yast
                 )
               )
             )
-          end 
+          end
 
 
           # add processor index
@@ -235,7 +238,7 @@ module Yast
 
         Builtins.foreach(dir) do |d|
           uniq = Builtins.add(uniq, d) if !Builtins.contains(uniq, d)
-        end 
+        end
 
 
         dir = deep_copy(uniq)
@@ -284,9 +287,25 @@ module Yast
       end
     end
 
+    # Check if the "hwinfo" package or binary is available and possibly offer
+    # to install it.
+    #
+    # @return [Boolean] true if success, false if error
+    #
+    def ensure_hwinfo_available
+      return true unless Mode.normal
+
+      return true if Package.CheckAndInstallPackages(["hwinfo"])
+
+      Report.Error(Message.CannotContinueWithoutPackagesInstalled)
+      false
+    end
+
 
     # Main
     def StartGUI
+      return :back unless ensure_hwinfo_available
+
       # display progress popup
       OpenProbingPopup()
 
