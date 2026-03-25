@@ -17,14 +17,13 @@
 
 
 Name:           yast2-tune
-Version:        5.0.0
+Version:        5.0.1
 Release:        0
 Summary:        YaST2 - Hardware Tuning
 License:        GPL-2.0-or-later
 Group:          System/YaST
 URL:            https://github.com/yast/yast-tune
 Source0:        %{name}-%{version}.tar.bz2
-BuildRequires:  update-desktop-files
 # CFA::SysctlConfig
 BuildRequires:  yast2 >= 4.2.67
 BuildRequires:  yast2-devtools >= 4.4.0
